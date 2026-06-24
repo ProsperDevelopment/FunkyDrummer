@@ -1,5 +1,6 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { playDrum, playMetronomeClick } from '../audio/drumSounds';
+import { STEPS_PER_MEASURE, BEAT_INTERVAL, MEASURE_INTERVAL, COUNT_IN_BEATS } from '../config/constants';
 
 export function usePlayback(pattern, bpmOverride, stopAfterReps = 0, onDrumPlayed, metronomeOn = false, drumPlaybackOn = true, countdownOn = false) {
   const [isPlaying, setIsPlaying] = useState(false);
@@ -10,7 +11,7 @@ export function usePlayback(pattern, bpmOverride, stopAfterReps = 0, onDrumPlaye
   const intervalRef = useRef(null);
   const countdownTimerRef = useRef(null);
   const stepRef = useRef(0);
-  const stepsRef = useRef(32);
+  const stepsRef = useRef(STEPS_PER_MEASURE * 2);
   const patternRef = useRef(pattern);
   const bpmRef = useRef(bpmOverride);
   const stopAfterRef = useRef(stopAfterReps);
@@ -28,7 +29,7 @@ export function usePlayback(pattern, bpmOverride, stopAfterReps = 0, onDrumPlaye
   useEffect(() => {
     patternRef.current = pattern;
     if (pattern) {
-      const steps = pattern.measures * 16;
+      const steps = pattern.measures * STEPS_PER_MEASURE;
       stepsRef.current = steps;
       setTotalSteps(steps);
     }
@@ -72,8 +73,8 @@ export function usePlayback(pattern, bpmOverride, stopAfterReps = 0, onDrumPlaye
         }
       }
 
-      if (metronomeRef.current && modStep % 4 === 0) {
-        playMetronomeClick(modStep % 16 === 0);
+      if (metronomeRef.current && modStep % BEAT_INTERVAL === 0) {
+        playMetronomeClick(modStep % MEASURE_INTERVAL === 0);
       }
 
       const nextStep = step + 1;
@@ -111,7 +112,7 @@ export function usePlayback(pattern, bpmOverride, stopAfterReps = 0, onDrumPlaye
 
     if (countdownRef.current) {
       setIsCountdown(true);
-      let count = 4;
+      let count = COUNT_IN_BEATS;
       const tick = () => {
         playMetronomeClick(count === 4);
         count--;

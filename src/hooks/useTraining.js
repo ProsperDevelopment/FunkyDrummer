@@ -1,11 +1,12 @@
 import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
+import { STEPS_PER_MEASURE, TRAINING_HIT_TOLERANCE, TRAINING_SCORE_GOOD_WEIGHT, TRAINING_SCORE_MULTIPLIER } from '../config/constants';
 
 function computeStats(hits) {
   if (hits.length === 0) return null;
   const counts = { perfect: 0, good: 0, off: 0, miss: 0 };
   for (const h of hits) counts[h.accuracy]++;
   const total = hits.length;
-  const score = Math.round(((counts.perfect + counts.good * 0.5) / total) * 100);
+  const score = Math.round(((counts.perfect + counts.good * TRAINING_SCORE_GOOD_WEIGHT) / total) * TRAINING_SCORE_MULTIPLIER);
   return { ...counts, total, score };
 }
 
@@ -44,7 +45,7 @@ export function useTraining(pattern, currentStep) {
     if (!trainingMode) return;
     const p = patternRef.current;
     if (!p) return;
-    const steps = p.measures * 16;
+    const steps = p.measures * STEPS_PER_MEASURE;
     const prevMod = prevStepRef.current % steps;
     const currMod = currentStep % steps;
     prevStepRef.current = currentStep;
@@ -64,7 +65,7 @@ export function useTraining(pattern, currentStep) {
     let uncovered = 0;
     for (const drumId of drumsWithNotes) {
       const covered = currentHits.some(h =>
-        h.drumId === drumId && Math.abs(h.step - prevMod) <= 1
+        h.drumId === drumId && Math.abs(h.step - prevMod) <= TRAINING_HIT_TOLERANCE
       );
       if (!covered) uncovered++;
     }
@@ -90,7 +91,7 @@ export function useTraining(pattern, currentStep) {
       accuracy = 'miss';
     } else {
       let nearestDist = Infinity;
-      for (let offset = -2; offset <= 2; offset++) {
+      for (let offset = -TRAINING_HIT_TOLERANCE * 2; offset <= TRAINING_HIT_TOLERANCE * 2; offset++) {
         const checkStep = ((modStep + offset) % steps + steps) % steps;
         if (p.grid[drumId][checkStep]) {
           const dist = Math.abs(offset);
@@ -102,7 +103,7 @@ export function useTraining(pattern, currentStep) {
         accuracy = 'miss';
       } else if (nearestDist === 0) {
         accuracy = 'perfect';
-      } else if (nearestDist <= 1) {
+      } else if (nearestDist <= TRAINING_HIT_TOLERANCE) {
         accuracy = 'good';
       } else {
         accuracy = 'off';

@@ -1,6 +1,7 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { playDrum, playMetronomeClick } from '../audio/drumSounds';
 import { drumPatterns } from '../data/drumPatterns';
+import { STEPS_PER_MEASURE, BEAT_INTERVAL, MEASURE_INTERVAL } from '../config/constants';
 
 function getPattern(id) {
   return drumPatterns.find(p => p.id === id) || drumPatterns[0];
@@ -76,7 +77,7 @@ export function useLessonPlayback(track, onDrumPlayed, metronomeOn = false, drum
       }
 
       const p = getPattern(part.patternId);
-      const steps = p.measures * 16;
+      const steps = p.measures * STEPS_PER_MEASURE;
       const step = stepRef.current;
       const modStep = step % steps;
 
@@ -90,8 +91,8 @@ export function useLessonPlayback(track, onDrumPlayed, metronomeOn = false, drum
         }
       }
 
-      if (metronomeRef.current && modStep % 4 === 0) {
-        playMetronomeClick(modStep % 16 === 0);
+      if (metronomeRef.current && modStep % BEAT_INTERVAL === 0) {
+        playMetronomeClick(modStep % MEASURE_INTERVAL === 0);
       }
 
       const nextStep = step + 1;

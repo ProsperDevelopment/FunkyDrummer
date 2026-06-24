@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { keyToDrum } from '../config/drumConfig';
+import { DEFAULT_VELOCITY } from '../config/constants';
 
 export function useKeyboard(onNoteOn, actions = {}, disabled = false) {
   useEffect(() => {
@@ -12,7 +13,7 @@ export function useKeyboard(onNoteOn, actions = {}, disabled = false) {
       const drumId = keyToDrum[key];
       if (drumId) {
         e.preventDefault();
-        onNoteOn(drumId, 0.8);
+        onNoteOn(drumId, DEFAULT_VELOCITY);
         return;
       }
 
