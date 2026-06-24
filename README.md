@@ -188,11 +188,33 @@ Output goes to `dist/`. Serve with any static file server:
 npm run preview
 ```
 
-## Deploy
+## Deploy to GitHub Pages
 
-Push to `master` — the GitHub Actions workflow automatically builds and deploys to GitHub Pages.
+### One-time setup
 
-Manual trigger: go to **Actions** → **Deploy to GitHub Pages** → **Run workflow**.
+1. Go to your repo **Settings** → **Pages**
+2. Under **Source**, select **GitHub Actions**
+3. No further configuration needed — the workflow file handles everything
+
+### Automatic deploy
+
+Push to `master` — the GitHub Actions workflow automatically builds and deploys.
+
+### Manual trigger
+
+Go to **Actions** → **Deploy to GitHub Pages** → **Run workflow**.
+
+### How to access
+
+After a successful deployment, the app is live at:
+**https://ProsperDevelopment.github.io/FunkyDrummer/**
+
+The deployment URL is also shown in the GitHub Actions run summary under the **deploy** job → **environment** → **page_url**.
+
+If you see a blank page:
+- Check the **Actions** tab for any workflow failures
+- Make sure **Settings** → **Pages** → **Source** is set to **GitHub Actions**
+- Verify the build output has the correct base path — try `npm run build` locally and check that `dist/index.html` references `/FunkyDrummer/` prefixed assets
 
 ## Browser Compatibility
 
