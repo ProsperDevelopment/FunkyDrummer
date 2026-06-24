@@ -11,6 +11,7 @@ import { useTraining } from './hooks/useTraining';
 import { useActiveDrums } from './hooks/useActiveDrums';
 import { playDrum, setKit, getActiveKit, isKitLoading } from './audio/drumSounds';
 import { drumKits } from './config/drumKits';
+import { midiConfigs, getNoteMap } from './config/midiConfigs';
 import './App.css';
 
 function getPattern(id) {
@@ -27,6 +28,8 @@ export default function App() {
   const [showVisualizer, setShowVisualizer] = useState(false);
   const [metronomeOn, setMetronomeOn] = useState(false);
   const [drumPlaybackOn, setDrumPlaybackOn] = useState(true);
+  const [midiConfigId, setMidiConfigId] = useState(midiConfigs[0].id);
+  const midiNoteMap = getNoteMap(midiConfigId);
 
   const { activeDrums, hit: hitVisualizer } = useActiveDrums();
 
@@ -51,7 +54,7 @@ export default function App() {
     hitVisualizer(drumId);
   }, [handleDrumHit, hitVisualizer]);
 
-  const { inputs, activeInput, setActiveInput } = useMIDI(onDrumHit);
+  const { inputs, activeInput, setActiveInput } = useMIDI(onDrumHit, midiNoteMap);
   useKeyboard(onDrumHit);
 
   const wasPlayingRef = useRef(false);
@@ -90,6 +93,10 @@ export default function App() {
 
   const handleToggleDrumPlayback = useCallback(() => {
     setDrumPlaybackOn(v => !v);
+  }, []);
+
+  const handleMidiConfigChange = useCallback((id) => {
+    setMidiConfigId(id);
   }, []);
 
   const handleKitChange = useCallback(async (kitId) => {
@@ -152,6 +159,8 @@ export default function App() {
             onToggleMetronome={handleToggleMetronome}
             drumPlaybackOn={drumPlaybackOn}
             onToggleDrumPlayback={handleToggleDrumPlayback}
+            midiConfigId={midiConfigId}
+            onMidiConfigChange={handleMidiConfigChange}
           />
 
           {showVisualizer && (

@@ -1,5 +1,6 @@
 import { drumConfig } from '../config/drumConfig';
 import { drumKits } from '../config/drumKits';
+import { midiConfigs } from '../config/midiConfigs';
 import './Controls.css';
 
 export default function Controls({
@@ -12,6 +13,7 @@ export default function Controls({
   showVisualizer, onToggleVisualizer,
   metronomeOn, onToggleMetronome,
   drumPlaybackOn, onToggleDrumPlayback,
+  midiConfigId, onMidiConfigChange,
 }) {
   const hasSessionResult = sessionResult && sessionResult.stats;
 
@@ -77,16 +79,14 @@ export default function Controls({
           </button>
         </div>
 
-        {trainingMode && (
-          <div className="controls-group">
-            <button
-              className={`btn btn-drum-playback ${drumPlaybackOn ? 'active' : ''}`}
-              onClick={onToggleDrumPlayback}
-            >
-              {drumPlaybackOn ? '🥁 Pattern On' : '🔇 Pattern Off'}
-            </button>
-          </div>
-        )}
+        <div className="controls-group">
+          <button
+            className={`btn btn-drum-playback ${drumPlaybackOn ? 'active' : ''}`}
+            onClick={onToggleDrumPlayback}
+          >
+            {drumPlaybackOn ? '🥁 Pattern On' : '🔇 Pattern Off'}
+          </button>
+        </div>
 
         <div className="controls-group">
           <button
@@ -131,6 +131,21 @@ export default function Controls({
             >
               {midiInputs.map(input => (
                 <option key={input.id} value={input.id}>{input.name}</option>
+              ))}
+            </select>
+          </div>
+        )}
+
+        {midiInputs.length > 0 && (
+          <div className="controls-group">
+            <label className="control-label">Map:</label>
+            <select
+              className="midi-select"
+              value={midiConfigId}
+              onChange={e => onMidiConfigChange(e.target.value)}
+            >
+              {midiConfigs.map(c => (
+                <option key={c.id} value={c.id}>{c.name}</option>
               ))}
             </select>
           </div>
