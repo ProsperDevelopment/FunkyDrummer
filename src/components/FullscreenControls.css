@@ -2,12 +2,14 @@
   display: flex;
   align-items: center;
   flex-shrink: 0;
+  overflow: visible;
 }
 
 .fs-controls-row {
   display: flex;
   align-items: center;
   gap: 6px;
+  overflow: visible;
 }
 
 .fs-btn {
@@ -68,6 +70,8 @@
 
 .fs-bpm-wrap {
   position: relative;
+  overflow: visible;
+  z-index: 55;
 }
 
 .fs-btn-bpm {
@@ -89,9 +93,10 @@
 
 .fs-bpm-popup {
   position: absolute;
-  bottom: calc(100% + 10px);
+  top: calc(100% + 10px);
   left: 50%;
   transform: translateX(-50%);
+  z-index: 60;
   background: rgba(22, 22, 42, 0.95);
   border: 1px solid #3a3a6a;
   border-radius: 8px;
@@ -155,6 +160,8 @@
 
 .fs-reps-wrap {
   position: relative;
+  overflow: visible;
+  z-index: 55;
 }
 
 .fs-btn-reps {
@@ -176,9 +183,10 @@
 
 .fs-reps-popup {
   position: absolute;
-  bottom: calc(100% + 10px);
+  top: calc(100% + 10px);
   left: 50%;
   transform: translateX(-50%);
+  z-index: 60;
   background: rgba(22, 22, 42, 0.95);
   border: 1px solid #3a3a6a;
   border-radius: 8px;

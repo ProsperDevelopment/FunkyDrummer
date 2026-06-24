@@ -1,10 +1,11 @@
 import { useRef, useEffect, useLayoutEffect, useState, useMemo } from 'react';
 import { drumConfig } from '../config/drumConfig';
+import { STEPS_PER_MEASURE, BEAT_INTERVAL, MEASURE_INTERVAL, CANVAS_STEP_WIDTH, CANVAS_ROW_HEIGHT, CANVAS_HEADER_WIDTH, CANVAS_HIT_RADIUS, CANVAS_HIT_FONT_SIZE, CANVAS_BEAT_FONT_SIZE } from '../config/constants';
 import './Timeline.css';
 
-const STEP_WIDTH = 40;
-const ROW_HEIGHT = 40;
-const HEADER_WIDTH = 100;
+const STEP_WIDTH = CANVAS_STEP_WIDTH;
+const ROW_HEIGHT = CANVAS_ROW_HEIGHT;
+const HEADER_WIDTH = CANVAS_HEADER_WIDTH;
 
 function getScrollX(step, stageWidth) {
   return stageWidth / 2 - step * STEP_WIDTH - STEP_WIDTH / 2;
@@ -44,7 +45,7 @@ export default function Timeline({ pattern, currentStep, isPlaying, userHits = [
     [pattern]
   );
 
-  const steps = pattern ? pattern.measures * 16 : 0;
+  const steps = pattern ? pattern.measures * STEPS_PER_MEASURE : 0;
   const totalWidth = steps * STEP_WIDTH;
 
   const userHitColors = {
@@ -72,10 +73,10 @@ export default function Timeline({ pattern, currentStep, isPlaying, userHits = [
     // beat dividers
     for (let i = 0; i <= steps; i++) {
       const x = scrollX + i * STEP_WIDTH;
-      if (i % 16 === 0) {
+      if (i % MEASURE_INTERVAL === 0) {
         ctx.strokeStyle = '#4a4a6a';
         ctx.lineWidth = 2;
-      } else if (i % 4 === 0) {
+      } else if (i % BEAT_INTERVAL === 0) {
         ctx.strokeStyle = '#2a2a4a';
         ctx.lineWidth = 1;
       } else {
@@ -88,10 +89,10 @@ export default function Timeline({ pattern, currentStep, isPlaying, userHits = [
     }
 
     // beat numbers
-    ctx.font = '10px sans-serif';
+    ctx.font = `${CANVAS_BEAT_FONT_SIZE}px sans-serif`;
     ctx.fillStyle = '#555';
-    for (let i = 0; i < steps; i += 4) {
-      ctx.fillText(`${Math.floor(i / 4) + 1}`, scrollX + i * STEP_WIDTH + 4, 12);
+    for (let i = 0; i < steps; i += BEAT_INTERVAL) {
+      ctx.fillText(`${Math.floor(i / BEAT_INTERVAL) + 1}`, scrollX + i * STEP_WIDTH + 4, 12);
     }
 
     // row dividers
@@ -141,7 +142,7 @@ export default function Timeline({ pattern, currentStep, isPlaying, userHits = [
         if (patternRow && hit.accuracy !== 'miss') {
           let nearestPatternStep = -1;
           let nearestDist = Infinity;
-          const steps2 = pattern.measures * 16;
+          const steps2 = pattern.measures * STEPS_PER_MEASURE;
           for (let s = 0; s < steps2; s++) {
             if (patternRow[s]) {
               const dist = Math.abs(hit.step - s);
@@ -174,7 +175,7 @@ export default function Timeline({ pattern, currentStep, isPlaying, userHits = [
         ctx.fillStyle = color;
         ctx.globalAlpha = 0.85;
         ctx.beginPath();
-        ctx.arc(cx, cy, 11, 0, Math.PI * 2);
+        ctx.arc(cx, cy, CANVAS_HIT_RADIUS, 0, Math.PI * 2);
         ctx.fill();
         ctx.globalAlpha = 1;
         ctx.shadowBlur = 0;
@@ -184,7 +185,7 @@ export default function Timeline({ pattern, currentStep, isPlaying, userHits = [
         ctx.stroke();
 
         ctx.fillStyle = '#000';
-        ctx.font = 'bold 10px sans-serif';
+        ctx.font = `bold ${CANVAS_HIT_FONT_SIZE}px sans-serif`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillText(accLabels[hit.accuracy] || '?', cx, cy);

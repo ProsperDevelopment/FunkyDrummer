@@ -16,6 +16,7 @@ import { playDrum, setKit, getActiveKit, isKitLoading, getHihatPedalPressed, set
 import { drumKits } from './config/drumKits';
 import { midiConfigs, getNoteMap } from './config/midiConfigs';
 import { drumLayouts } from './config/drumLayouts';
+import { BPM_MIN, BPM_MAX, BPM_STEP, PEDAL_CC, PEDAL_THRESHOLD, GOOD_SCORE_THRESHOLD, OK_SCORE_THRESHOLD } from './config/constants';
 import './App.css';
 
 function getPattern(id) {
@@ -81,8 +82,8 @@ export default function App() {
   }, [handleDrumHit, hitVisualizer, hihatPedalPressed]);
 
   const handleCC = useCallback((controller, value) => {
-    if (controller === 4) {
-      const pressed = value >= 64;
+    if (controller === PEDAL_CC) {
+      const pressed = value >= PEDAL_THRESHOLD;
       setHihatPedalPressedState(pressed);
       setHihatPedalPressed(pressed);
       console.log('pedal', pressed ? 'closed' : 'open');
@@ -91,12 +92,12 @@ export default function App() {
 
   const { inputs, activeInput, setActiveInput } = useMIDI(onDrumHit, midiNoteMap, handleCC);
   const handleBpmUp = useCallback(() => {
-    const next = Math.min(300, effectiveBpm + 5);
+    const next = Math.min(BPM_MAX, effectiveBpm + BPM_STEP);
     setBpmOverride(next === defaultBpm ? null : next);
   }, [effectiveBpm, defaultBpm]);
 
   const handleBpmDown = useCallback(() => {
-    const next = Math.max(30, effectiveBpm - 5);
+    const next = Math.max(BPM_MIN, effectiveBpm - BPM_STEP);
     setBpmOverride(next === defaultBpm ? null : next);
   }, [effectiveBpm, defaultBpm]);
 
@@ -321,7 +322,7 @@ export default function App() {
               <div className="fs-stats-row">
                 <div className="fs-stat">
                   <span className="fs-stat-label">Acc</span>
-                  <span className={`fs-stat-value ${accuracyStats.score >= 80 ? 'good' : accuracyStats.score >= 50 ? 'ok' : 'bad'}`}>
+                  <span className={`fs-stat-value ${accuracyStats.score >= GOOD_SCORE_THRESHOLD ? 'good' : accuracyStats.score >= OK_SCORE_THRESHOLD ? 'ok' : 'bad'}`}>
                     {accuracyStats.score}%
                   </span>
                 </div>

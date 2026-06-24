@@ -1,10 +1,11 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
+import { DRUM_GLOW_MS, DEFAULT_VELOCITY } from '../config/constants';
 
 export function useActiveDrums() {
   const [activeDrums, setActiveDrums] = useState(new Map());
   const timersRef = useRef({});
 
-  const hit = useCallback((drumId, velocity = 1) => {
+  const hit = useCallback((drumId, velocity = DEFAULT_VELOCITY) => {
     setActiveDrums(prev => new Map(prev).set(drumId, velocity));
     if (timersRef.current[drumId]) {
       clearTimeout(timersRef.current[drumId]);
@@ -16,7 +17,7 @@ export function useActiveDrums() {
         return next;
       });
       delete timersRef.current[drumId];
-    }, 150);
+    }, DRUM_GLOW_MS);
   }, []);
 
   useEffect(() => {

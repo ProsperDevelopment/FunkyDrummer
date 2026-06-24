@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { BPM_MIN, BPM_MAX, REPS_MIN, REPS_MAX, GOOD_SCORE_THRESHOLD, OK_SCORE_THRESHOLD } from '../config/constants';
 import './Controls.css';
 
 export default function Controls({
@@ -39,8 +40,8 @@ export default function Controls({
           <input
             type="range"
             className="bpm-slider"
-            min="30"
-            max="300"
+            min={BPM_MIN}
+            max={BPM_MAX}
             step="1"
             value={bpm}
             onChange={e => onBpmChange(Number(e.target.value))}
@@ -48,12 +49,12 @@ export default function Controls({
           <input
             type="number"
             className="bpm-input"
-            min="30"
-            max="300"
+            min={BPM_MIN}
+            max={BPM_MAX}
             value={bpm}
             onChange={e => {
               const v = Number(e.target.value);
-              if (v >= 30 && v <= 300) onBpmChange(v);
+              if (v >= BPM_MIN && v <= BPM_MAX) onBpmChange(v);
             }}
           />
         </div>
@@ -64,21 +65,21 @@ export default function Controls({
             <input
               type="range"
               className="reps-slider"
-              min="5"
-              max="50"
+              min={REPS_MIN}
+              max={REPS_MAX}
               step="1"
-              value={stopAfterReps || 5}
+              value={stopAfterReps || REPS_MIN}
               onChange={e => onStopAfterRepsChange(Number(e.target.value))}
             />
             <input
               type="number"
               className="reps-input"
-              min="5"
-              max="50"
+              min={REPS_MIN}
+              max={REPS_MAX}
               value={stopAfterReps}
               onChange={e => {
                 const v = Number(e.target.value);
-                if (v >= 5 && v <= 50) onStopAfterRepsChange(v);
+                if (v >= REPS_MIN && v <= REPS_MAX) onStopAfterRepsChange(v);
               }}
             />
             {isPlaying && stopAfterReps > 0 && (
@@ -141,7 +142,7 @@ export default function Controls({
             <div className="stats-box">
               <div className="stat">
                 <span className="stat-label">Accuracy</span>
-                <span className={`stat-value ${accuracyStats.score >= 80 ? 'good' : accuracyStats.score >= 50 ? 'ok' : 'bad'}`}>
+                <span className={`stat-value ${accuracyStats.score >= GOOD_SCORE_THRESHOLD ? 'good' : accuracyStats.score >= OK_SCORE_THRESHOLD ? 'ok' : 'bad'}`}>
                   {accuracyStats.score}%
                 </span>
               </div>
@@ -183,7 +184,7 @@ export default function Controls({
           <div className="session-modal" onClick={e => e.stopPropagation()}>
             <h2 className="session-modal-title">Session Complete</h2>
             <div className="session-modal-score">
-              <span className={`score-value ${sessionResult.stats.score >= 80 ? 'good' : sessionResult.stats.score >= 50 ? 'ok' : 'bad'}`}>
+              <span className={`score-value ${sessionResult.stats.score >= GOOD_SCORE_THRESHOLD ? 'good' : sessionResult.stats.score >= OK_SCORE_THRESHOLD ? 'ok' : 'bad'}`}>
                 {sessionResult.stats.score}%
               </span>
               <span className="score-label">Accuracy</span>

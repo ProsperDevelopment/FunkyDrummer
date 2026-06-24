@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { BPM_MIN, BPM_MAX, REPS_MIN, REPS_MAX } from '../config/constants';
 import './FullscreenControls.css';
 
 export default function FullscreenControls({
@@ -42,15 +43,17 @@ export default function FullscreenControls({
     };
   }, [showReps]);
 
+  const showPlaying = isPlaying;
+
   return (
     <div className="fullscreen-controls">
       <div className="fs-controls-row">
         <button
-          className={`fs-btn fs-btn-play ${isPlaying ? 'playing' : ''}`}
+          className={`fs-btn fs-btn-play ${showPlaying ? 'playing' : ''}`}
           onClick={onTogglePlay}
-          title={isPlaying ? 'Pause' : 'Play'}
+          title={showPlaying ? 'Pause' : 'Play'}
         >
-          {isPlaying ? '⏸' : '▶'}
+          {showPlaying ? '⏸' : '▶'}
         </button>
         <button className="fs-btn fs-btn-stop" onClick={onStop} title="Stop">
           ⏹
@@ -81,28 +84,28 @@ export default function FullscreenControls({
               onClick={() => setShowReps(v => !v)}
               title="Reps"
             >
-              <span className="fs-reps-value">{stopAfterReps || 5}</span>
+              <span className="fs-reps-value">{stopAfterReps || REPS_MIN}</span>
             </button>
             {showReps && (
               <div className="fs-reps-popup">
                 <input
                   type="range"
                   className="fs-reps-slider"
-                  min="5"
-                  max="50"
+                  min={REPS_MIN}
+                  max={REPS_MAX}
                   step="1"
-                  value={stopAfterReps || 5}
+                  value={stopAfterReps || REPS_MIN}
                   onChange={e => onStopAfterRepsChange(Number(e.target.value))}
                 />
                 <input
                   type="number"
                   className="fs-reps-input"
-                  min="5"
-                  max="50"
+                  min={REPS_MIN}
+                  max={REPS_MAX}
                   value={stopAfterReps}
                   onChange={e => {
                     const v = Number(e.target.value);
-                    if (v >= 5 && v <= 50) onStopAfterRepsChange(v);
+                    if (v >= REPS_MIN && v <= REPS_MAX) onStopAfterRepsChange(v);
                   }}
                 />
                 {showPlaying && stopAfterReps > 0 && (
@@ -126,8 +129,8 @@ export default function FullscreenControls({
               <input
                 type="range"
                 className="fs-bpm-slider"
-                min="30"
-                max="300"
+                min={BPM_MIN}
+                max={BPM_MAX}
                 step="1"
                 value={bpm}
                 onChange={e => onBpmChange(Number(e.target.value))}
@@ -135,12 +138,12 @@ export default function FullscreenControls({
               <input
                 type="number"
                 className="fs-bpm-input"
-                min="30"
-                max="300"
+                min={BPM_MIN}
+                max={BPM_MAX}
                 value={bpm}
                 onChange={e => {
                   const v = Number(e.target.value);
-                  if (v >= 30 && v <= 300) onBpmChange(v);
+                  if (v >= BPM_MIN && v <= BPM_MAX) onBpmChange(v);
                 }}
               />
             </div>
