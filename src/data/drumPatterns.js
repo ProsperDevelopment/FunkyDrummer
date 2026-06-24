@@ -514,6 +514,113 @@ export const drumPatterns = [
       return this;
     }
   },
+  {
+    id: 'tom-fill',
+    name: 'Tom Fill',
+    bpm: 110,
+    ...grid(2,
+      ['kick',  [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+      ['snare', [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+      ['hihat', [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+      ['hihatOpen', [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+      ['crash', [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+      ['tomHi', [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+      ['tomMid',[0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+      ['tomLo', [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+    ),
+    rebuild() {
+      const m = this.measures;
+      const steps = m * 16;
+      this.grid.kick = new Array(steps).fill(0);
+      this.grid.snare = new Array(steps).fill(0);
+      this.grid.hihat = new Array(steps).fill(0);
+      this.grid.hihatOpen = new Array(steps).fill(0);
+      this.grid.crash = new Array(steps).fill(0);
+      this.grid.tomHi = new Array(steps).fill(0);
+      this.grid.tomMid = new Array(steps).fill(0);
+      this.grid.tomLo = new Array(steps).fill(0);
+      for (let i = 0; i < m; i++) {
+        const o = i * 16;
+        this.grid.kick[o + 0] = 1.0;
+        this.grid.kick[o + 8] = 0.7;
+        this.grid.snare[o + 4] = 1.0;
+        this.grid.snare[o + 12] = 1.0;
+        for (let j = 0; j < 16; j += 2) {
+          this.grid.hihat[o + j] = 0.4;
+        }
+        this.grid.crash[o + 0] = 0.7;
+        if (i % 2 === 0) {
+          this.grid.tomHi[o + 10] = 0.8;
+          this.grid.tomMid[o + 11] = 0.7;
+          this.grid.tomLo[o + 12] = 0.8;
+          this.grid.tomHi[o + 14] = 0.6;
+          this.grid.tomMid[o + 15] = 0.6;
+        } else {
+          this.grid.tomHi[o + 6] = 0.6;
+          this.grid.tomMid[o + 7] = 0.7;
+          this.grid.tomLo[o + 8] = 0.8;
+          this.grid.tomMid[o + 10] = 0.6;
+          this.grid.tomLo[o + 12] = 0.6;
+          this.grid.hihatOpen[o + 14] = 0.5;
+        }
+      }
+      return this;
+    }
+  },
+  {
+    id: 'tribal',
+    name: 'Tribal',
+    bpm: 120,
+    ...grid(2,
+      ['kick',  [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+      ['snare', [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+      ['hihat', [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+      ['tomHi', [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+      ['tomMid',[0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+      ['tomLo', [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+      ['crash', [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+    ),
+    rebuild() {
+      const m = this.measures;
+      const steps = m * 16;
+      this.grid.kick = new Array(steps).fill(0);
+      this.grid.snare = new Array(steps).fill(0);
+      this.grid.hihat = new Array(steps).fill(0);
+      this.grid.tomHi = new Array(steps).fill(0);
+      this.grid.tomMid = new Array(steps).fill(0);
+      this.grid.tomLo = new Array(steps).fill(0);
+      this.grid.crash = new Array(steps).fill(0);
+      for (let i = 0; i < m; i++) {
+        const o = i * 16;
+        this.grid.kick[o + 0] = 1.0;
+        this.grid.kick[o + 6] = 0.7;
+        this.grid.kick[o + 12] = 0.9;
+        this.grid.snare[o + 4] = 0.8;
+        this.grid.snare[o + 8] = 0.5;
+        this.grid.snare[o + 12] = 0.8;
+        this.grid.hihat[o + 0] = 0.3;
+        this.grid.hihat[o + 4] = 0.3;
+        this.grid.hihat[o + 8] = 0.3;
+        this.grid.hihat[o + 12] = 0.3;
+        this.grid.crash[o + 0] = 0.7;
+        if (i % 2 === 0) {
+          this.grid.tomHi[o + 2] = 0.7;
+          this.grid.tomMid[o + 3] = 0.6;
+          this.grid.tomLo[o + 4] = 0.7;
+          this.grid.tomMid[o + 10] = 0.5;
+          this.grid.tomHi[o + 11] = 0.6;
+        } else {
+          this.grid.tomLo[o + 2] = 0.7;
+          this.grid.tomMid[o + 3] = 0.6;
+          this.grid.tomHi[o + 4] = 0.7;
+          this.grid.tomLo[o + 10] = 0.6;
+          this.grid.tomMid[o + 11] = 0.5;
+          this.grid.tomHi[o + 12] = 0.4;
+        }
+      }
+      return this;
+    }
+  },
 ];
 
 for (const pattern of drumPatterns) {
