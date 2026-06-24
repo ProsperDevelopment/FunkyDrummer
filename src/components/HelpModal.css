@@ -1,0 +1,124 @@
+.help-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 20px;
+}
+
+.help-modal {
+  background: #1a1a2e;
+  border: 1px solid #3a3a6a;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 560px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+}
+
+.help-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid #2a2a4a;
+}
+
+.help-title {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #c4b5fd;
+  font-weight: 700;
+}
+
+.help-close {
+  background: none;
+  border: 1px solid #3a3a5a;
+  color: #888;
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-family: inherit;
+}
+
+.help-close:hover {
+  background: #2a2a4a;
+  color: #ddd;
+}
+
+.help-body {
+  padding: 16px 20px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.help-section {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.help-section h3 {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #a78bfa;
+  font-weight: 600;
+}
+
+.help-section p {
+  margin: 0;
+  font-size: 0.82rem;
+  color: #999;
+  line-height: 1.5;
+}
+
+.help-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+}
+
+.help-table th {
+  text-align: left;
+  color: #666;
+  font-weight: 600;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 4px 8px;
+  border-bottom: 1px solid #2a2a4a;
+}
+
+.help-table td {
+  padding: 5px 8px;
+  color: #aaa;
+  border-bottom: 1px solid #1e1e3a;
+}
+
+.help-table tr:last-child td {
+  border-bottom: none;
+}
+
+.help-key {
+  display: inline-block;
+  padding: 2px 8px;
+  background: #16162a;
+  border: 1px solid #2a2a4a;
+  border-radius: 4px;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 0.82rem;
+}
+
+.acc-perfect { color: #4ade80; font-weight: 600; }
+.acc-good { color: #fbbf24; font-weight: 600; }
+.acc-off { color: #fb923c; font-weight: 600; }
+.acc-miss { color: #f87171; font-weight: 600; }

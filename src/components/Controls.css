@@ -151,42 +151,6 @@
   font-style: italic;
 }
 
-.keyboard-hint {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  flex-wrap: wrap;
-}
-
-.hint-title {
-  font-size: 0.75rem;
-  color: #666;
-  margin-right: 4px;
-}
-
-.key-hint {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 3px 8px;
-  background: #16162a;
-  border: 1px solid #2a2a4a;
-  border-radius: 4px;
-  font-size: 0.7rem;
-  color: #999;
-  font-family: inherit;
-}
-
-.key-cap {
-  font-weight: 700;
-  color: var(--key-color, #aaa);
-  font-size: 0.75rem;
-}
-
-.key-label {
-  color: #777;
-}
-
 .btn-training {
   color: #a78bfa;
   border-color: #3a2a5a;

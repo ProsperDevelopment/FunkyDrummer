@@ -1,4 +1,3 @@
-import { drumConfig } from '../config/drumConfig';
 import { drumKits } from '../config/drumKits';
 import { midiConfigs } from '../config/midiConfigs';
 import './Controls.css';
@@ -236,15 +235,6 @@ export default function Controls({
         </div>
       )}
 
-      <div className="keyboard-hint">
-        <span className="hint-title">Keyboard:</span>
-        {drumConfig.map(d => (
-          <kbd key={d.key} className="key-hint" style={{ '--key-color': d.color }}>
-            <span className="key-cap">{d.key.toUpperCase()}</span>
-            <span className="key-label">{d.name}</span>
-          </kbd>
-        ))}
-      </div>
     </div>
   );
 }

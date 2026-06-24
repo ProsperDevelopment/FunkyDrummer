@@ -3,6 +3,7 @@ import Timeline from './components/Timeline';
 import PatternMenu from './components/PatternMenu';
 import Controls from './components/Controls';
 import DrumVisualizer from './components/DrumVisualizer';
+import HelpModal from './components/HelpModal';
 import { drumPatterns } from './data/drumPatterns';
 import { useMIDI } from './hooks/useMIDI';
 import { useKeyboard } from './hooks/useKeyboard';
@@ -29,6 +30,8 @@ export default function App() {
   const [metronomeOn, setMetronomeOn] = useState(false);
   const [drumPlaybackOn, setDrumPlaybackOn] = useState(true);
   const [midiConfigId, setMidiConfigId] = useState(midiConfigs[0].id);
+  const [showPatterns, setShowPatterns] = useState(true);
+  const [showHelp, setShowHelp] = useState(false);
   const midiNoteMap = getNoteMap(midiConfigId);
 
   const { activeDrums, hit: hitVisualizer } = useActiveDrums();
@@ -119,19 +122,36 @@ export default function App() {
   return (
     <div className="app">
       <header className="app-header">
+        <button
+          className="header-btn sidebar-toggle"
+          onClick={() => setShowPatterns(v => !v)}
+          title={showPatterns ? 'Hide patterns' : 'Show patterns'}
+        >
+          {showPatterns ? '◀' : '▶'}
+        </button>
         <h1 className="app-title">Funky Drummer</h1>
         <span className="app-subtitle">Drum Machine & Trainer</span>
+        <div className="header-spacer" />
+        <button
+          className="header-btn help-btn"
+          onClick={() => setShowHelp(true)}
+          title="Help"
+        >
+          ?
+        </button>
       </header>
 
       <div className="app-layout">
-        <aside className="app-sidebar">
-          <PatternMenu
-            selectedPatternId={selectedPatternId}
-            onSelectPattern={handlePatternSelect}
-          />
-        </aside>
+        {showPatterns && (
+          <aside className="app-sidebar">
+            <PatternMenu
+              selectedPatternId={selectedPatternId}
+              onSelectPattern={handlePatternSelect}
+            />
+          </aside>
+        )}
 
-        <main className="app-main">
+        <main className={`app-main${showPatterns ? '' : ' app-main-full'}`}>
           <Controls
             isPlaying={playback.isPlaying}
             onTogglePlay={playback.togglePlay}
@@ -163,9 +183,6 @@ export default function App() {
             onMidiConfigChange={handleMidiConfigChange}
           />
 
-          {showVisualizer && (
-            <DrumVisualizer activeDrums={activeDrums} />
-          )}
           <Timeline
             pattern={pattern}
             currentStep={playback.currentStep}
@@ -173,8 +190,14 @@ export default function App() {
             userHits={userHits}
             trainingMode={trainingMode}
           />
+
+          {showVisualizer && (
+            <DrumVisualizer activeDrums={activeDrums} onDrumClick={onDrumHit} />
+          )}
         </main>
       </div>
+
+      {showHelp && <HelpModal onClose={() => setShowHelp(false)} />}
     </div>
   );
 }

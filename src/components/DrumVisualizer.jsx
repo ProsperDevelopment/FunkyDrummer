@@ -20,7 +20,7 @@ const DRUM_POSITIONS = [
   { id: 'kick',   cx: 300, cy: 340, r: 50 },
 ];
 
-export default function DrumVisualizer({ activeDrums }) {
+export default function DrumVisualizer({ activeDrums, onDrumClick }) {
   const isActive = (id, group) =>
     activeDrums.has(id) || (group || []).some(g => activeDrums.has(g));
 
@@ -39,6 +39,8 @@ export default function DrumVisualizer({ activeDrums }) {
                 strokeWidth={active ? 3 : 1.5}
                 opacity={active ? 0.9 : 0.5}
                 className={`drum-piece${active ? ' active' : ''}`}
+                style={{ cursor: 'pointer' }}
+                onClick={() => onDrumClick?.(id)}
               />
               {active && (
                 <circle
