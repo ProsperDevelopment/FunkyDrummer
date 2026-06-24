@@ -3,12 +3,14 @@ import './FullscreenControls.css';
 
 export default function FullscreenControls({
   isPlaying, onTogglePlay, onStop, bpm, onBpmChange,
-  metronomeOn, onToggleMetronome,
   drumPlaybackOn, onToggleDrumPlayback,
   trainingMode, onTrainingToggle,
+  stopAfterReps, onStopAfterRepsChange, currentLoop,
 }) {
   const [showBpm, setShowBpm] = useState(false);
+  const [showReps, setShowReps] = useState(false);
   const bpmRef = useRef(null);
+  const repsRef = useRef(null);
 
   useEffect(() => {
     if (!showBpm) return;
@@ -25,6 +27,21 @@ export default function FullscreenControls({
     };
   }, [showBpm]);
 
+  useEffect(() => {
+    if (!showReps) return;
+    const handler = (e) => {
+      if (repsRef.current && !repsRef.current.contains(e.target)) {
+        setShowReps(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    document.addEventListener('touchstart', handler);
+    return () => {
+      document.removeEventListener('mousedown', handler);
+      document.removeEventListener('touchstart', handler);
+    };
+  }, [showReps]);
+
   return (
     <div className="fullscreen-controls">
       <div className="fs-controls-row">
@@ -37,16 +54,6 @@ export default function FullscreenControls({
         </button>
         <button className="fs-btn fs-btn-stop" onClick={onStop} title="Stop">
           ⏹
-        </button>
-
-        <div className="fs-separator" />
-
-        <button
-          className={`fs-btn ${metronomeOn ? 'active' : ''}`}
-          onClick={onToggleMetronome}
-          title={metronomeOn ? 'Click On' : 'Click Off'}
-        >
-          🔊
         </button>
 
         <button
@@ -66,6 +73,45 @@ export default function FullscreenControls({
         </button>
 
         <div className="fs-separator" />
+
+        {trainingMode && (
+          <div className="fs-reps-wrap" ref={repsRef}>
+            <button
+              className={`fs-btn fs-btn-reps ${showReps ? 'active' : ''}`}
+              onClick={() => setShowReps(v => !v)}
+              title="Reps"
+            >
+              <span className="fs-reps-value">{stopAfterReps || 5}</span>
+            </button>
+            {showReps && (
+              <div className="fs-reps-popup">
+                <input
+                  type="range"
+                  className="fs-reps-slider"
+                  min="5"
+                  max="50"
+                  step="1"
+                  value={stopAfterReps || 5}
+                  onChange={e => onStopAfterRepsChange(Number(e.target.value))}
+                />
+                <input
+                  type="number"
+                  className="fs-reps-input"
+                  min="5"
+                  max="50"
+                  value={stopAfterReps}
+                  onChange={e => {
+                    const v = Number(e.target.value);
+                    if (v >= 5 && v <= 50) onStopAfterRepsChange(v);
+                  }}
+                />
+                {showPlaying && stopAfterReps > 0 && (
+                  <span className="fs-reps-counter">{currentLoop}/{stopAfterReps}</span>
+                )}
+              </div>
+            )}
+          </div>
+        )}
 
         <div className="fs-bpm-wrap" ref={bpmRef}>
           <button
@@ -101,6 +147,7 @@ export default function FullscreenControls({
           )}
         </div>
       </div>
+
     </div>
   );
 }

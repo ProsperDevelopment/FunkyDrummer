@@ -39,6 +39,7 @@ export default function App() {
   const [fullscreenMode, setFullscreenMode] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [hihatPedalPressed, setHihatPedalPressedState] = useState(getHihatPedalPressed());
+  const [countdownOn, setCountdownOn] = useState(false);
   const midiNoteMap = getNoteMap(midiConfigId);
 
   const { activeDrums, hit: hitVisualizer } = useActiveDrums();
@@ -50,7 +51,7 @@ export default function App() {
     setHihatPedalPressedState(getHihatPedalPressed());
   }, [hitVisualizer]);
 
-  const playback = usePlayback(pattern, bpmOverride, stopAfterReps, onPatternDrumPlayed, metronomeOn, drumPlaybackOn);
+  const playback = usePlayback(pattern, bpmOverride, stopAfterReps, onPatternDrumPlayed, metronomeOn, drumPlaybackOn, countdownOn);
 
   const defaultBpm = pattern.bpm;
   const effectiveBpm = bpmOverride || defaultBpm;
@@ -185,6 +186,10 @@ export default function App() {
     setTrainingMode(!trainingMode);
   }, [trainingMode]);
 
+  const handleCountdownToggle = useCallback(() => {
+    setCountdownOn(v => !v);
+  }, []);
+
   useKeyboard(onDrumHit, {
     onTogglePlay: playback.togglePlay,
     onStop: playback.stop,
@@ -193,7 +198,7 @@ export default function App() {
     onTrainingToggle: handleTrainingToggle,
     onBpmUp: handleBpmUp,
     onBpmDown: handleBpmDown,
-  });
+  }, showSettings);
 
   return (
     <div className="app">
@@ -246,9 +251,6 @@ export default function App() {
             isPlaying={playback.isPlaying}
             onTogglePlay={playback.togglePlay}
             onStop={playback.stop}
-            midiInputs={inputs}
-            activeInput={activeInput}
-            onInputChange={setActiveInput}
             bpm={effectiveBpm}
             trainingMode={trainingMode}
             onTrainingToggle={handleTrainingToggle}
@@ -261,19 +263,14 @@ export default function App() {
             currentLoop={playback.currentLoop}
             sessionResult={sessionResult}
             onDismissResult={dismissResult}
-            activeKitId={activeKitId}
-            onKitChange={handleKitChange}
-            kitBusy={kitBusy}
             showVisualizer={showVisualizer}
             onToggleVisualizer={handleToggleVisualizer}
             metronomeOn={metronomeOn}
             onToggleMetronome={handleToggleMetronome}
             drumPlaybackOn={drumPlaybackOn}
             onToggleDrumPlayback={handleToggleDrumPlayback}
-            midiConfigId={midiConfigId}
-            onMidiConfigChange={handleMidiConfigChange}
-            drumLayoutId={drumLayoutId}
-            onLayoutChange={handleLayoutChange}
+            countdownOn={countdownOn}
+            onCountdownToggle={handleCountdownToggle}
           />
 
           <Timeline
@@ -293,14 +290,26 @@ export default function App() {
       {fullscreenMode && (
         <div className="fullscreen-overlay">
           <header className="app-header fullscreen-header">
-            <h1 className="app-title">Funky Drummer</h1>
+            <h1 className="app-title">
+              <span className="app-title-text">Funky Drummer</span>
+              <span className="app-title-icon">🥁</span>
+            </h1>
             <span className="app-subtitle">Drum Machine & Trainer</span>
+            <FullscreenControls
+              isPlaying={playback.isPlaying}
+              onTogglePlay={playback.togglePlay}
+              onStop={playback.stop}
+              bpm={effectiveBpm}
+              onBpmChange={handleBpmChange}
+              drumPlaybackOn={drumPlaybackOn}
+              onToggleDrumPlayback={handleToggleDrumPlayback}
+              trainingMode={trainingMode}
+              onTrainingToggle={handleTrainingToggle}
+              stopAfterReps={stopAfterReps}
+              onStopAfterRepsChange={setStopAfterReps}
+              currentLoop={playback.currentLoop}
+            />
             <div className="header-spacer" />
-            <button
-              className="header-btn settings-btn"
-              onClick={handleOpenSettings}
-              title="Settings"
-            >⚙</button>
             <button
               className="header-btn fullscreen-btn"
               onClick={handleToggleFullscreen}
@@ -308,6 +317,40 @@ export default function App() {
             >⛶</button>
           </header>
           <div className="fullscreen-content">
+            {trainingMode && accuracyStats && (
+              <div className="fs-stats-row">
+                <div className="fs-stat">
+                  <span className="fs-stat-label">Acc</span>
+                  <span className={`fs-stat-value ${accuracyStats.score >= 80 ? 'good' : accuracyStats.score >= 50 ? 'ok' : 'bad'}`}>
+                    {accuracyStats.score}%
+                  </span>
+                </div>
+                <div className="fs-stat">
+                  <span className="fs-stat-label">Perfect</span>
+                  <span className="fs-stat-value perfect">{accuracyStats.perfect}</span>
+                </div>
+                <div className="fs-stat">
+                  <span className="fs-stat-label">Good</span>
+                  <span className="fs-stat-value good">{accuracyStats.good}</span>
+                </div>
+                <div className="fs-stat">
+                  <span className="fs-stat-label">Off</span>
+                  <span className="fs-stat-value off">{accuracyStats.off}</span>
+                </div>
+                <div className="fs-stat">
+                  <span className="fs-stat-label">Extra</span>
+                  <span className="fs-stat-value miss">{accuracyStats.miss}</span>
+                </div>
+                <div className="fs-stat">
+                  <span className="fs-stat-label">Missed</span>
+                  <span className="fs-stat-value miss">{missedHits}</span>
+                </div>
+                <div className="fs-stat">
+                  <span className="fs-stat-label">Total</span>
+                  <span className="fs-stat-value total">{accuracyStats.total}</span>
+                </div>
+              </div>
+            )}
             <Timeline
               pattern={pattern}
               currentStep={playback.currentStep}
@@ -315,22 +358,7 @@ export default function App() {
               userHits={userHits}
               trainingMode={trainingMode}
             />
-            <div className="fullscreen-col">
-              <FullscreenControls
-                isPlaying={playback.isPlaying}
-                onTogglePlay={playback.togglePlay}
-                onStop={playback.stop}
-                bpm={effectiveBpm}
-                onBpmChange={handleBpmChange}
-                metronomeOn={metronomeOn}
-                onToggleMetronome={handleToggleMetronome}
-                drumPlaybackOn={drumPlaybackOn}
-                onToggleDrumPlayback={handleToggleDrumPlayback}
-                trainingMode={trainingMode}
-                onTrainingToggle={handleTrainingToggle}
-              />
-              <DrumVisualizer activeDrums={activeDrums} onDrumClick={onDrumHit} layoutId={drumLayoutId} hihatPedalPressed={hihatPedalPressed} onHihatPedalDown={handleHihatPedalDown} onHihatPedalUp={handleHihatPedalUp} />
-            </div>
+            <DrumVisualizer activeDrums={activeDrums} onDrumClick={onDrumHit} layoutId={drumLayoutId} hihatPedalPressed={hihatPedalPressed} onHihatPedalDown={handleHihatPedalDown} onHihatPedalUp={handleHihatPedalUp} />
           </div>
         </div>
       )}
@@ -344,6 +372,11 @@ export default function App() {
           drumLayoutId={drumLayoutId}
           onLayoutChange={handleLayoutChange}
           showVisualizer={showVisualizer}
+          midiInputs={inputs}
+          activeInput={activeInput}
+          onInputChange={setActiveInput}
+          midiConfigId={midiConfigId}
+          onMidiConfigChange={handleMidiConfigChange}
         />
       )}
       {showHelp && <HelpModal onClose={() => setShowHelp(false)} />}

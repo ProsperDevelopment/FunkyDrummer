@@ -1,8 +1,9 @@
 import { useEffect } from 'react';
 import { keyToDrum } from '../config/drumConfig';
 
-export function useKeyboard(onNoteOn, actions = {}) {
+export function useKeyboard(onNoteOn, actions = {}, disabled = false) {
   useEffect(() => {
+    if (disabled) return;
     const handler = (e) => {
       if (e.repeat) return;
       if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') return;
@@ -51,5 +52,5 @@ export function useKeyboard(onNoteOn, actions = {}) {
 
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, [onNoteOn, actions]);
+  }, [onNoteOn, actions, disabled]);
 }

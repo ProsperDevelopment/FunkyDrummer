@@ -17,15 +17,32 @@
 
 .app-title {
   margin: 0;
-  font-size: 1.2rem;
+  font-size: clamp(0.9rem, 2vw, 1.4rem);
   font-weight: 700;
   color: #c4b5fd;
   letter-spacing: -0.5px;
   white-space: nowrap;
+  display: flex;
+  align-items: center;
+}
+
+.app-title-icon {
+  display: none;
+  font-size: clamp(1rem, 2.5vw, 1.6rem);
+  line-height: 1;
+}
+
+@media (orientation: portrait) {
+  .fullscreen-header .app-title-text {
+    display: none;
+  }
+  .fullscreen-header .app-title-icon {
+    display: inline;
+  }
 }
 
 .app-subtitle {
-  font-size: 0.78rem;
+  font-size: clamp(0.65rem, 1.2vw, 0.85rem);
   color: #666;
   white-space: nowrap;
 }
@@ -40,9 +57,9 @@
   border: 1px solid #2a2a4a;
   color: #888;
   cursor: pointer;
-  padding: 4px 10px;
+  padding: clamp(3px, 0.6vw, 6px) clamp(6px, 1.2vw, 12px);
   border-radius: 4px;
-  font-size: 0.85rem;
+  font-size: clamp(0.7rem, 1.4vw, 0.95rem);
   font-family: inherit;
   line-height: 1;
   flex-shrink: 0;
@@ -56,14 +73,14 @@
 
 .help-btn {
   font-weight: 700;
-  font-size: 0.95rem;
-  width: 32px;
+  font-size: clamp(0.8rem, 1.6vw, 1.1rem);
+  width: clamp(28px, 4vw, 36px);
   text-align: center;
   padding: 4px 0;
 }
 
 .sidebar-toggle {
-  font-size: 0.7rem;
+  font-size: clamp(0.6rem, 1.2vw, 0.8rem);
   padding: 4px 6px;
 }
 
@@ -136,6 +153,49 @@
   max-height: 40vh;
 }
 
+.fs-stats-row {
+  display: flex;
+  gap: clamp(6px, 1.2vw, 12px);
+  align-items: center;
+  flex-shrink: 0;
+  background: rgba(22, 22, 42, 0.6);
+  border: 1px solid #2a2a4a;
+  border-radius: 6px;
+  padding: clamp(2px, 0.5vw, 6px) clamp(8px, 1.5vw, 14px);
+  height: clamp(28px, 4vw, 40px);
+  box-sizing: border-box;
+}
+
+.fs-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+}
+
+.fs-stat-label {
+  font-size: clamp(0.45rem, 0.9vw, 0.6rem);
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  line-height: 1;
+}
+
+.fs-stat-value {
+  font-size: clamp(0.65rem, 1.3vw, 0.9rem);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.2;
+}
+
+.fs-stat-value.good { color: #4ade80; }
+.fs-stat-value.ok { color: #fbbf24; }
+.fs-stat-value.bad { color: #f87171; }
+.fs-stat-value.perfect { color: #4ade80; }
+.fs-stat-value.off { color: #fbbf24; }
+.fs-stat-value.miss { color: #f87171; }
+.fs-stat-value.total { color: #aaa; }
+
 .fullscreen-col {
   display: flex;
   flex-direction: column;
@@ -147,10 +207,6 @@
   .app-header {
     padding: 10px 12px;
     gap: 8px;
-  }
-
-  .app-title {
-    font-size: 1rem;
   }
 
   .app-subtitle {
