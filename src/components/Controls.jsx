@@ -1,5 +1,6 @@
 import { drumKits } from '../config/drumKits';
 import { midiConfigs } from '../config/midiConfigs';
+import { drumLayouts } from '../config/drumLayouts';
 import './Controls.css';
 
 export default function Controls({
@@ -13,6 +14,7 @@ export default function Controls({
   metronomeOn, onToggleMetronome,
   drumPlaybackOn, onToggleDrumPlayback,
   midiConfigId, onMidiConfigChange,
+  drumLayoutId, onLayoutChange,
 }) {
   const hasSessionResult = sessionResult && sessionResult.stats;
 
@@ -103,6 +105,20 @@ export default function Controls({
           >
             {showVisualizer ? '📊 View On' : '📊 View'}
           </button>
+          {showVisualizer && (
+            <>
+              <label className="control-label">Layout:</label>
+              <select
+                className="layout-select"
+                value={drumLayoutId}
+                onChange={e => onLayoutChange(e.target.value)}
+              >
+                {drumLayouts.map(l => (
+                  <option key={l.id} value={l.id}>{l.name}</option>
+                ))}
+              </select>
+            </>
+          )}
         </div>
 
         <div className="controls-group">

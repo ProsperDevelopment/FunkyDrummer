@@ -4,8 +4,7 @@
   border-radius: 8px;
   border: 1px solid #2a2a4a;
   overflow: hidden;
-  flex: 1;
-  min-height: 0;
+  flex: 0 0 auto;
 }
 
 .timeline-empty {
