@@ -1,0 +1,53 @@
+.timeline-container {
+  display: flex;
+  background: #1a1a2e;
+  border-radius: 8px;
+  border: 1px solid #2a2a4a;
+  overflow: hidden;
+  flex: 1;
+  min-height: 0;
+}
+
+.timeline-empty {
+  padding: 40px;
+  text-align: center;
+  color: #666;
+  font-size: 1.1rem;
+}
+
+.timeline-drum-labels {
+  flex-shrink: 0;
+  border-right: 2px solid #2a2a4a;
+  background: #16162a;
+  z-index: 2;
+}
+
+.drum-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 12px;
+  font-size: 0.8rem;
+  color: #aaa;
+  border-bottom: 1px solid #2a2a4a;
+  user-select: none;
+  height: 40px;
+}
+
+.drum-indicator {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.timeline-canvas-wrapper {
+  flex: 1;
+  min-width: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.timeline-canvas-wrapper canvas {
+  display: block;
+}
