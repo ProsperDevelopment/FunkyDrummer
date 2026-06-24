@@ -7,24 +7,64 @@
 
 .app-header {
   display: flex;
-  align-items: baseline;
-  gap: 12px;
-  padding: 16px 24px;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
   background: #16162a;
   border-bottom: 1px solid #2a2a4a;
+  flex-shrink: 0;
 }
 
 .app-title {
   margin: 0;
-  font-size: 1.4rem;
+  font-size: 1.2rem;
   font-weight: 700;
   color: #c4b5fd;
   letter-spacing: -0.5px;
+  white-space: nowrap;
 }
 
 .app-subtitle {
-  font-size: 0.85rem;
+  font-size: 0.78rem;
   color: #666;
+  white-space: nowrap;
+}
+
+.header-spacer {
+  flex: 1;
+  min-width: 8px;
+}
+
+.header-btn {
+  background: none;
+  border: 1px solid #2a2a4a;
+  color: #888;
+  cursor: pointer;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  font-family: inherit;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.header-btn:hover {
+  background: #1e1e3e;
+  border-color: #3a3a6a;
+  color: #ccc;
+}
+
+.help-btn {
+  font-weight: 700;
+  font-size: 0.95rem;
+  width: 32px;
+  text-align: center;
+  padding: 4px 0;
+}
+
+.sidebar-toggle {
+  font-size: 0.7rem;
+  padding: 4px 6px;
 }
 
 .app-layout {
@@ -33,11 +73,13 @@
   gap: 16px;
   padding: 16px;
   overflow: hidden;
+  min-height: 0;
 }
 
 .app-sidebar {
   width: 220px;
   flex-shrink: 0;
+  overflow-y: auto;
 }
 
 .app-main {
@@ -48,4 +90,42 @@
   min-width: 0;
 }
 
+.app-main-full {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
 
+@media (max-width: 768px) {
+  .app-header {
+    padding: 10px 12px;
+    gap: 8px;
+  }
+
+  .app-title {
+    font-size: 1rem;
+  }
+
+  .app-subtitle {
+    display: none;
+  }
+
+  .app-layout {
+    flex-direction: column;
+    padding: 12px;
+    gap: 12px;
+  }
+
+  .app-sidebar {
+    width: 100%;
+    max-height: 200px;
+    overflow-y: auto;
+    flex-shrink: 1;
+  }
+
+  .app-main {
+    gap: 12px;
+  }
+}
