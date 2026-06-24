@@ -134,6 +134,8 @@ const synthSounds = {
 let activeKit = drumKits[0];
 let kitLoading = false;
 let loadCallbacks = [];
+let hihatPedalPressed = true;
+let userPressingPedal = false;
 
 export function getActiveKit() {
   return activeKit;
@@ -141,6 +143,22 @@ export function getActiveKit() {
 
 export function isKitLoading() {
   return kitLoading;
+}
+
+export function getHihatPedalPressed() {
+  return hihatPedalPressed;
+}
+
+export function setHihatPedalPressed(pressed) {
+  hihatPedalPressed = pressed;
+}
+
+export function setUserPressingPedal(pressing) {
+  userPressingPedal = pressing;
+}
+
+export function getUserPressingPedal() {
+  return userPressingPedal;
 }
 
 export function onKitLoaded(cb) {
@@ -175,6 +193,10 @@ export function playDrum(drumId, velocity = 0.8) {
   const ctx = getContext();
   if (ctx.state === 'suspended') ctx.resume();
   const kit = activeKit;
+
+  if (!userPressingPedal && (drumId === 'hihat' || drumId === 'hihatOpen')) {
+    hihatPedalPressed = drumId === 'hihat';
+  }
 
   if (kit.type === 'samples' && kit.samples && kit.samples[drumId]) {
     playSampleBuffer(kit.samples[drumId], velocity);

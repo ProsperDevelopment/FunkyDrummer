@@ -1,33 +1,53 @@
 import { drumConfig } from '../config/drumConfig';
+import { getLayoutById } from '../config/drumLayouts';
+import { setUserPressingPedal } from '../audio/drumSounds';
 import './DrumVisualizer.css';
 
 const drumColorMap = Object.fromEntries(
   drumConfig.map(d => [d.id, d.color])
 );
-const drumNameMap = Object.fromEntries(
-  drumConfig.map(d => [d.id, d.name])
-);
 
-const DRUM_POSITIONS = [
-  { id: 'crash',  cx: 100, cy: 62,  r: 46 },
-  { id: 'ride',   cx: 500, cy: 62,  r: 46 },
-  { id: 'hihat',  cx: 92,  cy: 172, r: 36, group: ['hihatOpen'] },
-  { id: 'tomHi',  cx: 200, cy: 152, r: 38 },
-  { id: 'tomMid', cx: 310, cy: 152, r: 38 },
-  { id: 'tomLo',  cx: 420, cy: 172, r: 40 },
-  { id: 'snare',  cx: 208, cy: 252, r: 40 },
-  { id: 'clap',   cx: 392, cy: 252, r: 30 },
-  { id: 'kick',   cx: 300, cy: 340, r: 50 },
-];
+const drumAbbr = {
+  kick: 'KCK', snare: 'SNR', hihat: 'HH', hihatOpen: 'HO',
+  crash: 'CR', ride: 'RD', tomHi: 'HT', tomMid: 'MT',
+  tomLo: 'FT', clap: 'CL',
+};
 
-export default function DrumVisualizer({ activeDrums, onDrumClick }) {
+function handlePointerDown(id, onDrumClick, e) {
+  e.preventDefault();
+  e.target.setPointerCapture(e.pointerId);
+  onDrumClick?.(id);
+}
+
+function handlePedalDown(onHihatPedalDown, e) {
+  e.preventDefault();
+  e.target.setPointerCapture(e.pointerId);
+  setUserPressingPedal(true);
+  onHihatPedalDown?.();
+}
+
+function handlePedalUp(onHihatPedalUp, e) {
+  setUserPressingPedal(false);
+  onHihatPedalUp?.();
+}
+
+export default function DrumVisualizer({ activeDrums, onDrumClick, layoutId, hihatPedalPressed, onHihatPedalDown, onHihatPedalUp }) {
+  const layout = getLayoutById(layoutId);
   const isActive = (id, group) =>
     activeDrums.has(id) || (group || []).some(g => activeDrums.has(g));
+  const kickPos = layout.positions.find(p => p.id === 'kick');
+  const pedalW = kickPos ? kickPos.r * 2 : 100;
+  const pedalH = kickPos ? kickPos.r : 50;
+  const pedalCx = kickPos ? kickPos.cx - kickPos.r - pedalW / 2 - 16 : 130;
+  const pedalCy = kickPos ? kickPos.cy : 340;
+  const pedalActive = hihatPedalPressed
+    ? { active: true, color: drumColorMap.hihat, label: 'CL' }
+    : { active: true, color: '#f39c12', label: 'OP' };
 
   return (
     <div className="drum-visualizer">
       <svg viewBox="0 0 600 410" className="drum-visualizer-svg">
-        {DRUM_POSITIONS.map(({ id, cx, cy, r, group }) => {
+        {layout.positions.map(({ id, cx, cy, r, group }) => {
           const active = isActive(id, group);
           const color = drumColorMap[id] || '#888';
           return (
@@ -35,20 +55,20 @@ export default function DrumVisualizer({ activeDrums, onDrumClick }) {
               <circle
                 cx={cx} cy={cy} r={r}
                 fill={active ? color : 'transparent'}
-                stroke={active ? color : '#3a3a5a'}
-                strokeWidth={active ? 3 : 1.5}
-                opacity={active ? 0.9 : 0.5}
+                stroke={active ? color : '#8a8aba'}
+                strokeWidth={active ? 6 : 4}
+                opacity={active ? 1 : 0.7}
                 className={`drum-piece${active ? ' active' : ''}`}
-                style={{ cursor: 'pointer' }}
-                onClick={() => onDrumClick?.(id)}
+                style={{ cursor: 'pointer', touchAction: 'none' }}
+                onPointerDown={(e) => handlePointerDown(id, onDrumClick, e)}
               />
               {active && (
                 <circle
-                  cx={cx} cy={cy} r={r + 4}
+                  cx={cx} cy={cy} r={r + 6}
                   fill="none"
                   stroke={color}
-                  strokeWidth={2}
-                  opacity={0.4}
+                  strokeWidth={4}
+                  opacity={0.5}
                   className="drum-glow-ring"
                 />
               )}
@@ -56,16 +76,48 @@ export default function DrumVisualizer({ activeDrums, onDrumClick }) {
                 x={cx} y={cy}
                 textAnchor="middle"
                 dominantBaseline="central"
-                fill={active ? '#fff' : '#666'}
-                fontSize={id === 'hihat' ? 10 : 11}
+                fill={active ? '#fff' : '#888'}
+                fontSize={14}
                 fontWeight={active ? 700 : 400}
                 className="drum-label"
               >
-                {drumNameMap[id] || id}
+                {drumAbbr[id] || id}
               </text>
             </g>
           );
         })}
+        <rect
+          x={pedalCx - pedalW / 2} y={pedalCy - pedalH / 2}
+          width={pedalW} height={pedalH} rx={6}
+          fill={pedalActive.active ? pedalActive.color : 'transparent'}
+          stroke={pedalActive.active ? pedalActive.color : '#8a8aba'}
+          strokeWidth={4}
+          opacity={pedalActive.active ? 1 : 0.7}
+          className="drum-piece"
+          style={{ cursor: 'pointer', touchAction: 'none' }}
+          onPointerDown={(e) => handlePedalDown(onHihatPedalDown, e)}
+          onPointerUp={(e) => handlePedalUp(onHihatPedalUp, e)}
+          onPointerCancel={(e) => handlePedalUp(onHihatPedalUp, e)}
+          onPointerLeave={(e) => handlePedalUp(onHihatPedalUp, e)}
+        />
+        <text
+          x={pedalCx} y={pedalCy}
+          textAnchor="middle" dominantBaseline="central"
+          fill={pedalActive.active ? '#fff' : '#888'}
+          fontSize={16} fontWeight={700}
+          className="drum-label"
+        >
+          {pedalActive.label}
+        </text>
+        <rect
+          x={pedalCx - pedalW / 2 - 4} y={pedalCy - pedalH / 2 - 4}
+          width={pedalW + 8} height={pedalH + 8} rx={8}
+          fill="none"
+          stroke={pedalActive.color}
+          strokeWidth={4}
+          opacity={0.5}
+          className="drum-glow-ring"
+        />
       </svg>
     </div>
   );

@@ -11,11 +11,16 @@
   width: 100%;
   height: auto;
   max-height: 240px;
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 .drum-piece {
   transition: fill 0.06s ease, stroke 0.06s ease, stroke-width 0.06s ease, opacity 0.06s ease;
-  cursor: default;
+  cursor: pointer;
+  touch-action: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .drum-glow-ring {

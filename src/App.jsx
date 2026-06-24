@@ -10,9 +10,10 @@ import { useKeyboard } from './hooks/useKeyboard';
 import { usePlayback } from './hooks/usePlayback';
 import { useTraining } from './hooks/useTraining';
 import { useActiveDrums } from './hooks/useActiveDrums';
-import { playDrum, setKit, getActiveKit, isKitLoading } from './audio/drumSounds';
+import { playDrum, setKit, getActiveKit, isKitLoading, getHihatPedalPressed, setHihatPedalPressed } from './audio/drumSounds';
 import { drumKits } from './config/drumKits';
 import { midiConfigs, getNoteMap } from './config/midiConfigs';
+import { drumLayouts } from './config/drumLayouts';
 import './App.css';
 
 function getPattern(id) {
@@ -30,15 +31,23 @@ export default function App() {
   const [metronomeOn, setMetronomeOn] = useState(false);
   const [drumPlaybackOn, setDrumPlaybackOn] = useState(true);
   const [midiConfigId, setMidiConfigId] = useState(midiConfigs[0].id);
+  const [drumLayoutId, setDrumLayoutId] = useState(drumLayouts[0].id);
   const [showPatterns, setShowPatterns] = useState(true);
   const [showHelp, setShowHelp] = useState(false);
   const [fullscreenMode, setFullscreenMode] = useState(false);
+  const [hihatPedalPressed, setHihatPedalPressedState] = useState(getHihatPedalPressed());
   const midiNoteMap = getNoteMap(midiConfigId);
 
   const { activeDrums, hit: hitVisualizer } = useActiveDrums();
 
   const pattern = getPattern(selectedPatternId);
-  const playback = usePlayback(pattern, bpmOverride, stopAfterReps, hitVisualizer, metronomeOn, drumPlaybackOn);
+
+  const onPatternDrumPlayed = useCallback((drumId, vel) => {
+    hitVisualizer(drumId, vel);
+    setHihatPedalPressedState(getHihatPedalPressed());
+  }, [hitVisualizer]);
+
+  const playback = usePlayback(pattern, bpmOverride, stopAfterReps, onPatternDrumPlayed, metronomeOn, drumPlaybackOn);
 
   const defaultBpm = pattern.bpm;
   const effectiveBpm = bpmOverride || defaultBpm;
@@ -53,10 +62,18 @@ export default function App() {
   } = useTraining(pattern, playback.currentStep);
 
   const onDrumHit = useCallback((drumId, velocity) => {
-    playDrum(drumId, velocity);
+    const resolvedId = drumId === 'hihat'
+      ? (hihatPedalPressed ? 'hihat' : 'hihatOpen')
+      : drumId;
+    const prev = getHihatPedalPressed();
+    playDrum(resolvedId, velocity);
     handleDrumHit(drumId);
-    hitVisualizer(drumId);
-  }, [handleDrumHit, hitVisualizer]);
+    hitVisualizer(resolvedId);
+    const next = getHihatPedalPressed();
+    if (prev !== next) {
+      setHihatPedalPressedState(next);
+    }
+  }, [handleDrumHit, hitVisualizer, hihatPedalPressed]);
 
   const { inputs, activeInput, setActiveInput } = useMIDI(onDrumHit, midiNoteMap);
   useKeyboard(onDrumHit);
@@ -101,6 +118,20 @@ export default function App() {
 
   const handleMidiConfigChange = useCallback((id) => {
     setMidiConfigId(id);
+  }, []);
+
+  const handleLayoutChange = useCallback((id) => {
+    setDrumLayoutId(id);
+  }, []);
+
+  const handleHihatPedalDown = useCallback(() => {
+    setHihatPedalPressedState(true);
+    setHihatPedalPressed(true);
+  }, []);
+
+  const handleHihatPedalUp = useCallback(() => {
+    setHihatPedalPressedState(false);
+    setHihatPedalPressed(false);
   }, []);
 
   const handleKitChange = useCallback(async (kitId) => {
@@ -193,6 +224,8 @@ export default function App() {
             onToggleDrumPlayback={handleToggleDrumPlayback}
             midiConfigId={midiConfigId}
             onMidiConfigChange={handleMidiConfigChange}
+            drumLayoutId={drumLayoutId}
+            onLayoutChange={handleLayoutChange}
           />
 
           <Timeline
@@ -204,7 +237,7 @@ export default function App() {
           />
 
           {showVisualizer && (
-            <DrumVisualizer activeDrums={activeDrums} onDrumClick={onDrumHit} />
+            <DrumVisualizer activeDrums={activeDrums} onDrumClick={onDrumHit} layoutId={drumLayoutId} hihatPedalPressed={hihatPedalPressed} onHihatPedalDown={handleHihatPedalDown} onHihatPedalUp={handleHihatPedalUp} />
           )}
         </main>
       </div>
@@ -219,7 +252,7 @@ export default function App() {
               userHits={userHits}
               trainingMode={trainingMode}
             />
-            <DrumVisualizer activeDrums={activeDrums} onDrumClick={onDrumHit} />
+            <DrumVisualizer activeDrums={activeDrums} onDrumClick={onDrumHit} layoutId={drumLayoutId} hihatPedalPressed={hihatPedalPressed} onHihatPedalDown={handleHihatPedalDown} onHihatPedalUp={handleHihatPedalUp} />
           </div>
           <button className="fullscreen-exit" onClick={handleToggleFullscreen} title="Exit fullscreen">
             ✕

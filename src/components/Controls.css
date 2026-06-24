@@ -383,4 +383,15 @@
   font-style: italic;
 }
 
+.layout-select {
+  padding: 6px 10px;
+  background: #16162a;
+  border: 1px solid #2a2a4a;
+  border-radius: 6px;
+  color: #ccc;
+  font-size: 0.8rem;
+  font-family: inherit;
+  cursor: pointer;
+}
+
 

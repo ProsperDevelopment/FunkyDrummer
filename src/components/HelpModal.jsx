@@ -69,7 +69,8 @@ export default function HelpModal({ onClose }) {
 
           <section className="help-section">
             <h3>Drum Visualizer</h3>
-            <p>Toggle the <strong>View</strong> button to show a top-down SVG drum kit. Click any drum to play it. Drums light up when triggered by the pattern, MIDI, or keyboard.</p>
+            <p>Toggle the <strong>View</strong> button to show a top-down SVG drum kit. Tap or click any drum to play it. Drums light up when triggered by the pattern, MIDI, or keyboard. Multi-touch is supported on touch devices.</p>
+            <p>Use the <strong>Layout</strong> dropdown to switch between kit layouts (Standard, Roland TD-02K).</p>
           </section>
 
           <section className="help-section">
