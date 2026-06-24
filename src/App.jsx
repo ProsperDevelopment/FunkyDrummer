@@ -78,7 +78,16 @@ export default function App() {
     }
   }, [handleDrumHit, hitVisualizer, hihatPedalPressed]);
 
-  const { inputs, activeInput, setActiveInput } = useMIDI(onDrumHit, midiNoteMap);
+  const handleCC = useCallback((controller, value) => {
+    if (controller === 4) {
+      const pressed = value >= 64;
+      setHihatPedalPressedState(pressed);
+      setHihatPedalPressed(pressed);
+      console.log('pedal', pressed ? 'closed' : 'open');
+    }
+  }, []);
+
+  const { inputs, activeInput, setActiveInput } = useMIDI(onDrumHit, midiNoteMap, handleCC);
   useKeyboard(onDrumHit);
 
   const wasPlayingRef = useRef(false);

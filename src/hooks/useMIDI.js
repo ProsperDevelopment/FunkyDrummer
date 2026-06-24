@@ -1,12 +1,14 @@
 import { useState, useEffect, useRef } from 'react';
 import { midiNoteToDrum as defaultNoteMap } from '../config/drumConfig';
 
-export function useMIDI(onNoteOn, noteMap) {
+export function useMIDI(onNoteOn, noteMap, onCC) {
   const [midiAccess, setMidiAccess] = useState(null);
   const [inputs, setInputs] = useState([]);
   const [activeInput, setActiveInput] = useState(null);
   const noteMapRef = useRef(noteMap || defaultNoteMap);
   noteMapRef.current = noteMap || defaultNoteMap;
+  const onCCRef = useRef(onCC);
+  onCCRef.current = onCC;
 
   useEffect(() => {
     if (!navigator.requestMIDIAccess) {
@@ -36,10 +38,18 @@ export function useMIDI(onNoteOn, noteMap) {
 
     const handler = (event) => {
       const status = event.data[0] & 0xF0;
-      if (status === 0x90 && event.data[2] > 0) {
-        const note = event.data[1];
-        const velocity = event.data[2] / 127;
-        const drumId = noteMapRef.current[note];
+      const data1 = event.data[1];
+      const data2 = event.data[2];
+
+      if (status === 0xB0) {
+        console.log(`MIDI CC ${data1} = ${data2}`);
+        onCCRef.current?.(data1, data2);
+        return;
+      }
+
+      if (status === 0x90 && data2 > 0) {
+        const velocity = data2 / 127;
+        const drumId = noteMapRef.current[data1];
         if (drumId) {
           onNoteOn(drumId, velocity);
         }
