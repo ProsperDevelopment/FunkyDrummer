@@ -32,6 +32,7 @@ export default function App() {
   const [midiConfigId, setMidiConfigId] = useState(midiConfigs[0].id);
   const [showPatterns, setShowPatterns] = useState(true);
   const [showHelp, setShowHelp] = useState(false);
+  const [fullscreenMode, setFullscreenMode] = useState(false);
   const midiNoteMap = getNoteMap(midiConfigId);
 
   const { activeDrums, hit: hitVisualizer } = useActiveDrums();
@@ -114,6 +115,10 @@ export default function App() {
     setKit(getActiveKit().id);
   }, []);
 
+  const handleToggleFullscreen = useCallback(() => {
+    setFullscreenMode(v => !v);
+  }, []);
+
   const handleTrainingToggle = useCallback(() => {
     setSessionResult(null);
     setTrainingMode(!trainingMode);
@@ -138,6 +143,13 @@ export default function App() {
           title="Help"
         >
           ?
+        </button>
+        <button
+          className="header-btn fullscreen-btn"
+          onClick={handleToggleFullscreen}
+          title="Fullscreen"
+        >
+          ⛶
         </button>
       </header>
 
@@ -196,6 +208,24 @@ export default function App() {
           )}
         </main>
       </div>
+
+      {fullscreenMode && (
+        <div className="fullscreen-overlay">
+          <div className="fullscreen-content">
+            <Timeline
+              pattern={pattern}
+              currentStep={playback.currentStep}
+              isPlaying={playback.isPlaying}
+              userHits={userHits}
+              trainingMode={trainingMode}
+            />
+            <DrumVisualizer activeDrums={activeDrums} onDrumClick={onDrumHit} />
+          </div>
+          <button className="fullscreen-exit" onClick={handleToggleFullscreen} title="Exit fullscreen">
+            ✕
+          </button>
+        </div>
+      )}
 
       {showHelp && <HelpModal onClose={() => setShowHelp(false)} />}
     </div>
