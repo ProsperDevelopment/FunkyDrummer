@@ -1,3 +1,5 @@
+const base = import.meta.env.BASE_URL || '/';
+
 export const drumKits = [
   {
     id: 'stock',
@@ -9,13 +11,13 @@ export const drumKits = [
     name: 'Boom Bap',
     type: 'samples',
     samples: {
-      kick: '/drum-kits/boom-bap/kick.wav',
-      snare: '/drum-kits/boom-bap/snare.wav',
-      hihat: '/drum-kits/boom-bap/hihat.wav',
-      hihatOpen: '/drum-kits/boom-bap/hihatOpen.wav',
-      crash: '/drum-kits/boom-bap/crash.wav',
-      ride: '/drum-kits/boom-bap/ride.wav',
-      clap: '/drum-kits/boom-bap/clap.wav',
+      kick: `${base}drum-kits/boom-bap/kick.wav`,
+      snare: `${base}drum-kits/boom-bap/snare.wav`,
+      hihat: `${base}drum-kits/boom-bap/hihat.wav`,
+      hihatOpen: `${base}drum-kits/boom-bap/hihatOpen.wav`,
+      crash: `${base}drum-kits/boom-bap/crash.wav`,
+      ride: `${base}drum-kits/boom-bap/ride.wav`,
+      clap: `${base}drum-kits/boom-bap/clap.wav`,
     },
   },
 ];
