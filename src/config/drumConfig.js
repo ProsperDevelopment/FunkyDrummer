@@ -5,10 +5,9 @@ export const drumConfig = [
   { id: 'hihatOpen', name: 'Hi-Hat Open', midiNote: 46, key: 'f', color: '#f39c12' },
   { id: 'crash',    name: 'Crash',      midiNote: 49, key: 'g', color: '#9b59b6' },
   { id: 'ride',     name: 'Ride',       midiNote: 51, key: 'h', color: '#1abc9c' },
-  { id: 'tomHi',    name: 'Hi Tom',     midiNote: 43, key: 'j', color: '#2ecc71' },
+  { id: 'tomHi',    name: 'Hi Tom',     midiNote: 48, key: 'j', color: '#2ecc71' },
   { id: 'tomMid',   name: 'Mid Tom',    midiNote: 45, key: 'k', color: '#27ae60' },
-  { id: 'tomLo',    name: 'Floor Tom',  midiNote: 41, key: 'l', color: '#e67e22' },
-  { id: 'clap',     name: 'Clap',       midiNote: 39, key: ';', color: '#bdc3c7' },
+  { id: 'tomLo',    name: 'Floor Tom',  midiNote: 43, key: 'l', color: '#e67e22' },
 ];
 
 export const drumMap = Object.fromEntries(

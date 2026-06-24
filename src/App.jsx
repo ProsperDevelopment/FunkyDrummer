@@ -71,7 +71,7 @@ export default function App() {
     const prev = getHihatPedalPressed();
     playDrum(resolvedId, velocity);
     handleDrumHit(drumId);
-    hitVisualizer(resolvedId);
+    hitVisualizer(resolvedId, velocity);
     const next = getHihatPedalPressed();
     if (prev !== next) {
       setHihatPedalPressedState(next);

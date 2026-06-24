@@ -10,7 +10,7 @@ const drumColorMap = Object.fromEntries(
 const drumAbbr = {
   kick: 'KCK', snare: 'SNR', hihat: 'HH', hihatOpen: 'HO',
   crash: 'CR', ride: 'RD', tomHi: 'HT', tomMid: 'MT',
-  tomLo: 'FT', clap: 'CL',
+  tomLo: 'FT',
 };
 
 function handlePointerDown(id, onDrumClick, e) {
@@ -33,8 +33,10 @@ function handlePedalUp(onHihatPedalUp, e) {
 
 export default function DrumVisualizer({ activeDrums, onDrumClick, layoutId, hihatPedalPressed, onHihatPedalDown, onHihatPedalUp }) {
   const layout = getLayoutById(layoutId);
-  const isActive = (id, group) =>
-    activeDrums.has(id) || (group || []).some(g => activeDrums.has(g));
+  const getVel = (id, group) => {
+    const v = activeDrums.get(id) || (group || []).reduce((a, g) => a || activeDrums.get(g), 0);
+    return v || 0;
+  };
   const kickPos = layout.positions.find(p => p.id === 'kick');
   const pedalW = kickPos ? kickPos.r * 2 : 100;
   const pedalH = kickPos ? kickPos.r : 50;
@@ -48,7 +50,8 @@ export default function DrumVisualizer({ activeDrums, onDrumClick, layoutId, hih
     <div className="drum-visualizer">
       <svg viewBox="0 0 600 410" className="drum-visualizer-svg">
         {layout.positions.map(({ id, cx, cy, r, group }) => {
-          const active = isActive(id, group);
+          const vel = getVel(id, group);
+          const active = vel > 0;
           const color = drumColorMap[id] || '#888';
           return (
             <g key={id}>
@@ -57,6 +60,7 @@ export default function DrumVisualizer({ activeDrums, onDrumClick, layoutId, hih
                 fill={active ? color : 'transparent'}
                 stroke={active ? color : '#8a8aba'}
                 strokeWidth={active ? 6 : 4}
+                fillOpacity={active ? 0.3 + vel * 0.7 : 1}
                 opacity={active ? 1 : 0.7}
                 className={`drum-piece${active ? ' active' : ''}`}
                 style={{ cursor: 'pointer', touchAction: 'none' }}
@@ -68,7 +72,7 @@ export default function DrumVisualizer({ activeDrums, onDrumClick, layoutId, hih
                   fill="none"
                   stroke={color}
                   strokeWidth={4}
-                  opacity={0.5}
+                  opacity={0.2 + vel * 0.5}
                   className="drum-glow-ring"
                 />
               )}

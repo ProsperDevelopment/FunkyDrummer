@@ -17,7 +17,6 @@ export const drumKits = [
       hihatOpen: `${base}drum-kits/boom-bap/hihatOpen.wav`,
       crash: `${base}drum-kits/boom-bap/crash.wav`,
       ride: `${base}drum-kits/boom-bap/ride.wav`,
-      clap: `${base}drum-kits/boom-bap/clap.wav`,
     },
   },
 ];

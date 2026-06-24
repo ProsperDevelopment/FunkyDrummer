@@ -348,7 +348,6 @@ export const drumPatterns = [
     ...grid(2,
       ['kick',  [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
       ['snare', [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
-      ['clap',  [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
       ['hihat', [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
     ),
     rebuild() {
@@ -356,7 +355,6 @@ export const drumPatterns = [
       const steps = m * 16;
       this.grid.kick = new Array(steps).fill(0);
       this.grid.snare = new Array(steps).fill(0);
-      this.grid.clap = new Array(steps).fill(0);
       this.grid.hihat = new Array(steps).fill(0);
       for (let i = 0; i < m; i++) {
         const o = i * 16;
@@ -364,9 +362,9 @@ export const drumPatterns = [
         this.grid.kick[o + 6] = 0.6;
         this.grid.kick[o + 8] = 0.8;
         this.grid.kick[o + 14] = 0.6;
-        this.grid.clap[o + 4] = 1.0;
-        this.grid.clap[o + 12] = 1.0;
+        this.grid.snare[o + 4] = 1.0;
         this.grid.snare[o + 8] = 0.5;
+        this.grid.snare[o + 12] = 1.0;
         for (let j = 0; j < 16; j += 2) {
           this.grid.hihat[o + j] = 0.4;
         }
@@ -425,7 +423,6 @@ export const drumPatterns = [
     bpm: 125,
     ...grid(2,
       ['kick',  [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
-      ['clap',  [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
       ['hihat', [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
       ['hihatOpen', [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
     ),
@@ -433,7 +430,7 @@ export const drumPatterns = [
       const m = this.measures;
       const steps = m * 16;
       this.grid.kick = new Array(steps).fill(0);
-      this.grid.clap = new Array(steps).fill(0);
+      this.grid.snare = new Array(steps).fill(0);
       this.grid.hihat = new Array(steps).fill(0);
       this.grid.hihatOpen = new Array(steps).fill(0);
       for (let i = 0; i < m; i++) {
@@ -442,8 +439,8 @@ export const drumPatterns = [
         this.grid.kick[o + 4] = 0.8;
         this.grid.kick[o + 8] = 0.9;
         this.grid.kick[o + 12] = 0.8;
-        this.grid.clap[o + 4] = 1.0;
-        this.grid.clap[o + 12] = 1.0;
+        this.grid.snare[o + 4] = 1.0;
+        this.grid.snare[o + 12] = 1.0;
         for (let j = 0; j < 16; j += 2) {
           this.grid.hihat[o + j] = 0.4;
         }

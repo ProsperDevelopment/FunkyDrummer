@@ -120,15 +120,6 @@ const synthSounds = {
     playTone(ctx, 180, 0.3, v, 'sine');
     playTone(ctx, 150, 0.2, v * 0.3, 'triangle');
   },
-
-  clap(velocity = 0.7) {
-    const ctx = getContext();
-    const v = Math.min(1, velocity) * 0.6;
-    for (let i = 0; i < 3; i++) {
-      setTimeout(() => playNoise(ctx, 0.03, 8000, v * 0.4), i * 10);
-    }
-    playNoise(ctx, 0.1, 6000, v * 0.5);
-  },
 };
 
 let activeKit = drumKits[0];
