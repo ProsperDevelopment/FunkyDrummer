@@ -1,17 +1,17 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 
 export function useActiveDrums() {
-  const [activeDrums, setActiveDrums] = useState(new Set());
+  const [activeDrums, setActiveDrums] = useState(new Map());
   const timersRef = useRef({});
 
-  const hit = useCallback((drumId) => {
-    setActiveDrums(prev => new Set(prev).add(drumId));
+  const hit = useCallback((drumId, velocity = 1) => {
+    setActiveDrums(prev => new Map(prev).set(drumId, velocity));
     if (timersRef.current[drumId]) {
       clearTimeout(timersRef.current[drumId]);
     }
     timersRef.current[drumId] = setTimeout(() => {
       setActiveDrums(prev => {
-        const next = new Set(prev);
+        const next = new Map(prev);
         next.delete(drumId);
         return next;
       });
