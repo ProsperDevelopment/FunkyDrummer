@@ -1,14 +1,5 @@
-import { loadSample, playSampleBuffer } from './sampleLoader';
+import { loadSample, playSampleBuffer, getContext } from './sampleLoader';
 import { drumKits } from '../config/drumKits';
-
-let audioCtx = null;
-
-function getContext() {
-  if (!audioCtx) {
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  }
-  return audioCtx;
-}
 
 function noiseBuffer(ctx, length) {
   const size = ctx.sampleRate * length;
@@ -163,9 +154,16 @@ export async function setKit(kitId) {
   activeKit = kit;
   kitLoading = true;
 
-  if (kit.type === 'samples' && kit.samples) {
-    const promises = Object.values(kit.samples).map(url => loadSample(url));
-    await Promise.all(promises);
+  try {
+    if (kit.type === 'samples' && kit.samples) {
+      const promises = Object.values(kit.samples).map(url => loadSample(url));
+      await Promise.all(promises);
+    }
+  } catch (err) {
+    console.error('Failed to load kit:', kitId, err);
+    kitLoading = false;
+    loadCallbacks = [];
+    throw err;
   }
 
   kitLoading = false;
@@ -174,6 +172,8 @@ export async function setKit(kitId) {
 }
 
 export function playDrum(drumId, velocity = 0.8) {
+  const ctx = getContext();
+  if (ctx.state === 'suspended') ctx.resume();
   const kit = activeKit;
 
   if (kit.type === 'samples' && kit.samples && kit.samples[drumId]) {
@@ -185,6 +185,7 @@ export function playDrum(drumId, velocity = 0.8) {
 
 export function playMetronomeClick(accent = false) {
   const ctx = getContext();
+  if (ctx.state === 'suspended') ctx.resume();
   const osc = ctx.createOscillator();
   osc.type = 'sine';
   osc.frequency.setValueAtTime(accent ? 1500 : 1000, ctx.currentTime);
