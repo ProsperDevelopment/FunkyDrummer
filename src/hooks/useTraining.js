@@ -12,9 +12,12 @@ function computeStats(hits) {
 export function useTraining(pattern, currentStep) {
   const [trainingMode, setTrainingMode] = useState(false);
   const [userHits, setUserHits] = useState([]);
+  const [missedHits, setMissedHits] = useState(0);
   const hitIdRef = useRef(0);
   const currentStepRef = useRef(currentStep);
+  const prevStepRef = useRef(currentStep);
   const patternRef = useRef(pattern);
+  const missedStepsRef = useRef(new Set());
 
   useEffect(() => { currentStepRef.current = currentStep; }, [currentStep]);
   useEffect(() => { patternRef.current = pattern; }, [pattern]);
@@ -24,39 +27,86 @@ export function useTraining(pattern, currentStep) {
     if (pattern?.id !== prevPatternIdRef.current) {
       prevPatternIdRef.current = pattern?.id;
       setUserHits([]);
+      setMissedHits(0);
     }
   }, [pattern?.id]);
 
-  const clearHits = useCallback(() => { setUserHits([]); }, []);
+  const clearHits = useCallback(() => {
+    setUserHits([]);
+    setMissedHits(0);
+    missedStepsRef.current = new Set();
+  }, []);
+
+  const userHitsRef = useRef([]);
+  useEffect(() => { userHitsRef.current = userHits; }, [userHits]);
+
+  useEffect(() => {
+    if (!trainingMode) return;
+    const p = patternRef.current;
+    if (!p) return;
+    const steps = p.measures * 16;
+    const prevMod = prevStepRef.current % steps;
+    const currMod = currentStep % steps;
+    prevStepRef.current = currentStep;
+
+    if (prevMod === currMod || missedStepsRef.current.has(prevMod)) return;
+
+    const drumsWithNotes = [];
+    for (const [drumId, row] of Object.entries(p.grid)) {
+      if (row[prevMod]) {
+        drumsWithNotes.push(drumId);
+      }
+    }
+
+    if (drumsWithNotes.length === 0) return;
+
+    const currentHits = userHitsRef.current;
+    let uncovered = 0;
+    for (const drumId of drumsWithNotes) {
+      const covered = currentHits.some(h =>
+        h.drumId === drumId && Math.abs(h.step - prevMod) <= 1
+      );
+      if (!covered) uncovered++;
+    }
+    if (uncovered > 0) {
+      setMissedHits(prev => prev + uncovered);
+    }
+
+    missedStepsRef.current.add(prevMod);
+  }, [currentStep, trainingMode]);
 
   const handleDrumHit = useCallback((drumId) => {
     if (!trainingMode) return;
 
     const p = patternRef.current;
-    if (!p || !p.grid[drumId]) return;
+    if (!p) return;
 
     const step = currentStepRef.current;
     const steps = p.measures * 16;
     const modStep = step % steps;
 
-    let nearestDist = Infinity;
-    for (let offset = -2; offset <= 2; offset++) {
-      const checkStep = ((modStep + offset) % steps + steps) % steps;
-      if (p.grid[drumId][checkStep]) {
-        const dist = Math.abs(offset);
-        if (dist < nearestDist) nearestDist = dist;
-      }
-    }
-
     let accuracy;
-    if (nearestDist === Infinity) {
+    if (!p.grid[drumId]) {
       accuracy = 'miss';
-    } else if (nearestDist === 0) {
-      accuracy = 'perfect';
-    } else if (nearestDist <= 1) {
-      accuracy = 'good';
     } else {
-      accuracy = 'off';
+      let nearestDist = Infinity;
+      for (let offset = -2; offset <= 2; offset++) {
+        const checkStep = ((modStep + offset) % steps + steps) % steps;
+        if (p.grid[drumId][checkStep]) {
+          const dist = Math.abs(offset);
+          if (dist < nearestDist) nearestDist = dist;
+        }
+      }
+
+      if (nearestDist === Infinity) {
+        accuracy = 'miss';
+      } else if (nearestDist === 0) {
+        accuracy = 'perfect';
+      } else if (nearestDist <= 1) {
+        accuracy = 'good';
+      } else {
+        accuracy = 'off';
+      }
     }
 
     const hit = {
@@ -76,6 +126,8 @@ export function useTraining(pattern, currentStep) {
   useEffect(() => {
     if (!trainingMode) {
       setUserHits([]);
+      setMissedHits(0);
+      missedStepsRef.current = new Set();
       return;
     }
     const interval = setInterval(() => {
@@ -91,11 +143,14 @@ export function useTraining(pattern, currentStep) {
     trainingMode,
     setTrainingMode: (v) => {
       setUserHits([]);
+      setMissedHits(0);
+      missedStepsRef.current = new Set();
       setTrainingMode(v);
     },
     userHits,
     handleDrumHit,
     clearHits,
     accuracyStats,
+    missedHits,
   };
 }

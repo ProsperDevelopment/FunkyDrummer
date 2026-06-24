@@ -1,26 +1,55 @@
 import { useEffect } from 'react';
-import { keyToDrum, drumConfig } from '../config/drumConfig';
+import { keyToDrum } from '../config/drumConfig';
 
-export function useKeyboard(onNoteOn) {
+export function useKeyboard(onNoteOn, actions = {}) {
   useEffect(() => {
     const handler = (e) => {
       if (e.repeat) return;
       if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') return;
 
-      const drumId = keyToDrum[e.key.toLowerCase()];
+      const key = e.key.toLowerCase();
+      const drumId = keyToDrum[key];
       if (drumId) {
         e.preventDefault();
         onNoteOn(drumId, 0.8);
+        return;
       }
 
-      if (e.key === ' ') {
-        e.preventDefault();
+      switch (e.key) {
+        case ' ':
+          e.preventDefault();
+          actions.onTogglePlay?.();
+          break;
+        case 'Escape':
+          e.preventDefault();
+          actions.onStop?.();
+          break;
+        case 'm':
+          e.preventDefault();
+          actions.onToggleMetronome?.();
+          break;
+        case 'p':
+          e.preventDefault();
+          actions.onToggleDrumPlayback?.();
+          break;
+        case 't':
+          e.preventDefault();
+          actions.onTrainingToggle?.();
+          break;
+        case '+':
+        case '=':
+          e.preventDefault();
+          actions.onBpmUp?.();
+          break;
+        case '-':
+        case '_':
+          e.preventDefault();
+          actions.onBpmDown?.();
+          break;
       }
     };
 
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, [onNoteOn]);
-
-  return { keyToDrum, drumConfig };
+  }, [onNoteOn, actions]);
 }

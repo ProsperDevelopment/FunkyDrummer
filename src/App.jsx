@@ -62,6 +62,7 @@ export default function App() {
     handleDrumHit,
     clearHits,
     accuracyStats,
+    missedHits,
   } = useTraining(pattern, playback.currentStep);
 
   const onDrumHit = useCallback((drumId, velocity) => {
@@ -88,13 +89,22 @@ export default function App() {
   }, []);
 
   const { inputs, activeInput, setActiveInput } = useMIDI(onDrumHit, midiNoteMap, handleCC);
-  useKeyboard(onDrumHit);
+  const handleBpmUp = useCallback(() => {
+    const next = Math.min(300, effectiveBpm + 5);
+    setBpmOverride(next === defaultBpm ? null : next);
+  }, [effectiveBpm, defaultBpm]);
+
+  const handleBpmDown = useCallback(() => {
+    const next = Math.max(30, effectiveBpm - 5);
+    setBpmOverride(next === defaultBpm ? null : next);
+  }, [effectiveBpm, defaultBpm]);
 
   const wasPlayingRef = useRef(false);
   useEffect(() => {
     if (wasPlayingRef.current && !playback.isPlaying && trainingMode) {
       setSessionResult({
-        stats: accuracyStats || { perfect: 0, good: 0, off: 0, miss: 0, total: 0, score: 0 }
+        stats: accuracyStats || { perfect: 0, good: 0, off: 0, miss: 0, total: 0, score: 0 },
+        missedHits,
       });
     }
     wasPlayingRef.current = playback.isPlaying;
@@ -175,6 +185,16 @@ export default function App() {
     setTrainingMode(!trainingMode);
   }, [trainingMode]);
 
+  useKeyboard(onDrumHit, {
+    onTogglePlay: playback.togglePlay,
+    onStop: playback.stop,
+    onToggleMetronome: handleToggleMetronome,
+    onToggleDrumPlayback: handleToggleDrumPlayback,
+    onTrainingToggle: handleTrainingToggle,
+    onBpmUp: handleBpmUp,
+    onBpmDown: handleBpmDown,
+  });
+
   return (
     <div className="app">
       <header className="app-header">
@@ -233,6 +253,7 @@ export default function App() {
             trainingMode={trainingMode}
             onTrainingToggle={handleTrainingToggle}
             accuracyStats={accuracyStats}
+            missedHits={missedHits}
             bpmOverride={bpmOverride}
             onBpmChange={handleBpmChange}
             stopAfterReps={stopAfterReps}
