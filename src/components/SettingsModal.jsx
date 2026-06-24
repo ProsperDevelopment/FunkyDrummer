@@ -1,6 +1,7 @@
 import { useRef, useEffect } from 'react';
 import { drumKits } from '../config/drumKits';
 import { drumLayouts } from '../config/drumLayouts';
+import { midiConfigs } from '../config/midiConfigs';
 import './SettingsModal.css';
 
 export default function SettingsModal({
@@ -8,6 +9,8 @@ export default function SettingsModal({
   activeKitId, onKitChange, kitBusy,
   drumLayoutId, onLayoutChange,
   showVisualizer,
+  midiInputs, activeInput, onInputChange,
+  midiConfigId, onMidiConfigChange,
 }) {
   const overlayRef = useRef(null);
 
@@ -69,6 +72,40 @@ export default function SettingsModal({
               {!showVisualizer && (
                 <span className="settings-hint">(visualizer off)</span>
               )}
+            </div>
+          </div>
+
+          <div className="settings-field">
+            <label className="settings-label">MIDI Device</label>
+            <div className="settings-control">
+              {midiInputs.length > 0 ? (
+                <select
+                  className="settings-select"
+                  value={activeInput || ''}
+                  onChange={e => onInputChange(e.target.value)}
+                >
+                  {midiInputs.map(input => (
+                    <option key={input.id} value={input.id}>{input.name}</option>
+                  ))}
+                </select>
+              ) : (
+                <span className="settings-hint">No MIDI devices</span>
+              )}
+            </div>
+          </div>
+
+          <div className="settings-field">
+            <label className="settings-label">MIDI Map</label>
+            <div className="settings-control">
+              <select
+                className="settings-select"
+                value={midiConfigId}
+                onChange={e => onMidiConfigChange(e.target.value)}
+              >
+                {midiConfigs.map(c => (
+                  <option key={c.id} value={c.id}>{c.name}</option>
+                ))}
+              </select>
             </div>
           </div>
         </div>

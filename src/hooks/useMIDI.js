@@ -24,7 +24,10 @@ export function useMIDI(onNoteOn, noteMap, onCC) {
           list.push({ id: input.id, name: input.name || 'MIDI Input' });
         }
         setInputs(list);
-        if (list.length > 0) setActiveInput(list[0].id);
+        if (list.length > 0) {
+          const preferred = list.find(i => !i.name.includes('MIDI Through'));
+          setActiveInput(preferred ? preferred.id : list[0].id);
+        }
       },
       (err) => console.log('MIDI access denied:', err)
     );

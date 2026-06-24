@@ -22,10 +22,10 @@
 }
 
 .btn {
-  padding: 8px 18px;
+  padding: clamp(6px, 1.2vw, 12px) clamp(12px, 2vw, 22px);
   border: 1px solid #2a2a4a;
   border-radius: 6px;
-  font-size: 0.85rem;
+  font-size: clamp(0.7rem, 1.4vw, 0.95rem);
   cursor: pointer;
   transition: all 0.15s;
   font-family: inherit;
@@ -42,7 +42,7 @@
   background: #1a3a2a;
   border-color: #2a5a3a;
   color: #4ade80;
-  min-width: 100px;
+  min-width: clamp(80px, 12vw, 120px);
 }
 
 .btn-play:hover {
@@ -69,7 +69,7 @@
 }
 
 .bpm-slider {
-  width: 100px;
+  width: clamp(60px, 12vw, 120px);
   height: 4px;
   -webkit-appearance: none;
   appearance: none;
@@ -104,13 +104,13 @@
 }
 
 .bpm-input {
-  width: 52px;
-  padding: 4px 6px;
+  width: clamp(40px, 6vw, 56px);
+  padding: clamp(3px, 0.5vw, 6px) clamp(4px, 0.8vw, 8px);
   background: #16162a;
   border: 1px solid #2a2a4a;
   border-radius: 4px;
   color: #ccc;
-  font-size: 0.85rem;
+  font-size: clamp(0.7rem, 1.4vw, 0.9rem);
   font-family: inherit;
   text-align: center;
   font-weight: 600;
@@ -123,24 +123,24 @@
 }
 
 .bpm-display {
-  font-size: 0.9rem;
+  font-size: clamp(0.75rem, 1.5vw, 1rem);
   color: #aaa;
   font-weight: 600;
   font-variant-numeric: tabular-nums;
 }
 
 .control-label {
-  font-size: 0.8rem;
+  font-size: clamp(0.65rem, 1.3vw, 0.85rem);
   color: #888;
 }
 
 .midi-select {
-  padding: 6px 10px;
+  padding: clamp(4px, 0.8vw, 8px) clamp(6px, 1.2vw, 12px);
   background: #16162a;
   border: 1px solid #2a2a4a;
   border-radius: 6px;
   color: #ccc;
-  font-size: 0.8rem;
+  font-size: clamp(0.65rem, 1.3vw, 0.85rem);
   font-family: inherit;
   cursor: pointer;
 }
@@ -205,6 +205,25 @@
   box-shadow: 0 0 12px rgba(252, 211, 77, 0.3);
 }
 
+.btn-countdown {
+  color: #fcd34d;
+  border-color: #4a3a1a;
+  transition: all 0.2s;
+  font-size: clamp(0.85rem, 1.8vw, 1.1rem);
+  padding: clamp(6px, 1vw, 10px) clamp(10px, 1.5vw, 14px);
+}
+
+.btn-countdown:hover {
+  background: #2a2a1a;
+  border-color: #6a5a2a;
+}
+
+.btn-countdown.active {
+  background: #2a2a1a;
+  border-color: #fcd34d;
+  box-shadow: 0 0 12px rgba(252, 211, 77, 0.3);
+}
+
 .btn-drum-playback {
   color: #f9a8d4;
   border-color: #4a2a3a;
@@ -225,10 +244,28 @@
 
 .training-stats {
   display: flex;
-  gap: 16px;
-  flex-wrap: wrap;
+  justify-content: center;
   padding-top: 8px;
   border-top: 1px solid #2a2a4a;
+}
+
+.stats-box {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  background: #16162a;
+  border: 1px solid #2a2a4a;
+  border-radius: 8px;
+  padding: 10px 16px;
+  height: 56px;
+  box-sizing: border-box;
+}
+
+.stats-box-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 300px;
 }
 
 .stat {
@@ -239,14 +276,14 @@
 }
 
 .stat-label {
-  font-size: 0.65rem;
+  font-size: clamp(0.55rem, 1vw, 0.7rem);
   color: #666;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
 .stat-value {
-  font-size: 1rem;
+  font-size: clamp(0.85rem, 1.6vw, 1.1rem);
   font-weight: 700;
   font-variant-numeric: tabular-nums;
 }
@@ -263,14 +300,49 @@
   gap: 4px;
 }
 
+.reps-slider {
+  width: clamp(50px, 10vw, 100px);
+  height: 4px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: #2a2a4a;
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+}
+
+.reps-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #a78bfa;
+  border: 2px solid #c4b5fd;
+  cursor: pointer;
+  transition: transform 0.1s;
+}
+
+.reps-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+}
+
+.reps-slider::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #a78bfa;
+  border: 2px solid #c4b5fd;
+  cursor: pointer;
+}
+
 .reps-input {
-  width: 44px;
-  padding: 4px 6px;
+  width: clamp(36px, 5vw, 50px);
+  padding: clamp(3px, 0.5vw, 6px) clamp(4px, 0.8vw, 8px);
   background: #16162a;
   border: 1px solid #2a2a4a;
   border-radius: 4px;
   color: #a78bfa;
-  font-size: 0.85rem;
+  font-size: clamp(0.7rem, 1.4vw, 0.9rem);
   font-family: inherit;
   text-align: center;
   font-weight: 600;
@@ -282,73 +354,80 @@
 }
 
 .reps-counter {
-  font-size: 0.75rem;
+  font-size: clamp(0.65rem, 1.2vw, 0.85rem);
   color: #666;
   font-variant-numeric: tabular-nums;
   min-width: 36px;
 }
 
-.session-result {
+.session-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  backdrop-filter: blur(4px);
+}
+
+.session-modal {
   background: linear-gradient(135deg, #1e1a3a 0%, #2a1a3e 100%);
   border: 1px solid #5a3a7a;
-  border-radius: 8px;
-  padding: 16px;
+  border-radius: 12px;
+  padding: 24px 32px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
+  gap: 16px;
+  min-width: 340px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
 }
 
-.session-result-header {
-  text-align: center;
-}
-
-.session-result-title {
-  font-size: 1rem;
+.session-modal-title {
+  font-size: 1.2rem;
   font-weight: 700;
   color: #c4b5fd;
+  margin: 0;
   letter-spacing: 0.5px;
 }
 
-.session-result-body {
-  display: flex;
-  align-items: center;
-  gap: 24px;
-}
-
-.session-result-score {
+.session-modal-score {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2px;
-  padding-right: 24px;
-  border-right: 1px solid #3a2a5a;
+  gap: 4px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #3a2a5a;
+  width: 100%;
 }
 
 .score-value {
-  font-size: 2rem;
+  font-size: clamp(1.5rem, 4vw, 3rem);
   font-weight: 800;
   font-variant-numeric: tabular-nums;
   line-height: 1;
 }
 
 .score-label {
-  font-size: 0.65rem;
+  font-size: clamp(0.6rem, 1.2vw, 0.8rem);
   color: #666;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
-.session-result-stats {
+.session-modal-stats {
   display: flex;
   gap: 16px;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 .btn-dismiss {
-  padding: 6px 24px;
+  padding: clamp(5px, 1vw, 10px) clamp(16px, 3vw, 32px);
   border: 1px solid #5a3a7a;
   border-radius: 6px;
-  font-size: 0.8rem;
+  font-size: clamp(0.7rem, 1.4vw, 0.95rem);
   cursor: pointer;
   font-family: inherit;
   background: #2a1a4e;

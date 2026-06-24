@@ -1,8 +1,8 @@
-import { midiConfigs } from '../config/midiConfigs';
+import { useEffect } from 'react';
 import './Controls.css';
 
 export default function Controls({
-  isPlaying, onTogglePlay, onStop, midiInputs, activeInput, onInputChange, bpm,
+  isPlaying, onTogglePlay, onStop, bpm,
   trainingMode, onTrainingToggle, accuracyStats, missedHits,
   bpmOverride: _bpmOverride, onBpmChange,
   stopAfterReps, onStopAfterRepsChange, currentLoop,
@@ -10,9 +10,19 @@ export default function Controls({
   showVisualizer, onToggleVisualizer,
   metronomeOn, onToggleMetronome,
   drumPlaybackOn, onToggleDrumPlayback,
-  midiConfigId, onMidiConfigChange,
+  countdownOn, onCountdownToggle,
 }) {
   const hasSessionResult = sessionResult && sessionResult.stats;
+
+  useEffect(() => {
+    if (!hasSessionResult) return;
+    const handler = (e) => {
+      e.preventDefault();
+      onDismissResult();
+    };
+    document.addEventListener('keydown', handler);
+    return () => document.removeEventListener('keydown', handler);
+  }, [hasSessionResult, onDismissResult]);
 
   return (
     <div className="controls">
@@ -52,20 +62,39 @@ export default function Controls({
           <div className="controls-group reps-group">
             <label className="control-label">Reps</label>
             <input
-              type="number"
-              className="reps-input"
-              min="0"
+              type="range"
+              className="reps-slider"
+              min="5"
               max="50"
               step="1"
+              value={stopAfterReps || 5}
+              onChange={e => onStopAfterRepsChange(Number(e.target.value))}
+            />
+            <input
+              type="number"
+              className="reps-input"
+              min="5"
+              max="50"
               value={stopAfterReps}
-              title="0 = continuous"
-              onChange={e => onStopAfterRepsChange(Math.max(0, Math.min(50, Number(e.target.value) || 0)))}
+              onChange={e => {
+                const v = Number(e.target.value);
+                if (v >= 5 && v <= 50) onStopAfterRepsChange(v);
+              }}
             />
             {isPlaying && stopAfterReps > 0 && (
               <span className="reps-counter">{currentLoop}/{stopAfterReps}</span>
             )}
           </div>
         )}
+
+        <div className="controls-group">
+          <button
+            className={`btn btn-countdown ${countdownOn ? 'active' : ''}`}
+            onClick={onCountdownToggle}
+          >
+            🚦
+          </button>
+        </div>
 
         <div className="controls-group">
           <button
@@ -103,90 +132,13 @@ export default function Controls({
           </button>
         </div>
 
-        {midiInputs.length > 0 && (
-          <div className="controls-group">
-            <label className="control-label">MIDI:</label>
-            <select
-              className="midi-select"
-              value={activeInput || ''}
-              onChange={e => onInputChange(e.target.value)}
-            >
-              {midiInputs.map(input => (
-                <option key={input.id} value={input.id}>{input.name}</option>
-              ))}
-            </select>
-          </div>
-        )}
 
-        {midiInputs.length > 0 && (
-          <div className="controls-group">
-            <label className="control-label">Map:</label>
-            <select
-              className="midi-select"
-              value={midiConfigId}
-              onChange={e => onMidiConfigChange(e.target.value)}
-            >
-              {midiConfigs.map(c => (
-                <option key={c.id} value={c.id}>{c.name}</option>
-              ))}
-            </select>
-          </div>
-        )}
-
-        {midiInputs.length === 0 && (
-          <div className="controls-group">
-            <span className="no-midi">No MIDI devices</span>
-          </div>
-        )}
       </div>
-
-      {hasSessionResult && (
-        <div className="session-result">
-          <div className="session-result-header">
-            <span className="session-result-title">Session Complete</span>
-          </div>
-          <div className="session-result-body">
-            <div className="session-result-score">
-              <span className={`score-value ${sessionResult.stats.score >= 80 ? 'good' : sessionResult.stats.score >= 50 ? 'ok' : 'bad'}`}>
-                {sessionResult.stats.score}%
-              </span>
-              <span className="score-label">Accuracy</span>
-            </div>
-            <div className="session-result-stats">
-              <div className="stat">
-                <span className="stat-label">Perfect</span>
-                <span className="stat-value perfect">{sessionResult.stats.perfect}</span>
-              </div>
-              <div className="stat">
-                <span className="stat-label">Good</span>
-                <span className="stat-value good">{sessionResult.stats.good}</span>
-              </div>
-              <div className="stat">
-                <span className="stat-label">Off</span>
-                <span className="stat-value off">{sessionResult.stats.off}</span>
-              </div>
-              <div className="stat">
-                <span className="stat-label">Extra</span>
-                <span className="stat-value miss">{sessionResult.stats.miss}</span>
-              </div>
-              <div className="stat">
-                <span className="stat-label">Missed</span>
-                <span className="stat-value miss">{sessionResult.missedHits ?? 0}</span>
-              </div>
-              <div className="stat">
-                <span className="stat-label">Total</span>
-                <span className="stat-value total">{sessionResult.stats.total}</span>
-              </div>
-            </div>
-          </div>
-          <button className="btn btn-dismiss" onClick={onDismissResult}>Dismiss</button>
-        </div>
-      )}
 
       {trainingMode && !hasSessionResult && (
         <div className="training-stats">
           {accuracyStats ? (
-            <>
+            <div className="stats-box">
               <div className="stat">
                 <span className="stat-label">Accuracy</span>
                 <span className={`stat-value ${accuracyStats.score >= 80 ? 'good' : accuracyStats.score >= 50 ? 'ok' : 'bad'}`}>
@@ -217,12 +169,53 @@ export default function Controls({
                 <span className="stat-label">Total</span>
                 <span className="stat-value total">{accuracyStats.total}</span>
               </div>
-            </>
+            </div>
           ) : (
-            <div className="stat">
+            <div className="stats-box stats-box-empty">
               <span className="stat-label">Waiting for hits...</span>
             </div>
           )}
+        </div>
+      )}
+
+      {hasSessionResult && (
+        <div className="session-overlay" onClick={onDismissResult}>
+          <div className="session-modal" onClick={e => e.stopPropagation()}>
+            <h2 className="session-modal-title">Session Complete</h2>
+            <div className="session-modal-score">
+              <span className={`score-value ${sessionResult.stats.score >= 80 ? 'good' : sessionResult.stats.score >= 50 ? 'ok' : 'bad'}`}>
+                {sessionResult.stats.score}%
+              </span>
+              <span className="score-label">Accuracy</span>
+            </div>
+            <div className="session-modal-stats">
+              <div className="stat">
+                <span className="stat-label">Perfect</span>
+                <span className="stat-value perfect">{sessionResult.stats.perfect}</span>
+              </div>
+              <div className="stat">
+                <span className="stat-label">Good</span>
+                <span className="stat-value good">{sessionResult.stats.good}</span>
+              </div>
+              <div className="stat">
+                <span className="stat-label">Off</span>
+                <span className="stat-value off">{sessionResult.stats.off}</span>
+              </div>
+              <div className="stat">
+                <span className="stat-label">Extra</span>
+                <span className="stat-value miss">{sessionResult.stats.miss}</span>
+              </div>
+              <div className="stat">
+                <span className="stat-label">Missed</span>
+                <span className="stat-value miss">{sessionResult.missedHits ?? 0}</span>
+              </div>
+              <div className="stat">
+                <span className="stat-label">Total</span>
+                <span className="stat-value total">{sessionResult.stats.total}</span>
+              </div>
+            </div>
+            <button className="btn btn-dismiss" onClick={onDismissResult}>Dismiss</button>
+          </div>
         </div>
       )}
 
