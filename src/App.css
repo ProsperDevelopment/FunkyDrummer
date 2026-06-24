@@ -133,7 +133,7 @@
 
 .fullscreen-content .drum-visualizer {
   flex-shrink: 0;
-  max-height: 30vh;
+  max-height: 40vh;
 }
 
 .fullscreen-col {
@@ -141,34 +141,6 @@
   flex-direction: column;
   gap: 8px;
   min-height: 0;
-}
-
-@media (orientation: landscape) {
-  .fullscreen-content {
-    flex-direction: row;
-    gap: 10px;
-    padding: 10px;
-  }
-
-  .fullscreen-content .timeline-container {
-    flex: 3;
-  }
-
-  .fullscreen-col {
-    flex: 1;
-    max-width: 35vw;
-  }
-
-  .fullscreen-col .drum-visualizer {
-    flex: 1;
-    max-height: none;
-    display: flex;
-    align-items: center;
-  }
-
-  .fullscreen-col .drum-visualizer svg {
-    max-height: 90vh;
-  }
 }
 
 @media (max-width: 768px) {

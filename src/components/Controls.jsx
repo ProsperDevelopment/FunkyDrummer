@@ -3,7 +3,7 @@ import './Controls.css';
 
 export default function Controls({
   isPlaying, onTogglePlay, onStop, midiInputs, activeInput, onInputChange, bpm,
-  trainingMode, onTrainingToggle, accuracyStats,
+  trainingMode, onTrainingToggle, accuracyStats, missedHits,
   bpmOverride: _bpmOverride, onBpmChange,
   stopAfterReps, onStopAfterRepsChange, currentLoop,
   sessionResult, onDismissResult,
@@ -170,6 +170,10 @@ export default function Controls({
                 <span className="stat-value miss">{sessionResult.stats.miss}</span>
               </div>
               <div className="stat">
+                <span className="stat-label">Missed</span>
+                <span className="stat-value miss">{sessionResult.missedHits ?? 0}</span>
+              </div>
+              <div className="stat">
                 <span className="stat-label">Total</span>
                 <span className="stat-value total">{sessionResult.stats.total}</span>
               </div>
@@ -204,6 +208,10 @@ export default function Controls({
               <div className="stat">
                 <span className="stat-label">Extra</span>
                 <span className="stat-value miss">{accuracyStats.miss}</span>
+              </div>
+              <div className="stat">
+                <span className="stat-label">Missed</span>
+                <span className="stat-value miss">{missedHits}</span>
               </div>
               <div className="stat">
                 <span className="stat-label">Total</span>
