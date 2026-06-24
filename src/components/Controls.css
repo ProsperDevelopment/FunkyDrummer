@@ -361,37 +361,5 @@
   border-color: #8b5cf6;
 }
 
-.kit-select {
-  padding: 6px 10px;
-  background: #16162a;
-  border: 1px solid #2a2a4a;
-  border-radius: 6px;
-  color: #ccc;
-  font-size: 0.8rem;
-  font-family: inherit;
-  cursor: pointer;
-}
-
-.kit-select:disabled {
-  opacity: 0.5;
-  cursor: wait;
-}
-
-.kit-loading {
-  font-size: 0.7rem;
-  color: #fbbf24;
-  font-style: italic;
-}
-
-.layout-select {
-  padding: 6px 10px;
-  background: #16162a;
-  border: 1px solid #2a2a4a;
-  border-radius: 6px;
-  color: #ccc;
-  font-size: 0.8rem;
-  font-family: inherit;
-  cursor: pointer;
-}
 
 

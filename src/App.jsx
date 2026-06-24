@@ -4,6 +4,8 @@ import PatternMenu from './components/PatternMenu';
 import Controls from './components/Controls';
 import DrumVisualizer from './components/DrumVisualizer';
 import HelpModal from './components/HelpModal';
+import FullscreenControls from './components/FullscreenControls';
+import SettingsModal from './components/SettingsModal';
 import { drumPatterns } from './data/drumPatterns';
 import { useMIDI } from './hooks/useMIDI';
 import { useKeyboard } from './hooks/useKeyboard';
@@ -35,6 +37,7 @@ export default function App() {
   const [showPatterns, setShowPatterns] = useState(true);
   const [showHelp, setShowHelp] = useState(false);
   const [fullscreenMode, setFullscreenMode] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
   const [hihatPedalPressed, setHihatPedalPressedState] = useState(getHihatPedalPressed());
   const midiNoteMap = getNoteMap(midiConfigId);
 
@@ -150,6 +153,14 @@ export default function App() {
     setFullscreenMode(v => !v);
   }, []);
 
+  const handleOpenSettings = useCallback(() => {
+    setShowSettings(true);
+  }, []);
+
+  const handleCloseSettings = useCallback(() => {
+    setShowSettings(false);
+  }, []);
+
   const handleTrainingToggle = useCallback(() => {
     setSessionResult(null);
     setTrainingMode(!trainingMode);
@@ -174,6 +185,13 @@ export default function App() {
           title="Help"
         >
           ?
+        </button>
+        <button
+          className="header-btn settings-btn"
+          onClick={handleOpenSettings}
+          title="Settings"
+        >
+          ⚙
         </button>
         <button
           className="header-btn fullscreen-btn"
@@ -244,6 +262,21 @@ export default function App() {
 
       {fullscreenMode && (
         <div className="fullscreen-overlay">
+          <header className="app-header fullscreen-header">
+            <h1 className="app-title">Funky Drummer</h1>
+            <span className="app-subtitle">Drum Machine & Trainer</span>
+            <div className="header-spacer" />
+            <button
+              className="header-btn settings-btn"
+              onClick={handleOpenSettings}
+              title="Settings"
+            >⚙</button>
+            <button
+              className="header-btn fullscreen-btn"
+              onClick={handleToggleFullscreen}
+              title="Exit fullscreen"
+            >⛶</button>
+          </header>
           <div className="fullscreen-content">
             <Timeline
               pattern={pattern}
@@ -252,14 +285,37 @@ export default function App() {
               userHits={userHits}
               trainingMode={trainingMode}
             />
-            <DrumVisualizer activeDrums={activeDrums} onDrumClick={onDrumHit} layoutId={drumLayoutId} hihatPedalPressed={hihatPedalPressed} onHihatPedalDown={handleHihatPedalDown} onHihatPedalUp={handleHihatPedalUp} />
+            <div className="fullscreen-col">
+              <FullscreenControls
+                isPlaying={playback.isPlaying}
+                onTogglePlay={playback.togglePlay}
+                onStop={playback.stop}
+                bpm={effectiveBpm}
+                onBpmChange={handleBpmChange}
+                metronomeOn={metronomeOn}
+                onToggleMetronome={handleToggleMetronome}
+                drumPlaybackOn={drumPlaybackOn}
+                onToggleDrumPlayback={handleToggleDrumPlayback}
+                trainingMode={trainingMode}
+                onTrainingToggle={handleTrainingToggle}
+              />
+              <DrumVisualizer activeDrums={activeDrums} onDrumClick={onDrumHit} layoutId={drumLayoutId} hihatPedalPressed={hihatPedalPressed} onHihatPedalDown={handleHihatPedalDown} onHihatPedalUp={handleHihatPedalUp} />
+            </div>
           </div>
-          <button className="fullscreen-exit" onClick={handleToggleFullscreen} title="Exit fullscreen">
-            ✕
-          </button>
         </div>
       )}
 
+      {showSettings && (
+        <SettingsModal
+          onClose={handleCloseSettings}
+          activeKitId={activeKitId}
+          onKitChange={handleKitChange}
+          kitBusy={kitBusy}
+          drumLayoutId={drumLayoutId}
+          onLayoutChange={handleLayoutChange}
+          showVisualizer={showVisualizer}
+        />
+      )}
       {showHelp && <HelpModal onClose={() => setShowHelp(false)} />}
     </div>
   );
