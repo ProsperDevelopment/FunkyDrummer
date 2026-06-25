@@ -17,7 +17,7 @@ export default function HelpModal({ onClose }) {
               <tbody>
                 <tr><td>▶ Play / ⏸ Pause</td><td>Start or pause the pattern</td></tr>
                 <tr><td>⏹ Stop</td><td>Stop and reset to the start</td></tr>
-                <tr><td>🚦 Countdown</td><td>Play 4 metronome clicks before the pattern starts</td></tr>
+                <tr><td>🚦 Countdown</td><td>Count in 3…2…1…0 before playback starts</td></tr>
                 <tr><td>🔊 Click</td><td>Toggle metronome click on/off</td></tr>
                 <tr><td>🥁 Pattern On/Off</td><td>Mute or unmute the pattern drums</td></tr>
               </tbody>
@@ -26,7 +26,7 @@ export default function HelpModal({ onClose }) {
 
           <section className="help-section">
             <h3>BPM & Reps</h3>
-            <p>Use the slider or number input to adjust tempo (30–300). Switching patterns resets to the pattern's default BPM.</p>
+            <p>Use the slider or number input to adjust tempo (30–300). Switching patterns or tracks resets to the default BPM for that selection.</p>
             <p>In training mode, set <strong>Reps</strong> to auto-stop after a number of pattern repetitions. A slim progress bar tracks your session progress.</p>
           </section>
 
@@ -95,12 +95,18 @@ export default function HelpModal({ onClose }) {
 
           <section className="help-section">
             <h3>Fullscreen Mode</h3>
-            <p>Click the <strong>⛶</strong> button to enter fullscreen. The timeline, drum visualizer, and training stats fill the entire screen. Controls collapse into a compact header row. Click <strong>⛶</strong> again to exit.</p>
+            <p>Click the <strong>⛶</strong> button to enter fullscreen. The timeline, drum visualizer, and training stats fill the entire screen. Controls collapse into a compact header row with toggle buttons. Click <strong>⛶</strong> again to exit.</p>
           </section>
 
           <section className="help-section">
             <h3>Patterns</h3>
             <p>Browse patterns grouped by style. Use the <strong>style filter</strong> dropdown above the list to show only patterns from a specific genre. Scroll the list to see all available patterns.</p>
+          </section>
+
+          <section className="help-section">
+            <h3>Tracks</h3>
+            <p>Select a track to play a sequence of patterns one after another. Each part repeats a configurable number of times before advancing to the next. The timeline shows a continuous 3-iteration view with the current pattern in the center and upcoming/previous patterns previewed on the sides.</p>
+            <p>BPM can be overridden during track playback using the BPM slider. Training mode works with tracks — accuracy is tracked across all parts and a session summary is shown when the track finishes.</p>
           </section>
 
           <section className="help-section">

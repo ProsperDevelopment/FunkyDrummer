@@ -186,14 +186,14 @@ export default function App() {
     setDrumLayoutId(id);
   }, []);
 
-  const handleHihatPedalDown = useCallback(() => {
-    setHihatPedalPressedState(true);
-    setHihatPedalPressed(true);
+  const handleHihatPedalToggle = useCallback(() => {
+    const next = !getHihatPedalPressed();
+    setHihatPedalPressedState(next);
+    setHihatPedalPressed(next);
   }, []);
 
   const handleHihatPedalUp = useCallback(() => {
-    setHihatPedalPressedState(false);
-    setHihatPedalPressed(false);
+    // release only — no state change
   }, []);
 
   const handleKitChange = useCallback(async (kitId) => {
@@ -351,7 +351,7 @@ export default function App() {
           />
 
           {showVisualizer && (
-            <DrumVisualizer activeDrums={activeDrums} onDrumClick={onDrumHit} layoutId={drumLayoutId} hihatPedalPressed={hihatPedalPressed} onHihatPedalDown={handleHihatPedalDown} onHihatPedalUp={handleHihatPedalUp} />
+            <DrumVisualizer activeDrums={activeDrums} onDrumClick={onDrumHit} layoutId={drumLayoutId} hihatPedalPressed={hihatPedalPressed} onHihatPedalDown={handleHihatPedalToggle} onHihatPedalUp={handleHihatPedalUp} />
           )}
         </main>
       </div>
@@ -442,7 +442,7 @@ export default function App() {
               trainingMode={trainingMode}
               compact={true}
             />
-            <DrumVisualizer activeDrums={activeDrums} onDrumClick={onDrumHit} layoutId={drumLayoutId} hihatPedalPressed={hihatPedalPressed} onHihatPedalDown={handleHihatPedalDown} onHihatPedalUp={handleHihatPedalUp} />
+            <DrumVisualizer activeDrums={activeDrums} onDrumClick={onDrumHit} layoutId={drumLayoutId} hihatPedalPressed={hihatPedalPressed} onHihatPedalDown={handleHihatPedalToggle} onHihatPedalUp={handleHihatPedalUp} />
           </div>
         </div>
       )}
