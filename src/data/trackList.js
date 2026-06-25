@@ -2,6 +2,7 @@ export const trackList = [
   {
     id: 'basic-to-funk',
     name: 'Rock to Funk',
+    style: 'Rock',
     bpm: 110,
     parts: [
       { patternId: 'basic-rock', repeats: 4 },
@@ -14,6 +15,7 @@ export const trackList = [
   {
     id: 'groove-essentials',
     name: 'Groove Essentials',
+    style: 'Funk',
     bpm: 110,
     parts: [
       { patternId: 'funk', repeats: 4 },
@@ -26,6 +28,7 @@ export const trackList = [
   {
     id: 'speed-builder',
     name: 'Speed Builder',
+    style: 'Metal',
     bpm: 140,
     parts: [
       { patternId: 'basic-rock', repeats: 2 },
@@ -38,6 +41,7 @@ export const trackList = [
   {
     id: 'break-beat-journey',
     name: 'Break Beat Journey',
+    style: 'Breakbeat',
     bpm: 120,
     parts: [
       { patternId: 'hot-pants', repeats: 2 },
@@ -51,6 +55,7 @@ export const trackList = [
   {
     id: 'odd-meters',
     name: 'Odd Meters',
+    style: 'Jazz',
     bpm: 110,
     parts: [
       { patternId: 'half-time', repeats: 4 },
@@ -63,6 +68,7 @@ export const trackList = [
   {
     id: 'world-beats',
     name: 'World Beats',
+    style: 'World',
     bpm: 105,
     parts: [
       { patternId: 'reggae', repeats: 4 },
@@ -75,6 +81,7 @@ export const trackList = [
   {
     id: 'electronic-run',
     name: 'Electronic Run',
+    style: 'Electronic',
     bpm: 128,
     parts: [
       { patternId: 'house', repeats: 4 },
@@ -87,6 +94,7 @@ export const trackList = [
   {
     id: 'fill-practice',
     name: 'Fill Practice',
+    style: 'Rock',
     bpm: 100,
     parts: [
       { patternId: 'basic-rock', repeats: 4 },
@@ -99,6 +107,7 @@ export const trackList = [
   {
     id: 'build-up',
     name: 'Build Up',
+    style: 'Rock',
     bpm: 120,
     parts: [
       { patternId: 'kick-only', repeats: 2 },
@@ -112,6 +121,7 @@ export const trackList = [
   {
     id: 'punk-to-metal',
     name: 'Punk to Metal',
+    style: 'Punk',
     bpm: 160,
     parts: [
       { patternId: 'punk', repeats: 4 },
@@ -120,5 +130,242 @@ export const trackList = [
       { patternId: 'metal', repeats: 4 },
     ],
     description: 'High-energy punk and metal patterns at 160 BPM',
+  },
+  {
+    id: 'practice-fundamentals',
+    name: 'Practice Fundamentals',
+    style: 'Practice',
+    bpm: 80,
+    parts: [
+      { patternId: 'quarter-notes', repeats: 4 },
+      { patternId: 'eighth-kick', repeats: 4 },
+      { patternId: 'slow-rock', repeats: 4 },
+      { patternId: 'kick-variations', repeats: 4 },
+    ],
+    description: 'Builds from quarter notes through eighth notes to full rock variations',
+  },
+  {
+    id: 'limb-control',
+    name: 'Limb Control',
+    style: 'Practice',
+    bpm: 90,
+    parts: [
+      { patternId: 'snare-accents', repeats: 4 },
+      { patternId: 'hihat-control', repeats: 4 },
+      { patternId: 'ride-practice', repeats: 4 },
+      { patternId: 'shuffle-easy', repeats: 4 },
+    ],
+    description: 'Focuses on snare dynamics, hi-hat technique, ride cymbal, and shuffle feel',
+  },
+  {
+    id: 'funky-breakbeat',
+    name: 'Funky Breakbeat',
+    style: 'Funk',
+    bpm: 100,
+    parts: [
+      { patternId: 'funk', repeats: 4 },
+      { patternId: 'funky-drummer', repeats: 2 },
+      { patternId: 'funk-2', repeats: 4 },
+      { patternId: 'funky-drummer', repeats: 2 },
+    ],
+    description: 'Deep funk and breakbeat grooves for building pocket',
+  },
+  {
+    id: 'jazz-standards',
+    name: 'Jazz Standards',
+    style: 'Jazz',
+    bpm: 120,
+    parts: [
+      { patternId: 'jazz', repeats: 4 },
+      { patternId: 'swing', repeats: 4 },
+      { patternId: 'two-step', repeats: 4 },
+      { patternId: 'half-time', repeats: 4 },
+    ],
+    description: 'Classic jazz, swing, and two-step feels',
+  },
+  {
+    id: 'hip-hop-flow',
+    name: 'Hip Hop Flow',
+    style: 'Hip Hop',
+    bpm: 95,
+    parts: [
+      { patternId: 'hiphop', repeats: 4 },
+      { patternId: 'half-time', repeats: 2 },
+      { patternId: 'hiphop', repeats: 4 },
+      { patternId: 'basic-rock', repeats: 2 },
+    ],
+    description: 'Laid-back hip hop grooves with half-time feel',
+  },
+  {
+    id: 'latin-heat',
+    name: 'Latin Heat',
+    style: 'Latin',
+    bpm: 110,
+    parts: [
+      { patternId: 'reggaeton', repeats: 4 },
+      { patternId: 'tribal', repeats: 4 },
+      { patternId: 'reggaeton', repeats: 4 },
+      { patternId: 'drum-bass', repeats: 2 },
+    ],
+    description: 'Reggaeton, tribal, and Latin-infused rhythms',
+  },
+  {
+    id: 'blues-shuffle',
+    name: 'Blues Shuffle',
+    style: 'Blues',
+    bpm: 90,
+    parts: [
+      { patternId: 'blues', repeats: 4 },
+      { patternId: 'shuffle-easy', repeats: 2 },
+      { patternId: 'blues', repeats: 4 },
+      { patternId: 'swing', repeats: 2 },
+    ],
+    description: 'Blues grooves with easy shuffle and swing feels',
+  },
+  {
+    id: 'disco-fever',
+    name: 'Disco Fever',
+    style: 'Funk',
+    bpm: 120,
+    parts: [
+      { patternId: 'disco', repeats: 4 },
+      { patternId: 'funk', repeats: 2 },
+      { patternId: 'disco', repeats: 4 },
+      { patternId: 'funky-drummer', repeats: 2 },
+    ],
+    description: 'Four-on-the-floor disco with funk flavor',
+  },
+  {
+    id: 'dub-and-bass',
+    name: 'Dub & Bass',
+    style: 'Electronic',
+    bpm: 140,
+    parts: [
+      { patternId: 'drum-bass', repeats: 4 },
+      { patternId: 'uk-garage', repeats: 2 },
+      { patternId: 'drum-bass', repeats: 4 },
+      { patternId: 'house', repeats: 2 },
+    ],
+    description: 'Heavy drum & bass alternating with UK garage',
+  },
+  {
+    id: 'rock-endurance',
+    name: 'Rock Endurance',
+    style: 'Rock',
+    bpm: 120,
+    parts: [
+      { patternId: 'basic-rock', repeats: 4 },
+      { patternId: 'easy-rock', repeats: 4 },
+      { patternId: 'basic-rock', repeats: 4 },
+      { patternId: 'punk', repeats: 2 },
+      { patternId: 'basic-rock', repeats: 4 },
+    ],
+    description: 'Long-form rock workout to build stamina',
+  },
+  {
+    id: 'metal-blast',
+    name: 'Metal Blast',
+    style: 'Metal',
+    bpm: 180,
+    parts: [
+      { patternId: 'metal', repeats: 4 },
+      { patternId: 'punk', repeats: 2 },
+      { patternId: 'metal', repeats: 4 },
+      { patternId: 'basic-rock', repeats: 2 },
+    ],
+    description: 'High-speed metal patterns at 180 BPM',
+  },
+  {
+    id: 'beginner-basics',
+    name: 'Beginner Basics',
+    style: 'Practice',
+    bpm: 70,
+    parts: [
+      { patternId: 'kick-only', repeats: 2 },
+      { patternId: 'kick-snare', repeats: 2 },
+      { patternId: 'easy-rock', repeats: 4 },
+      { patternId: 'quarter-notes', repeats: 2 },
+    ],
+    description: 'Start here — builds coordination from the ground up',
+  },
+  {
+    id: 'electronic-exploration',
+    name: 'Electronic Exploration',
+    style: 'Electronic',
+    bpm: 130,
+    parts: [
+      { patternId: 'house', repeats: 4 },
+      { patternId: 'drum-bass', repeats: 4 },
+      { patternId: 'uk-garage', repeats: 4 },
+      { patternId: 'disco', repeats: 4 },
+      { patternId: 'drum-bass', repeats: 4 },
+    ],
+    description: 'A journey through house, D&B, UK garage, and disco',
+  },
+  {
+    id: 'practice-accents',
+    name: 'Practice Accents',
+    style: 'Practice',
+    bpm: 80,
+    parts: [
+      { patternId: 'snare-accents', repeats: 4 },
+      { patternId: 'hihat-control', repeats: 4 },
+      { patternId: 'ride-practice', repeats: 2 },
+      { patternId: 'shuffle-easy', repeats: 2 },
+    ],
+    description: 'Snare dynamics, hi-hat control, and ride cymbal technique',
+  },
+  {
+    id: 'breakbeat-fusion',
+    name: 'Breakbeat Fusion',
+    style: 'Breakbeat',
+    bpm: 130,
+    parts: [
+      { patternId: 'amen-break', repeats: 4 },
+      { patternId: 'think-break', repeats: 2 },
+      { patternId: 'hot-pants', repeats: 2 },
+      { patternId: 'amen-break', repeats: 4 },
+      { patternId: 'funk', repeats: 2 },
+    ],
+    description: 'Classic breakbeats with a funk twist',
+  },
+  {
+    id: 'world-fusion',
+    name: 'World Fusion',
+    style: 'World',
+    bpm: 100,
+    parts: [
+      { patternId: 'reggae', repeats: 4 },
+      { patternId: 'tribal', repeats: 4 },
+      { patternId: 'reggaeton', repeats: 2 },
+      { patternId: 'reggae', repeats: 4 },
+    ],
+    description: 'Reggae, tribal, and Latin rhythms in one set',
+  },
+  {
+    id: 'techno-run',
+    name: 'Techno Run',
+    style: 'Techno',
+    bpm: 130,
+    parts: [
+      { patternId: 'techno', repeats: 4 },
+      { patternId: 'techno-dark', repeats: 4 },
+      { patternId: 'techno', repeats: 4 },
+      { patternId: 'house', repeats: 2 },
+    ],
+    description: 'Driving techno alternating dark and classic vibes',
+  },
+  {
+    id: 'electro-grooves',
+    name: 'Electro Grooves',
+    style: 'Electro',
+    bpm: 115,
+    parts: [
+      { patternId: 'electro', repeats: 4 },
+      { patternId: 'electro-funk', repeats: 4 },
+      { patternId: 'electro', repeats: 2 },
+      { patternId: 'electro-funk', repeats: 2 },
+    ],
+    description: 'Electro and electro-funk grooves',
   },
 ];

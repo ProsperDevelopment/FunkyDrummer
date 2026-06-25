@@ -20,34 +20,12 @@
   letter-spacing: 0.5px;
 }
 
-.style-filter-row {
-  margin-bottom: 8px;
-}
-
-.style-select {
-  width: 100%;
-  padding: 6px 8px;
-  background: #16162a;
-  border: 1px solid #2a2a4a;
-  border-radius: 6px;
-  color: #aaa;
-  font-size: 0.78rem;
-  font-family: inherit;
-  cursor: pointer;
-  outline: none;
-}
-
-.style-select:focus {
-  border-color: #8b5cf6;
-}
-
 .pattern-list {
   display: flex;
   flex-direction: column;
   gap: 4px;
   overflow-y: auto;
   overflow-x: hidden;
-  max-height: 360px;
 }
 
 .style-group-header {

@@ -1,0 +1,79 @@
+.style-filter {
+  position: relative;
+}
+
+.style-filter-btn {
+  background: #16162a;
+  border: 1px solid #2a2a4a;
+  color: #888;
+  padding: 6px 10px;
+  border-radius: 5px;
+  font-size: 0.9rem;
+  line-height: 1;
+  font-family: inherit;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s;
+  position: relative;
+}
+
+.style-filter-badge {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  background: #8b5cf6;
+  color: #fff;
+  font-size: 0.5rem;
+  font-weight: 700;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.style-filter-btn:hover {
+  border-color: #3a3a6a;
+  color: #aaa;
+}
+
+.style-filter-popup {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  z-index: 10;
+  background: #1a1a2e;
+  border: 1px solid #2a2a4a;
+  border-radius: 8px;
+  padding: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  width: 200px;
+  margin-top: 4px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+}
+
+.style-filter-option {
+  background: #16162a;
+  border: 1px solid #2a2a4a;
+  color: #777;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.68rem;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.style-filter-option:hover {
+  border-color: #3a3a6a;
+  color: #aaa;
+}
+
+.style-filter-option.on {
+  background: #2a1a3e;
+  border-color: #8b5cf6;
+  color: #c4b5fd;
+}
