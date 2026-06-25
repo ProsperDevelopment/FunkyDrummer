@@ -19,16 +19,16 @@ function handlePointerDown(id, onDrumClick, e) {
   onDrumClick?.(id);
 }
 
-function handlePedalDown(onHihatPedalDown, e) {
+function handlePedalToggle(onHihatPedalDown, e) {
   e.preventDefault();
   e.target.setPointerCapture(e.pointerId);
   setUserPressingPedal(true);
   onHihatPedalDown?.();
 }
 
-function handlePedalUp(onHihatPedalUp, e) {
+function handlePedalRelease(e) {
+  e.target.releasePointerCapture(e.pointerId);
   setUserPressingPedal(false);
-  onHihatPedalUp?.();
 }
 
 export default function DrumVisualizer({ activeDrums, onDrumClick, layoutId, hihatPedalPressed, onHihatPedalDown, onHihatPedalUp }) {
@@ -99,10 +99,10 @@ export default function DrumVisualizer({ activeDrums, onDrumClick, layoutId, hih
           opacity={pedalActive.active ? 1 : 0.7}
           className="drum-piece"
           style={{ cursor: 'pointer', touchAction: 'none' }}
-          onPointerDown={(e) => handlePedalDown(onHihatPedalDown, e)}
-          onPointerUp={(e) => handlePedalUp(onHihatPedalUp, e)}
-          onPointerCancel={(e) => handlePedalUp(onHihatPedalUp, e)}
-          onPointerLeave={(e) => handlePedalUp(onHihatPedalUp, e)}
+          onPointerDown={(e) => handlePedalToggle(onHihatPedalDown, e)}
+          onPointerUp={(e) => handlePedalRelease(e)}
+          onPointerCancel={(e) => handlePedalRelease(e)}
+          onPointerLeave={(e) => handlePedalRelease(e)}
         />
         <text
           x={pedalCx} y={pedalCy}
