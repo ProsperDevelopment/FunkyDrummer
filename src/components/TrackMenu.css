@@ -10,7 +10,15 @@
   gap: 4px;
   overflow-y: auto;
   overflow-x: hidden;
-  max-height: 320px;
+}
+
+.style-group-header {
+  font-size: 0.65rem;
+  color: #6a6a8a;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  padding: 8px 4px 4px;
+  font-weight: 600;
 }
 
 .track-item {

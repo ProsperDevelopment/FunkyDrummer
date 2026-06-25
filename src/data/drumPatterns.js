@@ -973,6 +973,579 @@ export const drumPatterns = [
     }
   },
   {
+    id: 'quarter-notes',
+    name: 'Quarter Notes',
+    style: "Practice",
+    desc: "Kick on every quarter note, snare on 2 & 4 — the simplest possible beat to build coordination",
+    groove: [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    bpm: 80,
+    ...grid(2,
+      ['kick',  [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+      ['snare', [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+    ),
+    rebuild() {
+      const m = this.measures, steps = m * 16;
+      this.grid.kick = new Array(steps).fill(0);
+      this.grid.snare = new Array(steps).fill(0);
+      for (let i = 0; i < m; i++) {
+        const o = i * 16;
+        this.grid.kick[o + 0] = 1.0;
+        this.grid.kick[o + 4] = 0.8;
+        this.grid.kick[o + 8] = 1.0;
+        this.grid.kick[o + 12] = 0.8;
+        this.grid.snare[o + 4] = 1.0;
+        this.grid.snare[o + 12] = 1.0;
+      }
+      return this;
+    }
+  },
+  {
+    id: 'eighth-kick',
+    name: 'Eighth Note Kick',
+    style: "Practice",
+    desc: "Kick on every eighth note with snare backbeats — builds stamina and limb independence",
+    groove: [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    bpm: 90,
+    ...grid(2,
+      ['kick',  [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+      ['snare', [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+    ),
+    rebuild() {
+      const m = this.measures, steps = m * 16;
+      this.grid.kick = new Array(steps).fill(0);
+      this.grid.snare = new Array(steps).fill(0);
+      for (let i = 0; i < m; i++) {
+        const o = i * 16;
+        for (let j = 0; j < 16; j += 2) this.grid.kick[o + j] = 0.8;
+        this.grid.snare[o + 4] = 1.0;
+        this.grid.snare[o + 12] = 1.0;
+      }
+      return this;
+    }
+  },
+  {
+    id: 'kick-variations',
+    name: 'Kick Variations',
+    style: "Practice",
+    desc: "Simple rock pattern but the kick changes every measure — trains you to listen and adapt",
+    groove: [0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2],
+    bpm: 100,
+    ...grid(2,
+      ['kick',  [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+      ['snare', [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+      ['hihat', [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+    ),
+    rebuild() {
+      const m = this.measures, steps = m * 16;
+      this.grid.kick = new Array(steps).fill(0);
+      this.grid.snare = new Array(steps).fill(0);
+      this.grid.hihat = new Array(steps).fill(0);
+      for (let i = 0; i < m; i++) {
+        const o = i * 16;
+        this.grid.snare[o + 4] = 1.0;
+        this.grid.snare[o + 12] = 1.0;
+        for (let j = 0; j < 16; j += 2) this.grid.hihat[o + j] = 0.5;
+        if (i % 2 === 0) {
+          this.grid.kick[o + 0] = 0.9;
+          this.grid.kick[o + 4] = 0.7;
+          this.grid.kick[o + 8] = 0.9;
+          this.grid.kick[o + 10] = 0.5;
+        } else {
+          this.grid.kick[o + 0] = 0.9;
+          this.grid.kick[o + 6] = 0.6;
+          this.grid.kick[o + 8] = 0.8;
+          this.grid.kick[o + 14] = 0.6;
+        }
+      }
+      return this;
+    }
+  },
+  {
+    id: 'snare-accents',
+    name: 'Snare Accents',
+    style: "Practice",
+    desc: "Focus on snare dynamics — ghost notes and accented backbeats over steady kick and hi-hat",
+    groove: [0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2],
+    bpm: 90,
+    ...grid(2,
+      ['kick',  [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+      ['snare', [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+      ['hihat', [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+    ),
+    rebuild() {
+      const m = this.measures, steps = m * 16;
+      this.grid.kick = new Array(steps).fill(0);
+      this.grid.snare = new Array(steps).fill(0);
+      this.grid.hihat = new Array(steps).fill(0);
+      for (let i = 0; i < m; i++) {
+        const o = i * 16;
+        this.grid.kick[o + 0] = 0.9;
+        this.grid.kick[o + 8] = 0.9;
+        for (let j = 0; j < 16; j += 2) this.grid.hihat[o + j] = 0.5;
+        this.grid.snare[o + 4] = 1.0;
+        this.grid.snare[o + 8] = 0.3;
+        this.grid.snare[o + 12] = 1.0;
+        this.grid.snare[o + 14] = 0.2;
+      }
+      return this;
+    }
+  },
+  {
+    id: 'hihat-control',
+    name: 'Hi-Hat Control',
+    style: "Practice",
+    desc: "Steady kick and snare with varied hi-hat patterns — open and closed combinations",
+    groove: [0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2],
+    bpm: 100,
+    ...grid(2,
+      ['kick',  [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+      ['snare', [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+      ['hihat', [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+      ['hihatOpen', [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+    ),
+    rebuild() {
+      const m = this.measures, steps = m * 16;
+      this.grid.kick = new Array(steps).fill(0);
+      this.grid.snare = new Array(steps).fill(0);
+      this.grid.hihat = new Array(steps).fill(0);
+      this.grid.hihatOpen = new Array(steps).fill(0);
+      for (let i = 0; i < m; i++) {
+        const o = i * 16;
+        this.grid.kick[o + 0] = 0.9;
+        this.grid.kick[o + 4] = 0.7;
+        this.grid.kick[o + 8] = 0.9;
+        this.grid.kick[o + 12] = 0.7;
+        this.grid.snare[o + 4] = 1.0;
+        this.grid.snare[o + 12] = 1.0;
+        if (i % 2 === 0) {
+          for (let j = 0; j < 16; j += 2) this.grid.hihat[o + j] = 0.5;
+          this.grid.hihatOpen[o + 11] = 0.6;
+          this.grid.hihatOpen[o + 15] = 0.6;
+        } else {
+          this.grid.hihat[o + 0] = 0.5;
+          this.grid.hihat[o + 2] = 0.5;
+          this.grid.hihat[o + 4] = 0.5;
+          this.grid.hihat[o + 6] = 0.5;
+          this.grid.hihat[o + 8] = 0.5;
+          this.grid.hihat[o + 10] = 0.5;
+          this.grid.hihat[o + 12] = 0.5;
+          this.grid.hihat[o + 14] = 0.5;
+          this.grid.hihatOpen[o + 7] = 0.5;
+          this.grid.hihatOpen[o + 15] = 0.5;
+        }
+      }
+      return this;
+    }
+  },
+  {
+    id: 'slow-rock',
+    name: 'Slow Rock',
+    style: "Practice",
+    desc: "A very slow rock beat at 60 BPM — perfect for beginners learning to coordinate all four limbs",
+    groove: [0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2],
+    bpm: 60,
+    ...grid(2,
+      ['kick',  [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+      ['snare', [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+      ['hihat', [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+    ),
+    rebuild() {
+      const m = this.measures, steps = m * 16;
+      this.grid.kick = new Array(steps).fill(0);
+      this.grid.snare = new Array(steps).fill(0);
+      this.grid.hihat = new Array(steps).fill(0);
+      for (let i = 0; i < m; i++) {
+        const o = i * 16;
+        this.grid.kick[o + 0] = 1.0;
+        this.grid.kick[o + 8] = 0.9;
+        this.grid.snare[o + 4] = 1.0;
+        this.grid.snare[o + 12] = 1.0;
+        for (let j = 0; j < 16; j += 2) this.grid.hihat[o + j] = 0.6;
+      }
+      return this;
+    }
+  },
+  {
+    id: 'ride-practice',
+    name: 'Ride Practice',
+    style: "Practice",
+    desc: "Basic rock beat using the ride cymbal instead of hi-hat — essential for jazz and swing styles",
+    groove: [0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2],
+    bpm: 90,
+    ...grid(2,
+      ['kick',  [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+      ['snare', [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+      ['ride',  [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+    ),
+    rebuild() {
+      const m = this.measures, steps = m * 16;
+      this.grid.kick = new Array(steps).fill(0);
+      this.grid.snare = new Array(steps).fill(0);
+      this.grid.ride = new Array(steps).fill(0);
+      for (let i = 0; i < m; i++) {
+        const o = i * 16;
+        this.grid.kick[o + 0] = 0.9;
+        this.grid.kick[o + 8] = 0.9;
+        this.grid.snare[o + 4] = 1.0;
+        this.grid.snare[o + 12] = 1.0;
+        for (let j = 0; j < 16; j += 2) this.grid.ride[o + j] = 0.6;
+      }
+      return this;
+    }
+  },
+  {
+    id: 'shuffle-easy',
+    name: 'Easy Shuffle',
+    style: "Practice",
+    desc: "A simplified half-time shuffle at a comfortable tempo — triplet feel without the complexity",
+    groove: [0,0,4,0,0,0,4,0,0,0,4,0,0,0,4,0],
+    bpm: 70,
+    ...grid(2,
+      ['kick',  [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+      ['snare', [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+      ['hihat', [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+    ),
+    rebuild() {
+      const m = this.measures, steps = m * 16;
+      this.grid.kick = new Array(steps).fill(0);
+      this.grid.snare = new Array(steps).fill(0);
+      this.grid.hihat = new Array(steps).fill(0);
+      for (let i = 0; i < m; i++) {
+        const o = i * 16;
+        this.grid.kick[o + 0] = 0.9;
+        this.grid.kick[o + 12] = 0.8;
+        this.grid.snare[o + 8] = 1.0;
+        for (let j = 0; j < 16; j += 4) {
+          this.grid.hihat[o + j] = 0.5;
+          this.grid.hihat[o + j + 2] = 0.3;
+        }
+      }
+      return this;
+    }
+  },
+  {
+    id: 'boom-bap',
+    name: 'Boom Bap',
+    style: "Hip Hop",
+    desc: "Classic 90s boom bap — hard kick on 1, snare on 2 & 4, with swung hi-hats and open hats for accent",
+    groove: [0,4,0,4,0,4,0,4,0,4,0,4,0,4,0,4],
+    bpm: 90,
+    ...grid(2,
+      ['kick',  [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+      ['snare', [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+      ['hihat', [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+      ['hihatOpen', [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+    ),
+    rebuild() {
+      const m = this.measures;
+      const steps = m * 16;
+      this.grid.kick = new Array(steps).fill(0);
+      this.grid.snare = new Array(steps).fill(0);
+      this.grid.hihat = new Array(steps).fill(0);
+      this.grid.hihatOpen = new Array(steps).fill(0);
+      for (let i = 0; i < m; i++) {
+        const o = i * 16;
+        this.grid.kick[o + 0] = 1.0;
+        this.grid.kick[o + 8] = 0.9;
+        this.grid.kick[o + 11] = 0.6;
+        this.grid.snare[o + 4] = 1.0;
+        this.grid.snare[o + 12] = 1.0;
+        for (let j = 0; j < 16; j += 2) {
+          this.grid.hihat[o + j] = 0.3;
+        }
+        this.grid.hihat[o + 4] = 0.5;
+        this.grid.hihatOpen[o + 7] = 0.5;
+        this.grid.hihatOpen[o + 15] = 0.4;
+      }
+      return this;
+    }
+  },
+  {
+    id: 'trap',
+    name: 'Trap',
+    style: "Hip Hop",
+    desc: "Modern trap beat with rolling 16th-note hi-hats, heavy kick with rapid doubles, and snare on 3",
+    groove: [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    bpm: 140,
+    ...grid(2,
+      ['kick',  [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+      ['snare', [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+      ['hihat', [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+      ['hihatOpen', [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+    ),
+    rebuild() {
+      const m = this.measures;
+      const steps = m * 16;
+      this.grid.kick = new Array(steps).fill(0);
+      this.grid.snare = new Array(steps).fill(0);
+      this.grid.hihat = new Array(steps).fill(0);
+      this.grid.hihatOpen = new Array(steps).fill(0);
+      for (let i = 0; i < m; i++) {
+        const o = i * 16;
+        this.grid.kick[o + 0] = 1.0;
+        this.grid.kick[o + 2] = 0.8;
+        this.grid.kick[o + 12] = 0.9;
+        this.grid.kick[o + 14] = 0.7;
+        this.grid.snare[o + 8] = 1.0;
+        for (let j = 0; j < 16; j++) {
+          this.grid.hihat[o + j] = 0.2;
+        }
+        this.grid.hihat[o + 0] = 0.4;
+        this.grid.hihat[o + 8] = 0.4;
+        this.grid.hihatOpen[o + 13] = 0.5;
+        this.grid.hihatOpen[o + 15] = 0.5;
+      }
+      return this;
+    }
+  },
+  {
+    id: 'lo-fi',
+    name: 'Lo-Fi',
+    style: "Hip Hop",
+    desc: "Chilled lo-fi hip-hop with soft kick, brushed snare, and gentle hi-hats — perfect for relaxing practice",
+    groove: [0,3,0,3,0,3,0,3,0,3,0,3,0,3,0,3],
+    bpm: 75,
+    ...grid(2,
+      ['kick',  [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+      ['snare', [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+      ['hihat', [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+    ),
+    rebuild() {
+      const m = this.measures;
+      const steps = m * 16;
+      this.grid.kick = new Array(steps).fill(0);
+      this.grid.snare = new Array(steps).fill(0);
+      this.grid.hihat = new Array(steps).fill(0);
+      for (let i = 0; i < m; i++) {
+        const o = i * 16;
+        this.grid.kick[o + 0] = 0.9;
+        this.grid.kick[o + 8] = 0.8;
+        this.grid.snare[o + 4] = 0.8;
+        this.grid.snare[o + 12] = 0.8;
+        for (let j = 0; j < 16; j += 3) {
+          this.grid.hihat[o + j] = 0.2;
+        }
+        this.grid.hihat[o + 2] = 0.15;
+        this.grid.hihat[o + 6] = 0.15;
+      }
+      return this;
+    }
+  },
+  {
+    id: 'west-coast',
+    name: 'West Coast',
+    style: "Hip Hop",
+    desc: "G-funk inspired groove with syncopated kick, laid-back snare, and a swaggering hi-hat pattern",
+    groove: [0,5,0,3,0,5,0,3,0,5,0,3,0,5,0,3],
+    bpm: 92,
+    ...grid(2,
+      ['kick',  [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+      ['snare', [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+      ['hihat', [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+      ['hihatOpen', [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+    ),
+    rebuild() {
+      const m = this.measures;
+      const steps = m * 16;
+      this.grid.kick = new Array(steps).fill(0);
+      this.grid.snare = new Array(steps).fill(0);
+      this.grid.hihat = new Array(steps).fill(0);
+      this.grid.hihatOpen = new Array(steps).fill(0);
+      for (let i = 0; i < m; i++) {
+        const o = i * 16;
+        this.grid.kick[o + 0] = 1.0;
+        this.grid.kick[o + 4] = 0.7;
+        this.grid.kick[o + 11] = 0.8;
+        this.grid.snare[o + 4] = 1.0;
+        this.grid.snare[o + 12] = 1.0;
+        for (let j = 0; j < 16; j += 2) {
+          this.grid.hihat[o + j] = 0.35;
+        }
+        this.grid.hihat[o + 6] = 0.5;
+        this.grid.hihatOpen[o + 9] = 0.5;
+        this.grid.hihatOpen[o + 15] = 0.3;
+      }
+      return this;
+    }
+  },
+  {
+    id: 'dilla-swing',
+    name: 'Dilla Swing',
+    style: "Hip Hop",
+    desc: "J Dilla-inspired off-kilter groove with displaced kick placements, late snare, and lazy hi-hats",
+    groove: [0,6,0,5,0,6,0,5,0,6,0,5,0,6,0,5],
+    bpm: 88,
+    ...grid(2,
+      ['kick',  [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+      ['snare', [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+      ['hihat', [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+      ['hihatOpen', [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+    ),
+    rebuild() {
+      const m = this.measures;
+      const steps = m * 16;
+      this.grid.kick = new Array(steps).fill(0);
+      this.grid.snare = new Array(steps).fill(0);
+      this.grid.hihat = new Array(steps).fill(0);
+      this.grid.hihatOpen = new Array(steps).fill(0);
+      for (let i = 0; i < m; i++) {
+        const o = i * 16;
+        this.grid.kick[o + 0] = 1.0;
+        this.grid.kick[o + 3] = 0.7;
+        this.grid.kick[o + 7] = 0.6;
+        this.grid.kick[o + 12] = 0.9;
+        this.grid.snare[o + 5] = 0.9;
+        this.grid.snare[o + 13] = 0.9;
+        for (let j = 0; j < 16; j += 4) {
+          this.grid.hihat[o + j] = 0.3;
+          this.grid.hihat[o + j + 1] = 0.15;
+        }
+        this.grid.hihatOpen[o + 10] = 0.4;
+      }
+      return this;
+    }
+  },
+  {
+    id: 'techno',
+    name: 'Techno',
+    style: "Techno",
+    desc: "Driving four-on-the-floor kick with closed hi-hat on every eighth and snare/rimshot accents for a classic warehouse vibe",
+    groove: [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    bpm: 130,
+    ...grid(2,
+      ['kick',  [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+      ['hihat', [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+      ['snare', [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+      ['hihatOpen', [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+    ),
+    rebuild() {
+      const m = this.measures;
+      const steps = m * 16;
+      this.grid.kick = new Array(steps).fill(0);
+      this.grid.hihat = new Array(steps).fill(0);
+      this.grid.snare = new Array(steps).fill(0);
+      this.grid.hihatOpen = new Array(steps).fill(0);
+      for (let i = 0; i < m; i++) {
+        const o = i * 16;
+        for (let j = 0; j < 16; j += 4) this.grid.kick[o + j] = 1.0;
+        for (let j = 0; j < 16; j += 2) this.grid.hihat[o + j] = 0.3;
+        this.grid.snare[o + 4] = 0.7;
+        this.grid.snare[o + 12] = 0.7;
+        this.grid.hihatOpen[o + 11] = 0.4;
+        this.grid.hihatOpen[o + 15] = 0.4;
+      }
+      return this;
+    }
+  },
+  {
+    id: 'techno-dark',
+    name: 'Dark Techno',
+    style: "Techno",
+    desc: "Minimal dark techno with off-beat open hi-hats, delayed snare hits, and a pulsing kick foundation",
+    groove: [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    bpm: 128,
+    ...grid(2,
+      ['kick',  [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+      ['hihat', [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+      ['snare', [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+      ['hihatOpen', [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+      ['ride',  [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+    ),
+    rebuild() {
+      const m = this.measures;
+      const steps = m * 16;
+      this.grid.kick = new Array(steps).fill(0);
+      this.grid.hihat = new Array(steps).fill(0);
+      this.grid.snare = new Array(steps).fill(0);
+      this.grid.hihatOpen = new Array(steps).fill(0);
+      this.grid.ride = new Array(steps).fill(0);
+      for (let i = 0; i < m; i++) {
+        const o = i * 16;
+        for (let j = 0; j < 16; j += 4) this.grid.kick[o + j] = 1.0;
+        this.grid.kick[o + 2] = 0.6;
+        this.grid.hihat[o + 0] = 0.2;
+        this.grid.hihat[o + 4] = 0.2;
+        this.grid.hihat[o + 8] = 0.2;
+        this.grid.hihat[o + 12] = 0.2;
+        this.grid.hihatOpen[o + 6] = 0.5;
+        this.grid.hihatOpen[o + 14] = 0.5;
+        this.grid.snare[o + 5] = 0.7;
+        this.grid.snare[o + 13] = 0.7;
+        this.grid.ride[o + 10] = 0.4;
+      }
+      return this;
+    }
+  },
+  {
+    id: 'electro',
+    name: 'Electro',
+    style: "Electro",
+    desc: "Classic electro beat with syncopated kick pattern, crisp snare on 2 & 4, and robotic open hi-hat",
+    groove: [0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2],
+    bpm: 125,
+    ...grid(2,
+      ['kick',  [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+      ['snare', [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+      ['hihat', [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+    ),
+    rebuild() {
+      const m = this.measures;
+      const steps = m * 16;
+      this.grid.kick = new Array(steps).fill(0);
+      this.grid.snare = new Array(steps).fill(0);
+      this.grid.hihat = new Array(steps).fill(0);
+      for (let i = 0; i < m; i++) {
+        const o = i * 16;
+        this.grid.kick[o + 0] = 1.0;
+        this.grid.kick[o + 4] = 0.7;
+        this.grid.kick[o + 8] = 0.9;
+        this.grid.kick[o + 10] = 0.8;
+        this.grid.kick[o + 12] = 0.6;
+        this.grid.snare[o + 4] = 1.0;
+        this.grid.snare[o + 12] = 1.0;
+        for (let j = 0; j < 16; j += 2) this.grid.hihat[o + j] = 0.3;
+        this.grid.hihat[o + 2] = 0.2;
+        this.grid.hihat[o + 6] = 0.2;
+      }
+      return this;
+    }
+  },
+  {
+    id: 'electro-funk',
+    name: 'Electro Funk',
+    style: "Electro",
+    desc: "Electro-funk hybrid with grooving kick patterns, tight snare, and syncopated hi-hats with open accents",
+    groove: [0,3,0,2,0,3,0,2,0,3,0,2,0,3,0,2],
+    bpm: 110,
+    ...grid(2,
+      ['kick',  [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+      ['snare', [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+      ['hihat', [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+      ['hihatOpen', [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+    ),
+    rebuild() {
+      const m = this.measures;
+      const steps = m * 16;
+      this.grid.kick = new Array(steps).fill(0);
+      this.grid.snare = new Array(steps).fill(0);
+      this.grid.hihat = new Array(steps).fill(0);
+      this.grid.hihatOpen = new Array(steps).fill(0);
+      for (let i = 0; i < m; i++) {
+        const o = i * 16;
+        this.grid.kick[o + 0] = 1.0;
+        this.grid.kick[o + 3] = 0.6;
+        this.grid.kick[o + 8] = 0.9;
+        this.grid.kick[o + 14] = 0.7;
+        this.grid.snare[o + 4] = 1.0;
+        this.grid.snare[o + 12] = 1.0;
+        for (let j = 0; j < 16; j += 2) this.grid.hihat[o + j] = 0.25;
+        this.grid.hihatOpen[o + 5] = 0.4;
+        this.grid.hihatOpen[o + 13] = 0.4;
+      }
+      return this;
+    }
+  },
+  {
     id: 'tribal',
     name: 'Tribal',
     style: "World",

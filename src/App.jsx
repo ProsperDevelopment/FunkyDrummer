@@ -1,7 +1,6 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import Timeline from './components/Timeline';
-import PatternMenu from './components/PatternMenu';
-import TrackMenu from './components/TrackMenu';
+import PatternTrackTabs from './components/PatternTrackTabs';
 import Controls from './components/Controls';
 import DrumVisualizer from './components/DrumVisualizer';
 import HelpModal from './components/HelpModal';
@@ -293,11 +292,9 @@ export default function App() {
       <div className="app-layout">
         {showPatterns && (
           <aside className="app-sidebar">
-            <PatternMenu
+            <PatternTrackTabs
               selectedPatternId={selectedPatternId}
               onSelectPattern={handlePatternSelect}
-            />
-            <TrackMenu
               selectedTrackId={selectedTrackId}
               currentTrackName={trackPlayback.currentPattern?.name}
               onSelectTrack={handleTrackSelect}
@@ -353,6 +350,83 @@ export default function App() {
           {showVisualizer && (
             <DrumVisualizer activeDrums={activeDrums} onDrumClick={onDrumHit} layoutId={drumLayoutId} hihatPedalPressed={hihatPedalPressed} onHihatPedalDown={handleHihatPedalToggle} onHihatPedalUp={handleHihatPedalUp} />
           )}
+          {trainingMode && (
+            <div className="fs-stats-stack">
+              {stopAfterReps > 0 && (
+                <div className="fs-reps-progress-bar">
+                  <div
+                    className="fs-reps-progress-fill"
+                    style={{ width: `${Math.min((playback.currentLoop / stopAfterReps) * 100, 100)}%` }}
+                  />
+                </div>
+              )}
+              {accuracyStats ? (
+                <>
+                  <div className="fs-stat">
+                    <span className="fs-stat-label">Acc</span>
+                    <span className={`fs-stat-value ${accuracyStats.score >= GOOD_SCORE_THRESHOLD ? 'good' : accuracyStats.score >= OK_SCORE_THRESHOLD ? 'ok' : 'bad'}`}>
+                      {accuracyStats.score}%
+                    </span>
+                  </div>
+                  <div className="fs-stat">
+                    <span className="fs-stat-label">Perfect</span>
+                    <span className="fs-stat-value perfect">{accuracyStats.perfect}</span>
+                  </div>
+                  <div className="fs-stat">
+                    <span className="fs-stat-label">Good</span>
+                    <span className="fs-stat-value good">{accuracyStats.good}</span>
+                  </div>
+                  <div className="fs-stat">
+                    <span className="fs-stat-label">Off</span>
+                    <span className="fs-stat-value off">{accuracyStats.off}</span>
+                  </div>
+                  <div className="fs-stat">
+                    <span className="fs-stat-label">Extra</span>
+                    <span className="fs-stat-value miss">{accuracyStats.miss}</span>
+                  </div>
+                  <div className="fs-stat">
+                    <span className="fs-stat-label">Missed</span>
+                    <span className="fs-stat-value miss">{missedHits}</span>
+                  </div>
+                  <div className="fs-stat">
+                    <span className="fs-stat-label">Total</span>
+                    <span className="fs-stat-value total">{accuracyStats.total}</span>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="fs-stat">
+                    <span className="fs-stat-label">Acc</span>
+                    <span className="fs-stat-value" style={{ color: '#555' }}>-</span>
+                  </div>
+                  <div className="fs-stat">
+                    <span className="fs-stat-label">Perfect</span>
+                    <span className="fs-stat-value" style={{ color: '#555' }}>-</span>
+                  </div>
+                  <div className="fs-stat">
+                    <span className="fs-stat-label">Good</span>
+                    <span className="fs-stat-value" style={{ color: '#555' }}>-</span>
+                  </div>
+                  <div className="fs-stat">
+                    <span className="fs-stat-label">Off</span>
+                    <span className="fs-stat-value" style={{ color: '#555' }}>-</span>
+                  </div>
+                  <div className="fs-stat">
+                    <span className="fs-stat-label">Extra</span>
+                    <span className="fs-stat-value" style={{ color: '#555' }}>-</span>
+                  </div>
+                  <div className="fs-stat">
+                    <span className="fs-stat-label">Missed</span>
+                    <span className="fs-stat-value" style={{ color: '#555' }}>-</span>
+                  </div>
+                  <div className="fs-stat">
+                    <span className="fs-stat-label">Total</span>
+                    <span className="fs-stat-value" style={{ color: '#555' }}>-</span>
+                  </div>
+                </>
+              )}
+            </div>
+          )}
         </main>
       </div>
 
@@ -390,50 +464,6 @@ export default function App() {
             >⛶</button>
           </header>
           <div className="fullscreen-content">
-            {trainingMode && accuracyStats && (
-              <div className="fs-stats-block">
-                <div className="fs-stats-row">
-                  <div className="fs-stat">
-                    <span className="fs-stat-label">Acc</span>
-                    <span className={`fs-stat-value ${accuracyStats.score >= GOOD_SCORE_THRESHOLD ? 'good' : accuracyStats.score >= OK_SCORE_THRESHOLD ? 'ok' : 'bad'}`}>
-                      {accuracyStats.score}%
-                    </span>
-                  </div>
-                  <div className="fs-stat">
-                    <span className="fs-stat-label">Perfect</span>
-                    <span className="fs-stat-value perfect">{accuracyStats.perfect}</span>
-                  </div>
-                  <div className="fs-stat">
-                    <span className="fs-stat-label">Good</span>
-                    <span className="fs-stat-value good">{accuracyStats.good}</span>
-                  </div>
-                  <div className="fs-stat">
-                    <span className="fs-stat-label">Off</span>
-                    <span className="fs-stat-value off">{accuracyStats.off}</span>
-                  </div>
-                  <div className="fs-stat">
-                    <span className="fs-stat-label">Extra</span>
-                    <span className="fs-stat-value miss">{accuracyStats.miss}</span>
-                  </div>
-                  <div className="fs-stat">
-                    <span className="fs-stat-label">Missed</span>
-                    <span className="fs-stat-value miss">{missedHits}</span>
-                  </div>
-                  <div className="fs-stat">
-                    <span className="fs-stat-label">Total</span>
-                    <span className="fs-stat-value total">{accuracyStats.total}</span>
-                  </div>
-                </div>
-                {stopAfterReps > 0 && (
-                  <div className="fs-reps-progress-bar">
-                    <div
-                      className="fs-reps-progress-fill"
-                      style={{ width: `${Math.min((playback.currentLoop / stopAfterReps) * 100, 100)}%` }}
-                    />
-                  </div>
-                )}
-              </div>
-            )}
             <Timeline
               pattern={isTrackMode ? trackPlayback.currentPattern : pattern}
               currentStep={isTrackMode ? trackPlayback.currentStep : playback.currentStep}
@@ -442,7 +472,86 @@ export default function App() {
               trainingMode={trainingMode}
               compact={true}
             />
-            <DrumVisualizer activeDrums={activeDrums} onDrumClick={onDrumHit} layoutId={drumLayoutId} hihatPedalPressed={hihatPedalPressed} onHihatPedalDown={handleHihatPedalToggle} onHihatPedalUp={handleHihatPedalUp} />
+            <div className="fs-viz-area">
+              <DrumVisualizer activeDrums={activeDrums} onDrumClick={onDrumHit} layoutId={drumLayoutId} hihatPedalPressed={hihatPedalPressed} onHihatPedalDown={handleHihatPedalToggle} onHihatPedalUp={handleHihatPedalUp} />
+            </div>
+            {trainingMode && (
+              <div className="fs-stats-stack">
+                {stopAfterReps > 0 && (
+                  <div className="fs-reps-progress-bar">
+                    <div
+                      className="fs-reps-progress-fill"
+                      style={{ width: `${Math.min((playback.currentLoop / stopAfterReps) * 100, 100)}%` }}
+                    />
+                  </div>
+                )}
+                {accuracyStats ? (
+                  <>
+                    <div className="fs-stat">
+                      <span className="fs-stat-label">Acc</span>
+                      <span className={`fs-stat-value ${accuracyStats.score >= GOOD_SCORE_THRESHOLD ? 'good' : accuracyStats.score >= OK_SCORE_THRESHOLD ? 'ok' : 'bad'}`}>
+                        {accuracyStats.score}%
+                      </span>
+                    </div>
+                    <div className="fs-stat">
+                      <span className="fs-stat-label">Perfect</span>
+                      <span className="fs-stat-value perfect">{accuracyStats.perfect}</span>
+                    </div>
+                    <div className="fs-stat">
+                      <span className="fs-stat-label">Good</span>
+                      <span className="fs-stat-value good">{accuracyStats.good}</span>
+                    </div>
+                    <div className="fs-stat">
+                      <span className="fs-stat-label">Off</span>
+                      <span className="fs-stat-value off">{accuracyStats.off}</span>
+                    </div>
+                    <div className="fs-stat">
+                      <span className="fs-stat-label">Extra</span>
+                      <span className="fs-stat-value miss">{accuracyStats.miss}</span>
+                    </div>
+                    <div className="fs-stat">
+                      <span className="fs-stat-label">Missed</span>
+                      <span className="fs-stat-value miss">{missedHits}</span>
+                    </div>
+                    <div className="fs-stat">
+                      <span className="fs-stat-label">Total</span>
+                      <span className="fs-stat-value total">{accuracyStats.total}</span>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="fs-stat">
+                      <span className="fs-stat-label">Acc</span>
+                      <span className="fs-stat-value" style={{ color: '#555' }}>-</span>
+                    </div>
+                    <div className="fs-stat">
+                      <span className="fs-stat-label">Perfect</span>
+                      <span className="fs-stat-value" style={{ color: '#555' }}>-</span>
+                    </div>
+                    <div className="fs-stat">
+                      <span className="fs-stat-label">Good</span>
+                      <span className="fs-stat-value" style={{ color: '#555' }}>-</span>
+                    </div>
+                    <div className="fs-stat">
+                      <span className="fs-stat-label">Off</span>
+                      <span className="fs-stat-value" style={{ color: '#555' }}>-</span>
+                    </div>
+                    <div className="fs-stat">
+                      <span className="fs-stat-label">Extra</span>
+                      <span className="fs-stat-value" style={{ color: '#555' }}>-</span>
+                    </div>
+                    <div className="fs-stat">
+                      <span className="fs-stat-label">Missed</span>
+                      <span className="fs-stat-value" style={{ color: '#555' }}>-</span>
+                    </div>
+                    <div className="fs-stat">
+                      <span className="fs-stat-label">Total</span>
+                      <span className="fs-stat-value" style={{ color: '#555' }}>-</span>
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
           </div>
         </div>
       )}

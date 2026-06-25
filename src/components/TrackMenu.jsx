@@ -1,13 +1,27 @@
+import { useMemo } from 'react';
 import { trackList } from '../data/trackList';
 import './TrackMenu.css';
 
-export default function TrackMenu({ selectedTrackId, currentTrackName, onSelectTrack, isPlayingTrack, trackPart, trackTotalParts }) {
-  return (
-    <div className="track-menu">
-      <div className="menu-section">
-        <h2 className="menu-section-title">Tracks</h2>
-        <div className="track-list">
-          {trackList.map(track => {
+export default function TrackMenu({ selectedTrackId, currentTrackName, onSelectTrack, isPlayingTrack, trackPart, trackTotalParts, embedded, activeStyles }) {
+  const grouped = useMemo(() => {
+    const filtered = activeStyles.length === 0
+      ? trackList
+      : trackList.filter(t => activeStyles.includes(t.style));
+    const map = {};
+    for (const t of filtered) {
+      const s = t.style || 'Other';
+      if (!map[s]) map[s] = [];
+      map[s].push(t);
+    }
+    return map;
+  }, [activeStyles]);
+
+  const content = (
+    <div className="track-list">
+      {Object.entries(grouped).map(([style, tracks]) => (
+        <div key={style}>
+          <div className="style-group-header">{style}</div>
+          {tracks.map(track => {
             const isActive = track.id === selectedTrackId;
             return (
               <button
@@ -32,6 +46,17 @@ export default function TrackMenu({ selectedTrackId, currentTrackName, onSelectT
             );
           })}
         </div>
+      ))}
+    </div>
+  );
+
+  if (embedded) return content;
+
+  return (
+    <div className="track-menu">
+      <div className="menu-section">
+        <h2 className="menu-section-title">Tracks</h2>
+        {content}
       </div>
     </div>
   );

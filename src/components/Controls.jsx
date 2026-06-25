@@ -1,10 +1,10 @@
-import { useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { BPM_MIN, BPM_MAX, REPS_MIN, REPS_MAX, GOOD_SCORE_THRESHOLD, OK_SCORE_THRESHOLD } from '../config/constants';
 import './Controls.css';
 
 export default function Controls({
   isPlaying, onTogglePlay, onStop, bpm,
-  trainingMode, onTrainingToggle, accuracyStats, missedHits,
+  trainingMode, onTrainingToggle,
   bpmOverride: _bpmOverride, onBpmChange,
   stopAfterReps, onStopAfterRepsChange, currentLoop,
   sessionResult, onDismissResult,
@@ -15,6 +15,40 @@ export default function Controls({
   grooveOn, onGrooveToggle,
   trackMode, trackName, trackPart, trackTotalParts,
 }) {
+  const [showBpm, setShowBpm] = useState(false);
+  const [showReps, setShowReps] = useState(false);
+  const bpmRef = useRef(null);
+  const repsRef = useRef(null);
+
+  useEffect(() => {
+    if (!showBpm) return;
+    const handler = (e) => {
+      if (bpmRef.current && !bpmRef.current.contains(e.target)) {
+        setShowBpm(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    document.addEventListener('touchstart', handler);
+    return () => {
+      document.removeEventListener('mousedown', handler);
+      document.removeEventListener('touchstart', handler);
+    };
+  }, [showBpm]);
+
+  useEffect(() => {
+    if (!showReps) return;
+    const handler = (e) => {
+      if (repsRef.current && !repsRef.current.contains(e.target)) {
+        setShowReps(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    document.addEventListener('touchstart', handler);
+    return () => {
+      document.removeEventListener('mousedown', handler);
+      document.removeEventListener('touchstart', handler);
+    };
+  }, [showReps]);
   const hasSessionResult = sessionResult && sessionResult.stats;
 
   useEffect(() => {
@@ -46,55 +80,75 @@ export default function Controls({
           </div>
         )}
 
-        <div className="controls-group bpm-group">
-          <label className="control-label">BPM</label>
-          <input
-            type="range"
-            className="bpm-slider"
-            min={BPM_MIN}
-            max={BPM_MAX}
-            step="1"
-            value={bpm}
-            onChange={e => onBpmChange(Number(e.target.value))}
-          />
-          <input
-            type="number"
-            className="bpm-input"
-            min={BPM_MIN}
-            max={BPM_MAX}
-            value={bpm}
-            onChange={e => {
-              const v = Number(e.target.value);
-              if (v >= BPM_MIN && v <= BPM_MAX) onBpmChange(v);
-            }}
-          />
+        <div className="controls-group bpm-wrap" ref={bpmRef}>
+          <button
+            className={`btn btn-bpm ${showBpm ? 'active' : ''}`}
+            onClick={() => setShowBpm(v => !v)}
+            title="BPM"
+          >
+            <span className="bpm-value">{bpm}</span>
+          </button>
+          {showBpm && (
+            <div className="bpm-popup">
+              <input
+                type="range"
+                className="bpm-slider"
+                min={BPM_MIN}
+                max={BPM_MAX}
+                step="1"
+                value={bpm}
+                onChange={e => onBpmChange(Number(e.target.value))}
+              />
+              <input
+                type="number"
+                className="bpm-input"
+                min={BPM_MIN}
+                max={BPM_MAX}
+                value={bpm}
+                onChange={e => {
+                  const v = Number(e.target.value);
+                  if (v >= BPM_MIN && v <= BPM_MAX) onBpmChange(v);
+                }}
+              />
+            </div>
+          )}
         </div>
 
         {trainingMode && (
-          <div className="controls-group reps-group">
-            <label className="control-label">Reps</label>
-            <input
-              type="range"
-              className="reps-slider"
-              min={REPS_MIN}
-              max={REPS_MAX}
-              step="1"
-              value={stopAfterReps || REPS_MIN}
-              onChange={e => onStopAfterRepsChange(Number(e.target.value))}
-            />
-            <input
-              type="number"
-              className="reps-input"
-              min={REPS_MIN}
-              max={REPS_MAX}
-              value={stopAfterReps}
-              onChange={e => {
-                const v = Number(e.target.value);
-                if (v >= REPS_MIN && v <= REPS_MAX) onStopAfterRepsChange(v);
-              }}
-            />
-            {isPlaying && stopAfterReps > 0 && (
-              <span className="reps-counter">{currentLoop}/{stopAfterReps}</span>
+          <div className="controls-group reps-wrap" ref={repsRef}>
+            <button
+              className={`btn btn-reps ${showReps ? 'active' : ''}`}
+              onClick={() => setShowReps(v => !v)}
+              title="Reps"
+            >
+              <span className="reps-value">{stopAfterReps || REPS_MIN}</span>
+            </button>
+            {showReps && (
+              <div className="reps-popup">
+                <input
+                  type="range"
+                  className="reps-slider"
+                  min={REPS_MIN}
+                  max={REPS_MAX}
+                  step="1"
+                  value={stopAfterReps || REPS_MIN}
+                  onChange={e => onStopAfterRepsChange(Number(e.target.value))}
+                />
+                <input
+                  type="number"
+                  className="reps-input"
+                  min={REPS_MIN}
+                  max={REPS_MAX}
+                  value={stopAfterReps}
+                  onChange={e => {
+                    const v = Number(e.target.value);
+                    if (v >= REPS_MIN && v <= REPS_MAX) onStopAfterRepsChange(v);
+                  }}
+                />
+                {isPlaying && stopAfterReps > 0 && (
+                  <span className="reps-counter">{currentLoop}/{stopAfterReps}</span>
+                )}
+              </div>
             )}
           </div>
         )}
@@ -155,57 +209,6 @@ export default function Controls({
 
 
       </div>
-
-      {trainingMode && !hasSessionResult && (
-        <div className="training-stats">
-          {accuracyStats ? (
-            <div className="stats-box">
-              <div className="stat">
-                <span className="stat-label">Accuracy</span>
-                <span className={`stat-value ${accuracyStats.score >= GOOD_SCORE_THRESHOLD ? 'good' : accuracyStats.score >= OK_SCORE_THRESHOLD ? 'ok' : 'bad'}`}>
-                  {accuracyStats.score}%
-                </span>
-              </div>
-              <div className="stat">
-                <span className="stat-label">Perfect</span>
-                <span className="stat-value perfect">{accuracyStats.perfect}</span>
-              </div>
-              <div className="stat">
-                <span className="stat-label">Good</span>
-                <span className="stat-value good">{accuracyStats.good}</span>
-              </div>
-              <div className="stat">
-                <span className="stat-label">Off</span>
-                <span className="stat-value off">{accuracyStats.off}</span>
-              </div>
-              <div className="stat">
-                <span className="stat-label">Extra</span>
-                <span className="stat-value miss">{accuracyStats.miss}</span>
-              </div>
-              <div className="stat">
-                <span className="stat-label">Missed</span>
-                <span className="stat-value miss">{missedHits}</span>
-              </div>
-              <div className="stat">
-                <span className="stat-label">Total</span>
-                <span className="stat-value total">{accuracyStats.total}</span>
-              </div>
-            </div>
-          ) : (
-            <div className="stats-box stats-box-empty">
-              <span className="stat-label">Waiting for hits...</span>
-            </div>
-          )}
-          {stopAfterReps > 0 && (
-            <div className="reps-progress-bar">
-              <div
-                className="reps-progress-fill"
-                style={{ width: `${Math.min((currentLoop / stopAfterReps) * 100, 100)}%` }}
-              />
-            </div>
-          )}
-        </div>
-      )}
 
       {hasSessionResult && (
         <div className="session-overlay" onClick={onDismissResult}>
