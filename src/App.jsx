@@ -379,6 +379,8 @@ export default function App() {
               currentLoop={playback.currentLoop}
               grooveOn={grooveOn}
               onGrooveToggle={handleGrooveToggle}
+              countdownOn={countdownOn}
+              onCountdownToggle={handleCountdownToggle}
             />
             <div className="header-spacer" />
             <button
@@ -442,6 +444,14 @@ export default function App() {
             />
             <DrumVisualizer activeDrums={activeDrums} onDrumClick={onDrumHit} layoutId={drumLayoutId} hihatPedalPressed={hihatPedalPressed} onHihatPedalDown={handleHihatPedalDown} onHihatPedalUp={handleHihatPedalUp} />
           </div>
+        </div>
+      )}
+
+      {playback.isCountdown && (
+        <div className="countdown-overlay">
+          <span className="countdown-number" key={Math.ceil(playback.countdownCount / 4)}>
+            {Math.ceil(playback.countdownCount / 4) - 1}
+          </span>
         </div>
       )}
 
