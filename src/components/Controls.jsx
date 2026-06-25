@@ -34,9 +34,9 @@ export default function Controls({
       <div className="controls-row">
         <div className="controls-group">
           <button className={`btn btn-play ${isPlaying ? 'playing' : ''}`} onClick={onTogglePlay}>
-            {isPlaying ? '⏸ Pause' : '▶ Play'}
+            {isPlaying ? '⏸' : '▶'}
           </button>
-          <button className="btn btn-stop" onClick={onStop}>⏹ Stop</button>
+          <button className="btn btn-stop" onClick={onStop}>⏹</button>
         </div>
 
         {trackMode && (
@@ -110,46 +110,46 @@ export default function Controls({
 
         <div className="controls-group">
           <button
-            className={`btn btn-groove ${grooveOn ? 'active' : ''}`}
+            className={`btn btn-groove ${grooveOn ? 'active' : 'off'}`}
             onClick={onGrooveToggle}
           >
-            {grooveOn ? '🔀 Groove On' : '🔀 Groove'}
+            🔀
           </button>
         </div>
 
         <div className="controls-group">
           <button
-            className={`btn btn-metronome ${metronomeOn ? 'active' : ''}`}
+            className={`btn btn-metronome ${metronomeOn ? 'active' : 'off'}`}
             onClick={onToggleMetronome}
           >
-            {metronomeOn ? '🔊 Click' : '🔇 Click'}
+            🔊
           </button>
         </div>
 
         <div className="controls-group">
           <button
-            className={`btn btn-drum-playback ${drumPlaybackOn ? 'active' : ''}`}
+            className={`btn btn-drum-playback ${drumPlaybackOn ? 'active' : 'off'}`}
             onClick={onToggleDrumPlayback}
           >
-            {drumPlaybackOn ? '🥁 Pattern On' : '🔇 Pattern Off'}
+            🥁
           </button>
         </div>
 
         <div className="controls-group">
           <button
-            className={`btn btn-training ${trainingMode ? 'active' : ''}`}
+            className={`btn btn-training ${trainingMode ? 'active' : 'off'}`}
             onClick={onTrainingToggle}
           >
-            {trainingMode ? '🎯 Training On' : '🎯 Training'}
+            🎯
           </button>
         </div>
 
         <div className="controls-group">
           <button
-            className={`btn btn-visualizer ${showVisualizer ? 'active' : ''}`}
+            className={`btn btn-visualizer ${showVisualizer ? 'active' : 'off'}`}
             onClick={onToggleVisualizer}
           >
-            {showVisualizer ? '📊 View On' : '📊 View'}
+            📊
           </button>
         </div>
 

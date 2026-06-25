@@ -43,6 +43,26 @@
   box-shadow: 0 0 8px rgba(139, 92, 246, 0.25);
 }
 
+.fs-btn.off {
+  position: relative;
+  opacity: 0.65;
+}
+
+.fs-btn.off::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top right,
+    transparent calc(50% - 1px),
+    #f87171 calc(50% - 1px),
+    #f87171 calc(50% + 1px),
+    transparent calc(50% + 1px)
+  );
+  border-radius: 5px;
+  pointer-events: none;
+}
+
 .fs-btn-play {
   min-width: 44px;
 }

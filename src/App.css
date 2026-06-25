@@ -112,6 +112,7 @@
   flex-direction: column;
   gap: 16px;
   min-width: 0;
+  min-height: 0;
 }
 
 .app-main-full {
@@ -120,6 +121,7 @@
   flex-direction: column;
   gap: 16px;
   min-width: 0;
+  min-height: 0;
 }
 
 .fullscreen-overlay {
@@ -141,6 +143,13 @@
   flex-direction: column;
   gap: 8px;
   padding: 8px;
+  min-height: 0;
+  max-height: 100%;
+  overflow: hidden;
+}
+
+.app-main .drum-visualizer {
+  flex: 1;
   min-height: 0;
 }
 
@@ -216,6 +225,13 @@
   flex-direction: column;
   gap: 8px;
   min-height: 0;
+}
+
+@media (orientation: landscape) {
+  .app-main .drum-visualizer,
+  .fullscreen-content .drum-visualizer {
+    max-height: 55vh;
+  }
 }
 
 @media (max-width: 768px) {

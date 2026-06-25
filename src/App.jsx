@@ -48,6 +48,7 @@ export default function App() {
   const [hihatPedalPressed, setHihatPedalPressedState] = useState(getHihatPedalPressed());
   const [countdownOn, setCountdownOn] = useState(false);
   const [grooveOn, setGrooveOn] = useState(false);
+  const sessionSetRef = useRef(false);
   const midiNoteMap = getNoteMap(midiConfigId);
 
   const { activeDrums, hit: hitVisualizer } = useActiveDrums();
@@ -60,14 +61,16 @@ export default function App() {
   }, [hitVisualizer]);
 
   const playback = usePlayback(pattern, bpmOverride, stopAfterReps, onPatternDrumPlayed, metronomeOn, drumPlaybackOn, countdownOn, grooveOn);
-  const trackPlayback = useTrackPlayback(selectedTrack, onPatternDrumPlayed, metronomeOn, drumPlaybackOn);
+  const trackPlayback = useTrackPlayback(selectedTrack, onPatternDrumPlayed, metronomeOn, drumPlaybackOn, bpmOverride);
 
-  const defaultBpm = pattern.bpm;
+  const patternDefaultBpm = pattern.bpm;
+  const trackDefaultBpm = selectedTrack?.bpm ?? patternDefaultBpm;
+  const defaultBpm = isTrackMode ? trackDefaultBpm : patternDefaultBpm;
   const effectiveBpm = bpmOverride || defaultBpm;
-  const trackEffectiveBpm = selectedTrack?.bpm ?? effectiveBpm;
 
   const trainingPattern = isTrackMode ? trackPlayback.currentPattern : pattern;
   const trainingCurrentStep = isTrackMode ? trackPlayback.currentStep : playback.currentStep;
+  const trainingIsPlaying = isTrackMode ? trackPlayback.isPlaying : playback.isPlaying;
   const {
     trainingMode,
     setTrainingMode,
@@ -76,7 +79,7 @@ export default function App() {
     clearHits,
     accuracyStats,
     missedHits,
-  } = useTraining(trainingPattern, trainingCurrentStep);
+  } = useTraining(trainingPattern, trainingCurrentStep, trainingIsPlaying);
 
   const onDrumHit = useCallback((drumId, velocity) => {
     const resolvedId = drumId === 'hihat'
@@ -113,7 +116,8 @@ export default function App() {
   }, [effectiveBpm, defaultBpm]);
 
   useEffect(() => {
-    if (playback.repsComplete && trainingMode && !isTrackMode) {
+    if (playback.repsComplete && trainingMode && !isTrackMode && !sessionSetRef.current) {
+      sessionSetRef.current = true;
       setSessionResult({
         stats: accuracyStats || { perfect: 0, good: 0, off: 0, miss: 0, total: 0, score: 0 },
         missedHits,
@@ -122,7 +126,8 @@ export default function App() {
   }, [playback.repsComplete, trainingMode, accuracyStats, isTrackMode]);
 
   useEffect(() => {
-    if (trackPlayback.isFinished && trainingMode && isTrackMode) {
+    if (trackPlayback.isFinished && trainingMode && isTrackMode && !sessionSetRef.current) {
+      sessionSetRef.current = true;
       setSessionResult({
         stats: accuracyStats || { perfect: 0, good: 0, off: 0, miss: 0, total: 0, score: 0 },
         missedHits,
@@ -132,9 +137,11 @@ export default function App() {
 
   const dismissResult = useCallback(() => {
     setSessionResult(null);
+    sessionSetRef.current = false;
     playback.clearRepsComplete();
+    trackPlayback.stop();
     clearHits();
-  }, [clearHits, playback.clearRepsComplete]);
+  }, [clearHits, playback.clearRepsComplete, trackPlayback.stop]);
 
   const handlePatternSelect = useCallback((id) => {
     playback.stop();
@@ -143,13 +150,16 @@ export default function App() {
     setSelectedPatternId(id);
     setBpmOverride(null);
     setSessionResult(null);
+    sessionSetRef.current = false;
   }, [playback.stop, trackPlayback.stop]);
 
   const handleTrackSelect = useCallback((id) => {
     playback.stop();
     trackPlayback.stop();
     setSelectedTrackId(id);
+    setBpmOverride(null);
     setSessionResult(null);
+    sessionSetRef.current = false;
   }, [playback.stop, trackPlayback.stop]);
 
   const handleBpmChange = useCallback((value) => {
@@ -303,12 +313,12 @@ export default function App() {
             isPlaying={isTrackMode ? trackPlayback.isPlaying : playback.isPlaying}
             onTogglePlay={isTrackMode ? trackPlayback.togglePlay : playback.togglePlay}
             onStop={isTrackMode ? trackPlayback.stop : playback.stop}
-            bpm={isTrackMode ? trackEffectiveBpm : effectiveBpm}
+            bpm={effectiveBpm}
             trainingMode={trainingMode}
             onTrainingToggle={handleTrainingToggle}
             accuracyStats={accuracyStats}
             missedHits={missedHits}
-            bpmOverride={isTrackMode ? null : bpmOverride}
+            bpmOverride={bpmOverride}
             onBpmChange={handleBpmChange}
             stopAfterReps={stopAfterReps}
             onStopAfterRepsChange={setStopAfterReps}
@@ -358,7 +368,7 @@ export default function App() {
               isPlaying={isTrackMode ? trackPlayback.isPlaying : playback.isPlaying}
               onTogglePlay={isTrackMode ? trackPlayback.togglePlay : playback.togglePlay}
               onStop={isTrackMode ? trackPlayback.stop : playback.stop}
-              bpm={isTrackMode ? trackEffectiveBpm : effectiveBpm}
+            bpm={effectiveBpm}
               onBpmChange={handleBpmChange}
               drumPlaybackOn={drumPlaybackOn}
               onToggleDrumPlayback={handleToggleDrumPlayback}

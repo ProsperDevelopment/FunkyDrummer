@@ -61,7 +61,7 @@ export default function FullscreenControls({
         </button>
 
         <button
-          className={`fs-btn ${drumPlaybackOn ? 'active' : ''}`}
+          className={`fs-btn ${drumPlaybackOn ? 'active' : 'off'}`}
           onClick={onToggleDrumPlayback}
           title={drumPlaybackOn ? 'Pattern On' : 'Pattern Off'}
         >
@@ -69,7 +69,7 @@ export default function FullscreenControls({
         </button>
 
         <button
-          className={`fs-btn ${trainingMode ? 'active' : ''}`}
+          className={`fs-btn ${trainingMode ? 'active' : 'off'}`}
           onClick={onTrainingToggle}
           title={trainingMode ? 'Training On' : 'Training Off'}
         >
@@ -77,7 +77,7 @@ export default function FullscreenControls({
         </button>
 
         <button
-          className={`fs-btn ${grooveOn ? 'active' : ''}`}
+          className={`fs-btn ${grooveOn ? 'active' : 'off'}`}
           onClick={onGrooveToggle}
           title={grooveOn ? 'Groove On' : 'Groove Off'}
         >
