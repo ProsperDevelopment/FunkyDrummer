@@ -113,8 +113,9 @@ export default function App() {
 
   const dismissResult = useCallback(() => {
     setSessionResult(null);
+    playback.clearRepsComplete();
     clearHits();
-  }, [clearHits]);
+  }, [clearHits, playback.clearRepsComplete]);
 
   const handlePatternSelect = useCallback((id) => {
     playback.stop();

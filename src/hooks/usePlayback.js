@@ -164,5 +164,9 @@ export function usePlayback(pattern, bpmOverride, stopAfterReps = 0, onDrumPlaye
     };
   }, []);
 
-  return { isPlaying, isCountdown, currentStep, totalSteps, currentLoop, repsComplete, togglePlay, stop, play };
+  const clearRepsComplete = useCallback(() => {
+    setRepsComplete(false);
+  }, []);
+
+  return { isPlaying, isCountdown, currentStep, totalSteps, currentLoop, repsComplete, togglePlay, stop, play, clearRepsComplete };
 }

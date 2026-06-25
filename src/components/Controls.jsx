@@ -19,8 +19,10 @@ export default function Controls({
   useEffect(() => {
     if (!hasSessionResult) return;
     const handler = (e) => {
-      e.preventDefault();
-      onDismissResult();
+      if (e.code === 'Space') {
+        e.preventDefault();
+        onDismissResult();
+      }
     };
     document.addEventListener('keydown', handler);
     return () => document.removeEventListener('keydown', handler);
