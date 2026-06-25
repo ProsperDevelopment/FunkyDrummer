@@ -16,7 +16,7 @@ import { playDrum, setKit, getActiveKit, isKitLoading, getHihatPedalPressed, set
 import { drumKits } from './config/drumKits';
 import { midiConfigs, getNoteMap } from './config/midiConfigs';
 import { drumLayouts } from './config/drumLayouts';
-import { BPM_MIN, BPM_MAX, BPM_STEP, PEDAL_CC, PEDAL_THRESHOLD, GOOD_SCORE_THRESHOLD, OK_SCORE_THRESHOLD } from './config/constants';
+import { BPM_MIN, BPM_MAX, BPM_STEP, REPS_MIN, PEDAL_CC, PEDAL_THRESHOLD, GOOD_SCORE_THRESHOLD, OK_SCORE_THRESHOLD } from './config/constants';
 import './App.css';
 
 function getPattern(id) {
@@ -26,7 +26,7 @@ function getPattern(id) {
 export default function App() {
   const [selectedPatternId, setSelectedPatternId] = useState(drumPatterns[0].id);
   const [bpmOverride, setBpmOverride] = useState(null);
-  const [stopAfterReps, setStopAfterReps] = useState(0);
+  const [stopAfterReps, setStopAfterReps] = useState(REPS_MIN);
   const [sessionResult, setSessionResult] = useState(null);
   const [activeKitId, setActiveKitId] = useState(getActiveKit().id);
   const [kitBusy, setKitBusy] = useState(false);
@@ -41,6 +41,7 @@ export default function App() {
   const [showSettings, setShowSettings] = useState(false);
   const [hihatPedalPressed, setHihatPedalPressedState] = useState(getHihatPedalPressed());
   const [countdownOn, setCountdownOn] = useState(false);
+  const [grooveOn, setGrooveOn] = useState(false);
   const midiNoteMap = getNoteMap(midiConfigId);
 
   const { activeDrums, hit: hitVisualizer } = useActiveDrums();
@@ -52,7 +53,7 @@ export default function App() {
     setHihatPedalPressedState(getHihatPedalPressed());
   }, [hitVisualizer]);
 
-  const playback = usePlayback(pattern, bpmOverride, stopAfterReps, onPatternDrumPlayed, metronomeOn, drumPlaybackOn, countdownOn);
+  const playback = usePlayback(pattern, bpmOverride, stopAfterReps, onPatternDrumPlayed, metronomeOn, drumPlaybackOn, countdownOn, grooveOn);
 
   const defaultBpm = pattern.bpm;
   const effectiveBpm = bpmOverride || defaultBpm;
@@ -101,16 +102,14 @@ export default function App() {
     setBpmOverride(next === defaultBpm ? null : next);
   }, [effectiveBpm, defaultBpm]);
 
-  const wasPlayingRef = useRef(false);
   useEffect(() => {
-    if (wasPlayingRef.current && !playback.isPlaying && trainingMode) {
+    if (playback.repsComplete && trainingMode) {
       setSessionResult({
         stats: accuracyStats || { perfect: 0, good: 0, off: 0, miss: 0, total: 0, score: 0 },
         missedHits,
       });
     }
-    wasPlayingRef.current = playback.isPlaying;
-  }, [playback.isPlaying, trainingMode, accuracyStats]);
+  }, [playback.repsComplete, trainingMode, accuracyStats]);
 
   const dismissResult = useCallback(() => {
     setSessionResult(null);
@@ -191,12 +190,17 @@ export default function App() {
     setCountdownOn(v => !v);
   }, []);
 
+  const handleGrooveToggle = useCallback(() => {
+    setGrooveOn(v => !v);
+  }, []);
+
   useKeyboard(onDrumHit, {
     onTogglePlay: playback.togglePlay,
     onStop: playback.stop,
     onToggleMetronome: handleToggleMetronome,
     onToggleDrumPlayback: handleToggleDrumPlayback,
     onTrainingToggle: handleTrainingToggle,
+    onGrooveToggle: handleGrooveToggle,
     onBpmUp: handleBpmUp,
     onBpmDown: handleBpmDown,
   }, showSettings);
@@ -272,6 +276,8 @@ export default function App() {
             onToggleDrumPlayback={handleToggleDrumPlayback}
             countdownOn={countdownOn}
             onCountdownToggle={handleCountdownToggle}
+            grooveOn={grooveOn}
+            onGrooveToggle={handleGrooveToggle}
           />
 
           <Timeline
@@ -280,6 +286,7 @@ export default function App() {
             isPlaying={playback.isPlaying}
             userHits={userHits}
             trainingMode={trainingMode}
+            compact={false}
           />
 
           {showVisualizer && (
@@ -309,6 +316,8 @@ export default function App() {
               stopAfterReps={stopAfterReps}
               onStopAfterRepsChange={setStopAfterReps}
               currentLoop={playback.currentLoop}
+              grooveOn={grooveOn}
+              onGrooveToggle={handleGrooveToggle}
             />
             <div className="header-spacer" />
             <button
@@ -319,37 +328,47 @@ export default function App() {
           </header>
           <div className="fullscreen-content">
             {trainingMode && accuracyStats && (
-              <div className="fs-stats-row">
-                <div className="fs-stat">
-                  <span className="fs-stat-label">Acc</span>
-                  <span className={`fs-stat-value ${accuracyStats.score >= GOOD_SCORE_THRESHOLD ? 'good' : accuracyStats.score >= OK_SCORE_THRESHOLD ? 'ok' : 'bad'}`}>
-                    {accuracyStats.score}%
-                  </span>
+              <div className="fs-stats-block">
+                <div className="fs-stats-row">
+                  <div className="fs-stat">
+                    <span className="fs-stat-label">Acc</span>
+                    <span className={`fs-stat-value ${accuracyStats.score >= GOOD_SCORE_THRESHOLD ? 'good' : accuracyStats.score >= OK_SCORE_THRESHOLD ? 'ok' : 'bad'}`}>
+                      {accuracyStats.score}%
+                    </span>
+                  </div>
+                  <div className="fs-stat">
+                    <span className="fs-stat-label">Perfect</span>
+                    <span className="fs-stat-value perfect">{accuracyStats.perfect}</span>
+                  </div>
+                  <div className="fs-stat">
+                    <span className="fs-stat-label">Good</span>
+                    <span className="fs-stat-value good">{accuracyStats.good}</span>
+                  </div>
+                  <div className="fs-stat">
+                    <span className="fs-stat-label">Off</span>
+                    <span className="fs-stat-value off">{accuracyStats.off}</span>
+                  </div>
+                  <div className="fs-stat">
+                    <span className="fs-stat-label">Extra</span>
+                    <span className="fs-stat-value miss">{accuracyStats.miss}</span>
+                  </div>
+                  <div className="fs-stat">
+                    <span className="fs-stat-label">Missed</span>
+                    <span className="fs-stat-value miss">{missedHits}</span>
+                  </div>
+                  <div className="fs-stat">
+                    <span className="fs-stat-label">Total</span>
+                    <span className="fs-stat-value total">{accuracyStats.total}</span>
+                  </div>
                 </div>
-                <div className="fs-stat">
-                  <span className="fs-stat-label">Perfect</span>
-                  <span className="fs-stat-value perfect">{accuracyStats.perfect}</span>
-                </div>
-                <div className="fs-stat">
-                  <span className="fs-stat-label">Good</span>
-                  <span className="fs-stat-value good">{accuracyStats.good}</span>
-                </div>
-                <div className="fs-stat">
-                  <span className="fs-stat-label">Off</span>
-                  <span className="fs-stat-value off">{accuracyStats.off}</span>
-                </div>
-                <div className="fs-stat">
-                  <span className="fs-stat-label">Extra</span>
-                  <span className="fs-stat-value miss">{accuracyStats.miss}</span>
-                </div>
-                <div className="fs-stat">
-                  <span className="fs-stat-label">Missed</span>
-                  <span className="fs-stat-value miss">{missedHits}</span>
-                </div>
-                <div className="fs-stat">
-                  <span className="fs-stat-label">Total</span>
-                  <span className="fs-stat-value total">{accuracyStats.total}</span>
-                </div>
+                {stopAfterReps > 0 && (
+                  <div className="fs-reps-progress-bar">
+                    <div
+                      className="fs-reps-progress-fill"
+                      style={{ width: `${Math.min((playback.currentLoop / stopAfterReps) * 100, 100)}%` }}
+                    />
+                  </div>
+                )}
               </div>
             )}
             <Timeline
@@ -358,6 +377,7 @@ export default function App() {
               isPlaying={playback.isPlaying}
               userHits={userHits}
               trainingMode={trainingMode}
+              compact={true}
             />
             <DrumVisualizer activeDrums={activeDrums} onDrumClick={onDrumHit} layoutId={drumLayoutId} hihatPedalPressed={hihatPedalPressed} onHihatPedalDown={handleHihatPedalDown} onHihatPedalUp={handleHihatPedalUp} />
           </div>

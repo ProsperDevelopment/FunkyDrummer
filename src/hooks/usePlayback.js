@@ -2,12 +2,13 @@ import { useState, useRef, useCallback, useEffect } from 'react';
 import { playDrum, playMetronomeClick } from '../audio/drumSounds';
 import { STEPS_PER_MEASURE, BEAT_INTERVAL, MEASURE_INTERVAL, COUNT_IN_BEATS } from '../config/constants';
 
-export function usePlayback(pattern, bpmOverride, stopAfterReps = 0, onDrumPlayed, metronomeOn = false, drumPlaybackOn = true, countdownOn = false) {
+export function usePlayback(pattern, bpmOverride, stopAfterReps = 0, onDrumPlayed, metronomeOn = false, drumPlaybackOn = true, countdownOn = false, grooveOn = false) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isCountdown, setIsCountdown] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
   const [totalSteps, setTotalSteps] = useState(0);
   const [currentLoop, setCurrentLoop] = useState(0);
+  const [repsComplete, setRepsComplete] = useState(false);
   const intervalRef = useRef(null);
   const countdownTimerRef = useRef(null);
   const stepRef = useRef(0);
@@ -19,12 +20,14 @@ export function usePlayback(pattern, bpmOverride, stopAfterReps = 0, onDrumPlaye
   const metronomeRef = useRef(metronomeOn);
   const drumPlaybackRef = useRef(drumPlaybackOn);
   const countdownRef = useRef(countdownOn);
+  const grooveOnRef = useRef(grooveOn);
 
   useEffect(() => { bpmRef.current = bpmOverride; }, [bpmOverride]);
   useEffect(() => { stopAfterRef.current = stopAfterReps; }, [stopAfterReps]);
   useEffect(() => { metronomeRef.current = metronomeOn; }, [metronomeOn]);
   useEffect(() => { drumPlaybackRef.current = drumPlaybackOn; }, [drumPlaybackOn]);
   useEffect(() => { countdownRef.current = countdownOn; }, [countdownOn]);
+  useEffect(() => { grooveOnRef.current = grooveOn; }, [grooveOn]);
 
   useEffect(() => {
     patternRef.current = pattern;
@@ -37,7 +40,7 @@ export function usePlayback(pattern, bpmOverride, stopAfterReps = 0, onDrumPlaye
 
   const stop = useCallback(() => {
     if (intervalRef.current) {
-      clearInterval(intervalRef.current);
+      clearTimeout(intervalRef.current);
       intervalRef.current = null;
     }
     if (countdownTimerRef.current) {
@@ -55,7 +58,9 @@ export function usePlayback(pattern, bpmOverride, stopAfterReps = 0, onDrumPlaye
   const startPattern = useCallback((intervalMs) => {
     setIsPlaying(true);
 
-    intervalRef.current = setInterval(() => {
+    let prevGrooveOffset = 0;
+
+    const tick = () => {
       const step = stepRef.current;
       const p2 = patternRef.current;
       if (!p2) return;
@@ -85,6 +90,7 @@ export function usePlayback(pattern, bpmOverride, stopAfterReps = 0, onDrumPlaye
         loopCountRef.current++;
         setCurrentLoop(loopCountRef.current);
         if (stopAfterRef.current > 0 && loopCountRef.current >= stopAfterRef.current) {
+          setRepsComplete(true);
           stop();
           return;
         }
@@ -94,7 +100,16 @@ export function usePlayback(pattern, bpmOverride, stopAfterReps = 0, onDrumPlaye
         stepRef.current = 0;
         setCurrentStep(0);
       }
-    }, intervalMs);
+
+      const grooveActive = grooveOnRef.current;
+      const currGrooveOffset = grooveActive && p2.groove ? (p2.groove[modStep % 16] || 0) : 0;
+      const delay = Math.max(1, intervalMs + currGrooveOffset - prevGrooveOffset);
+      prevGrooveOffset = currGrooveOffset;
+
+      intervalRef.current = setTimeout(tick, delay);
+    };
+
+    intervalRef.current = setTimeout(tick, intervalMs);
   }, [stop, onDrumPlayed]);
 
   const play = useCallback(() => {
@@ -107,8 +122,9 @@ export function usePlayback(pattern, bpmOverride, stopAfterReps = 0, onDrumPlaye
     setCurrentStep(0);
     loopCountRef.current = 0;
     setCurrentLoop(0);
+    setRepsComplete(false);
 
-    if (intervalRef.current) clearInterval(intervalRef.current);
+    if (intervalRef.current) clearTimeout(intervalRef.current);
 
     if (countdownRef.current) {
       setIsCountdown(true);
@@ -143,10 +159,10 @@ export function usePlayback(pattern, bpmOverride, stopAfterReps = 0, onDrumPlaye
 
   useEffect(() => {
     return () => {
-      if (intervalRef.current) clearInterval(intervalRef.current);
+      if (intervalRef.current) clearTimeout(intervalRef.current);
       if (countdownTimerRef.current) clearTimeout(countdownTimerRef.current);
     };
   }, []);
 
-  return { isPlaying, isCountdown, currentStep, totalSteps, currentLoop, togglePlay, stop, play };
+  return { isPlaying, isCountdown, currentStep, totalSteps, currentLoop, repsComplete, togglePlay, stop, play };
 }

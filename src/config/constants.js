@@ -30,8 +30,8 @@ export const DRUM_GLOW_MS = 150
 export const DEFAULT_VELOCITY = 0.8
 
 export const CANVAS_STEP_WIDTH = 40
-export const CANVAS_ROW_HEIGHT = 40
+export const CANVAS_ROW_HEIGHT = 32
 export const CANVAS_HEADER_WIDTH = 100
-export const CANVAS_HIT_RADIUS = 11
-export const CANVAS_HIT_FONT_SIZE = 10
-export const CANVAS_BEAT_FONT_SIZE = 10
+export const CANVAS_HIT_RADIUS = 8
+export const CANVAS_HIT_FONT_SIZE = 8
+export const CANVAS_BEAT_FONT_SIZE = 8
