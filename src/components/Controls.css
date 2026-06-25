@@ -22,15 +22,17 @@
 }
 
 .btn {
-  padding: clamp(6px, 1.2vw, 12px) clamp(12px, 2vw, 22px);
+  padding: clamp(4px, 0.8vw, 8px) clamp(8px, 1.2vw, 14px);
   border: 1px solid #2a2a4a;
   border-radius: 6px;
-  font-size: clamp(0.7rem, 1.4vw, 0.95rem);
+  font-size: clamp(0.75rem, 1.4vw, 1rem);
   cursor: pointer;
   transition: all 0.15s;
   font-family: inherit;
   background: #16162a;
   color: #ccc;
+  position: relative;
+  line-height: 1.2;
 }
 
 .btn:hover {
@@ -42,7 +44,6 @@
   background: #1a3a2a;
   border-color: #2a5a3a;
   color: #4ade80;
-  min-width: clamp(80px, 12vw, 120px);
 }
 
 .btn-play:hover {
@@ -260,6 +261,26 @@
   box-shadow: 0 0 12px rgba(134, 239, 172, 0.3);
 }
 
+.btn.off {
+  position: relative;
+  opacity: 0.65;
+}
+
+.btn.off::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top right,
+    transparent calc(50% - 1px),
+    #f87171 calc(50% - 1px),
+    #f87171 calc(50% + 1px),
+    transparent calc(50% + 1px)
+  );
+  border-radius: 5px;
+  pointer-events: none;
+}
+
 .training-stats {
   display: flex;
   justify-content: center;
@@ -269,14 +290,14 @@
 
 .stats-box {
   display: flex;
-  gap: 14px;
-  flex-wrap: wrap;
+  gap: 12px;
   align-items: center;
   border: 1px solid #2a2a4a;
   border-radius: 8px 8px 0 0;
   padding: 6px 14px;
-  min-height: 56px;
+  min-height: 40px;
   box-sizing: border-box;
+  white-space: nowrap;
 }
 
 .stats-box-empty {
@@ -288,9 +309,9 @@
 
 .stat {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
-  gap: 2px;
+  gap: 4px;
 }
 
 .stat-label {

@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
 import { STEPS_PER_MEASURE, TRAINING_HIT_TOLERANCE, TRAINING_SCORE_GOOD_WEIGHT, TRAINING_SCORE_MULTIPLIER } from '../config/constants';
 
-export function useTraining(pattern, currentStep) {
+export function useTraining(pattern, currentStep, isPlaying = false) {
   const [trainingMode, setTrainingMode] = useState(false);
   const [userHits, setUserHits] = useState([]);
   const [missedHits, setMissedHits] = useState(0);
@@ -36,7 +36,7 @@ export function useTraining(pattern, currentStep) {
   useEffect(() => { userHitsRef.current = userHits; }, [userHits]);
 
   useEffect(() => {
-    if (!trainingMode) return;
+    if (!trainingMode || !isPlaying) return;
     const p = patternRef.current;
     if (!p) return;
     const steps = p.measures * STEPS_PER_MEASURE;
@@ -68,10 +68,10 @@ export function useTraining(pattern, currentStep) {
     }
 
     missedStepsRef.current.add(prevMod);
-  }, [currentStep, trainingMode]);
+  }, [currentStep, trainingMode, isPlaying]);
 
   const handleDrumHit = useCallback((drumId) => {
-    if (!trainingMode) return;
+    if (!trainingMode || !isPlaying) return;
 
     const p = patternRef.current;
     if (!p) return;
@@ -119,8 +119,8 @@ export function useTraining(pattern, currentStep) {
       const next = [...prev, hit];
       return next.slice(-200);
     });
-  }, [trainingMode]);
-
+  }, [trainingMode, isPlaying]);
+ 
   useEffect(() => {
     if (!trainingMode) {
       setUserHits([]);
