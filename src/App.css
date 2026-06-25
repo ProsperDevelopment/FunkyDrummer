@@ -132,7 +132,7 @@
 .fullscreen-overlay {
   position: fixed;
   inset: 0;
-  z-index: 50;
+  z-index: 70;
   background: #0e0e1a;
   display: flex;
   flex-direction: column;
@@ -195,7 +195,7 @@
 }
 
 .fs-stat-label {
-  font-size: clamp(0.45rem, 0.9vw, 0.6rem);
+  font-size: clamp(0.85rem, 1vw, 0.75rem);
   color: #666;
   text-transform: uppercase;
   letter-spacing: 0.3px;
@@ -203,7 +203,7 @@
 }
 
 .fs-stat-value {
-  font-size: clamp(0.65rem, 1.3vw, 0.9rem);
+  font-size: clamp(1.05rem, 1.6vw, 1.1rem);
   font-weight: 700;
   font-variant-numeric: tabular-nums;
   line-height: 1.2;
@@ -219,16 +219,30 @@
 
 .fs-stats-stack {
   display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 12px;
+  flex-direction: row;
+  gap: clamp(6px, 1.2vw, 12px);
+  align-items: center;
+  padding: clamp(2px, 0.5vw, 6px) clamp(8px, 1.5vw, 14px);
   border: 1px solid #2a2a4a;
   border-radius: 6px;
   background: rgba(22, 22, 42, 0.6);
-  width: 72px;
-  position: absolute;
-  bottom: 8px;
-  right: 8px;
+  flex-shrink: 0;
+}
+
+@media (orientation: landscape) {
+  .fs-stats-stack {
+    flex-direction: column;
+    gap: 8px;
+    padding: 12px;
+    width: 72px;
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    flex-shrink: 0;
+    border: 1px solid #2a2a4a;
+    border-radius: 6px;
+    background: rgba(22, 22, 42, 0.6);
+  }
 }
 
 @media (orientation: landscape) {

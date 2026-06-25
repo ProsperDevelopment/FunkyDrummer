@@ -464,17 +464,6 @@ export default function App() {
             >⛶</button>
           </header>
           <div className="fullscreen-content">
-            <Timeline
-              pattern={isTrackMode ? trackPlayback.currentPattern : pattern}
-              currentStep={isTrackMode ? trackPlayback.currentStep : playback.currentStep}
-              isPlaying={isTrackMode ? trackPlayback.isPlaying : playback.isPlaying}
-              userHits={userHits}
-              trainingMode={trainingMode}
-              compact={true}
-            />
-            <div className="fs-viz-area">
-              <DrumVisualizer activeDrums={activeDrums} onDrumClick={onDrumHit} layoutId={drumLayoutId} hihatPedalPressed={hihatPedalPressed} onHihatPedalDown={handleHihatPedalToggle} onHihatPedalUp={handleHihatPedalUp} />
-            </div>
             {trainingMode && (
               <div className="fs-stats-stack">
                 {stopAfterReps > 0 && (
@@ -552,6 +541,17 @@ export default function App() {
                 )}
               </div>
             )}
+            <Timeline
+              pattern={isTrackMode ? trackPlayback.currentPattern : pattern}
+              currentStep={isTrackMode ? trackPlayback.currentStep : playback.currentStep}
+              isPlaying={isTrackMode ? trackPlayback.isPlaying : playback.isPlaying}
+              userHits={userHits}
+              trainingMode={trainingMode}
+              compact={true}
+            />
+            <div className="fs-viz-area">
+              <DrumVisualizer activeDrums={activeDrums} onDrumClick={onDrumHit} layoutId={drumLayoutId} hihatPedalPressed={hihatPedalPressed} onHihatPedalDown={handleHihatPedalToggle} onHihatPedalUp={handleHihatPedalUp} />
+            </div>
           </div>
         </div>
       )}
