@@ -38,7 +38,7 @@ export default function Timeline({ pattern, currentStep, isPlaying, userHits = [
     });
     ro.observe(el);
     return () => ro.disconnect();
-  }, []);
+  }, [pattern]);
 
   const rows = useMemo(() =>
     pattern ? drumConfig.filter(d => d.id in pattern.grid) : [],
@@ -46,8 +46,7 @@ export default function Timeline({ pattern, currentStep, isPlaying, userHits = [
   );
 
   const steps = pattern ? pattern.measures * STEPS_PER_MEASURE : 0;
-  const viewSteps = steps * 3;
-  const totalWidth = viewSteps * STEP_WIDTH;
+  const totalWidth = steps * 3 * STEP_WIDTH;
 
   const userHitColors = {
     perfect: '#4ade80',
@@ -65,27 +64,34 @@ export default function Timeline({ pattern, currentStep, isPlaying, userHits = [
 
     if (!pattern) return;
 
-    // backgrounds
+    // backgrounds for 3 iterations
     for (let i = 0; i < rows.length; i++) {
       ctx.fillStyle = '#16162a';
       ctx.fillRect(scrollX, i * ROW_HEIGHT, totalWidth, ROW_HEIGHT);
     }
 
+    const viewSteps = steps * 3;
+
     // beat dividers
     for (let i = 0; i <= viewSteps; i++) {
       const x = scrollX + i * STEP_WIDTH;
       if (i > 0 && i < viewSteps && i % steps === 0) {
-        ctx.strokeStyle = '#6a4a9a';
+        ctx.strokeStyle = '#6b21a8';
         ctx.lineWidth = 2;
         ctx.setLineDash([6, 4]);
-      } else if (i % MEASURE_INTERVAL === 0) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, contentH);
+        ctx.stroke();
+        ctx.setLineDash([]);
+        continue;
+      }
+      if (i % MEASURE_INTERVAL === 0) {
         ctx.strokeStyle = '#4a4a6a';
         ctx.lineWidth = 2;
-        ctx.setLineDash([]);
       } else if (i % BEAT_INTERVAL === 0) {
         ctx.strokeStyle = '#2a2a4a';
         ctx.lineWidth = 1;
-        ctx.setLineDash([]);
       } else {
         continue;
       }
@@ -93,15 +99,13 @@ export default function Timeline({ pattern, currentStep, isPlaying, userHits = [
       ctx.moveTo(x, 0);
       ctx.lineTo(x, contentH);
       ctx.stroke();
-      ctx.setLineDash([]);
     }
 
     // beat numbers
     ctx.font = `${CANVAS_BEAT_FONT_SIZE}px sans-serif`;
     ctx.fillStyle = '#555';
-    const beatsPerPattern = Math.floor(steps / BEAT_INTERVAL);
     for (let i = 0; i < viewSteps; i += BEAT_INTERVAL) {
-      ctx.fillText(`${(Math.floor(i / BEAT_INTERVAL) % beatsPerPattern) + 1}`, scrollX + i * STEP_WIDTH + 4, 12);
+      ctx.fillText(`${Math.floor((i % steps) / BEAT_INTERVAL) + 1}`, scrollX + i * STEP_WIDTH + 4, 12);
     }
 
     // row dividers
@@ -115,15 +119,14 @@ export default function Timeline({ pattern, currentStep, isPlaying, userHits = [
       ctx.stroke();
     }
 
-    // drum hit blocks
+    // drum hit blocks (3 iterations)
     for (const drum of rows) {
       const row = pattern.grid[drum.id];
       if (!row) continue;
       const rowIdx = rows.indexOf(drum);
       for (let s = 0; s < viewSteps; s++) {
-        const hit = row[s % steps];
-        if (hit) {
-          ctx.globalAlpha = 0.6 + hit * 0.4;
+        if (row[s % steps]) {
+          ctx.globalAlpha = 0.6 + row[s % steps] * 0.4;
           ctx.fillStyle = drum.color;
           roundRect(ctx, scrollX + s * STEP_WIDTH + 4, rowIdx * ROW_HEIGHT + 4, STEP_WIDTH - 8, ROW_HEIGHT - 8, 4);
           ctx.fill();
@@ -132,12 +135,12 @@ export default function Timeline({ pattern, currentStep, isPlaying, userHits = [
       }
     }
 
-    // current step highlight
+    // current step highlight (middle iteration)
     const offsetStep = steps + (currentStep % steps);
     ctx.fillStyle = 'rgba(255,255,255,0.03)';
     ctx.fillRect(scrollX + offsetStep * STEP_WIDTH, 0, STEP_WIDTH, contentH);
 
-    // user hits (training mode)
+    // user hits (training mode) — drawn in the middle iteration
     if (trainingMode && userHits.length > 0) {
       const accLabels = { perfect: 'P', good: 'G', off: 'O', miss: 'X' };
       for (const hit of userHits) {
@@ -231,7 +234,7 @@ export default function Timeline({ pattern, currentStep, isPlaying, userHits = [
     canvas.style.height = rect.height + 'px';
     const ctx = canvas.getContext('2d');
     ctx.scale(dpr, dpr);
-  }, [dimensions]);
+  }, [dimensions, pattern]);
 
   // immediate draw on step/pattern/isPlaying change
   useLayoutEffect(() => {
