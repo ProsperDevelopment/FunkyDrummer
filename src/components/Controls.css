@@ -393,6 +393,23 @@
   min-width: 36px;
 }
 
+.track-info-group {
+  gap: 6px;
+}
+
+.track-info-label {
+  font-size: clamp(0.65rem, 1.3vw, 0.85rem);
+  color: #5b9cf6;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.track-info-progress {
+  font-size: clamp(0.6rem, 1.2vw, 0.78rem);
+  color: #888;
+  font-variant-numeric: tabular-nums;
+}
+
 .session-overlay {
   position: fixed;
   inset: 0;

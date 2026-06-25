@@ -1,15 +1,18 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import Timeline from './components/Timeline';
 import PatternMenu from './components/PatternMenu';
+import TrackMenu from './components/TrackMenu';
 import Controls from './components/Controls';
 import DrumVisualizer from './components/DrumVisualizer';
 import HelpModal from './components/HelpModal';
 import FullscreenControls from './components/FullscreenControls';
 import SettingsModal from './components/SettingsModal';
 import { drumPatterns } from './data/drumPatterns';
+import { trackList } from './data/trackList';
 import { useMIDI } from './hooks/useMIDI';
 import { useKeyboard } from './hooks/useKeyboard';
 import { usePlayback } from './hooks/usePlayback';
+import { useTrackPlayback } from './hooks/useTrackPlayback';
 import { useTraining } from './hooks/useTraining';
 import { useActiveDrums } from './hooks/useActiveDrums';
 import { playDrum, setKit, getActiveKit, isKitLoading, getHihatPedalPressed, setHihatPedalPressed } from './audio/drumSounds';
@@ -25,6 +28,9 @@ function getPattern(id) {
 
 export default function App() {
   const [selectedPatternId, setSelectedPatternId] = useState(drumPatterns[0].id);
+  const [selectedTrackId, setSelectedTrackId] = useState(null);
+  const isTrackMode = selectedTrackId !== null;
+  const selectedTrack = isTrackMode ? trackList.find(t => t.id === selectedTrackId) : null;
   const [bpmOverride, setBpmOverride] = useState(null);
   const [stopAfterReps, setStopAfterReps] = useState(REPS_MIN);
   const [sessionResult, setSessionResult] = useState(null);
@@ -54,10 +60,14 @@ export default function App() {
   }, [hitVisualizer]);
 
   const playback = usePlayback(pattern, bpmOverride, stopAfterReps, onPatternDrumPlayed, metronomeOn, drumPlaybackOn, countdownOn, grooveOn);
+  const trackPlayback = useTrackPlayback(selectedTrack, onPatternDrumPlayed, metronomeOn, drumPlaybackOn);
 
   const defaultBpm = pattern.bpm;
   const effectiveBpm = bpmOverride || defaultBpm;
+  const trackEffectiveBpm = selectedTrack?.bpm ?? effectiveBpm;
 
+  const trainingPattern = isTrackMode ? trackPlayback.currentPattern : pattern;
+  const trainingCurrentStep = isTrackMode ? trackPlayback.currentStep : playback.currentStep;
   const {
     trainingMode,
     setTrainingMode,
@@ -66,7 +76,7 @@ export default function App() {
     clearHits,
     accuracyStats,
     missedHits,
-  } = useTraining(pattern, playback.currentStep);
+  } = useTraining(trainingPattern, trainingCurrentStep);
 
   const onDrumHit = useCallback((drumId, velocity) => {
     const resolvedId = drumId === 'hihat'
@@ -103,13 +113,22 @@ export default function App() {
   }, [effectiveBpm, defaultBpm]);
 
   useEffect(() => {
-    if (playback.repsComplete && trainingMode) {
+    if (playback.repsComplete && trainingMode && !isTrackMode) {
       setSessionResult({
         stats: accuracyStats || { perfect: 0, good: 0, off: 0, miss: 0, total: 0, score: 0 },
         missedHits,
       });
     }
-  }, [playback.repsComplete, trainingMode, accuracyStats]);
+  }, [playback.repsComplete, trainingMode, accuracyStats, isTrackMode]);
+
+  useEffect(() => {
+    if (trackPlayback.isFinished && trainingMode && isTrackMode) {
+      setSessionResult({
+        stats: accuracyStats || { perfect: 0, good: 0, off: 0, miss: 0, total: 0, score: 0 },
+        missedHits,
+      });
+    }
+  }, [trackPlayback.isFinished, trainingMode, accuracyStats, isTrackMode]);
 
   const dismissResult = useCallback(() => {
     setSessionResult(null);
@@ -119,10 +138,19 @@ export default function App() {
 
   const handlePatternSelect = useCallback((id) => {
     playback.stop();
+    trackPlayback.stop();
+    setSelectedTrackId(null);
     setSelectedPatternId(id);
     setBpmOverride(null);
     setSessionResult(null);
-  }, [playback.stop]);
+  }, [playback.stop, trackPlayback.stop]);
+
+  const handleTrackSelect = useCallback((id) => {
+    playback.stop();
+    trackPlayback.stop();
+    setSelectedTrackId(id);
+    setSessionResult(null);
+  }, [playback.stop, trackPlayback.stop]);
 
   const handleBpmChange = useCallback((value) => {
     setBpmOverride(value === defaultBpm ? null : value);
@@ -195,9 +223,19 @@ export default function App() {
     setGrooveOn(v => !v);
   }, []);
 
+  const keyboardTogglePlay = useCallback(() => {
+    if (isTrackMode) trackPlayback.togglePlay();
+    else playback.togglePlay();
+  }, [isTrackMode, trackPlayback.togglePlay, playback.togglePlay]);
+
+  const keyboardStop = useCallback(() => {
+    if (isTrackMode) trackPlayback.stop();
+    else playback.stop();
+  }, [isTrackMode, trackPlayback.stop, playback.stop]);
+
   useKeyboard(onDrumHit, {
-    onTogglePlay: playback.togglePlay,
-    onStop: playback.stop,
+    onTogglePlay: keyboardTogglePlay,
+    onStop: keyboardStop,
     onToggleMetronome: handleToggleMetronome,
     onToggleDrumPlayback: handleToggleDrumPlayback,
     onTrainingToggle: handleTrainingToggle,
@@ -249,20 +287,28 @@ export default function App() {
               selectedPatternId={selectedPatternId}
               onSelectPattern={handlePatternSelect}
             />
+            <TrackMenu
+              selectedTrackId={selectedTrackId}
+              currentTrackName={trackPlayback.currentPattern?.name}
+              onSelectTrack={handleTrackSelect}
+              isPlayingTrack={trackPlayback.isPlaying}
+              trackPart={trackPlayback.currentPartIndex}
+              trackTotalParts={selectedTrack?.parts.length ?? 0}
+            />
           </aside>
         )}
 
         <main className={`app-main${showPatterns ? '' : ' app-main-full'}`}>
           <Controls
-            isPlaying={playback.isPlaying}
-            onTogglePlay={playback.togglePlay}
-            onStop={playback.stop}
-            bpm={effectiveBpm}
+            isPlaying={isTrackMode ? trackPlayback.isPlaying : playback.isPlaying}
+            onTogglePlay={isTrackMode ? trackPlayback.togglePlay : playback.togglePlay}
+            onStop={isTrackMode ? trackPlayback.stop : playback.stop}
+            bpm={isTrackMode ? trackEffectiveBpm : effectiveBpm}
             trainingMode={trainingMode}
             onTrainingToggle={handleTrainingToggle}
             accuracyStats={accuracyStats}
             missedHits={missedHits}
-            bpmOverride={bpmOverride}
+            bpmOverride={isTrackMode ? null : bpmOverride}
             onBpmChange={handleBpmChange}
             stopAfterReps={stopAfterReps}
             onStopAfterRepsChange={setStopAfterReps}
@@ -279,12 +325,16 @@ export default function App() {
             onCountdownToggle={handleCountdownToggle}
             grooveOn={grooveOn}
             onGrooveToggle={handleGrooveToggle}
+            trackMode={isTrackMode}
+            trackName={selectedTrack?.name ?? ''}
+            trackPart={trackPlayback.currentPartIndex}
+            trackTotalParts={selectedTrack?.parts.length ?? 0}
           />
 
           <Timeline
-            pattern={pattern}
-            currentStep={playback.currentStep}
-            isPlaying={playback.isPlaying}
+            pattern={isTrackMode ? trackPlayback.currentPattern : pattern}
+            currentStep={isTrackMode ? trackPlayback.currentStep : playback.currentStep}
+            isPlaying={isTrackMode ? trackPlayback.isPlaying : playback.isPlaying}
             userHits={userHits}
             trainingMode={trainingMode}
             compact={false}
@@ -305,10 +355,10 @@ export default function App() {
             </h1>
             <span className="app-subtitle">Drum Machine & Trainer</span>
             <FullscreenControls
-              isPlaying={playback.isPlaying}
-              onTogglePlay={playback.togglePlay}
-              onStop={playback.stop}
-              bpm={effectiveBpm}
+              isPlaying={isTrackMode ? trackPlayback.isPlaying : playback.isPlaying}
+              onTogglePlay={isTrackMode ? trackPlayback.togglePlay : playback.togglePlay}
+              onStop={isTrackMode ? trackPlayback.stop : playback.stop}
+              bpm={isTrackMode ? trackEffectiveBpm : effectiveBpm}
               onBpmChange={handleBpmChange}
               drumPlaybackOn={drumPlaybackOn}
               onToggleDrumPlayback={handleToggleDrumPlayback}
@@ -373,9 +423,9 @@ export default function App() {
               </div>
             )}
             <Timeline
-              pattern={pattern}
-              currentStep={playback.currentStep}
-              isPlaying={playback.isPlaying}
+              pattern={isTrackMode ? trackPlayback.currentPattern : pattern}
+              currentStep={isTrackMode ? trackPlayback.currentStep : playback.currentStep}
+              isPlaying={isTrackMode ? trackPlayback.isPlaying : playback.isPlaying}
               userHits={userHits}
               trainingMode={trainingMode}
               compact={true}

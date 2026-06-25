@@ -13,6 +13,7 @@ export default function Controls({
   drumPlaybackOn, onToggleDrumPlayback,
   countdownOn, onCountdownToggle,
   grooveOn, onGrooveToggle,
+  trackMode, trackName, trackPart, trackTotalParts,
 }) {
   const hasSessionResult = sessionResult && sessionResult.stats;
 
@@ -37,6 +38,13 @@ export default function Controls({
           </button>
           <button className="btn btn-stop" onClick={onStop}>⏹ Stop</button>
         </div>
+
+        {trackMode && (
+          <div className="controls-group track-info-group">
+            <span className="track-info-label">{trackName}</span>
+            <span className="track-info-progress">Part {trackPart + 1}/{trackTotalParts}</span>
+          </div>
+        )}
 
         <div className="controls-group bpm-group">
           <label className="control-label">BPM</label>

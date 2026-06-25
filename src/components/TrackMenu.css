@@ -1,0 +1,82 @@
+.track-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.track-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  max-height: 320px;
+}
+
+.track-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 10px;
+  background: #16162a;
+  border: 1px solid #2a2a4a;
+  border-radius: 5px;
+  color: #aaa;
+  cursor: pointer;
+  transition: all 0.15s;
+  text-align: left;
+  font-size: 0.78rem;
+  font-family: inherit;
+  gap: 8px;
+  min-width: 0;
+}
+
+.track-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1;
+}
+
+.track-item:hover {
+  background: #1e1e3e;
+  border-color: #3a3a6a;
+  color: #ddd;
+}
+
+.track-item.active {
+  background: #1a2a3e;
+  border-color: #5b9cf6;
+  color: #9db5fd;
+}
+
+.track-name {
+  font-weight: 600;
+  font-size: 0.82rem;
+}
+
+.track-desc {
+  font-size: 0.65rem;
+  color: #666;
+  line-height: 1.3;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.track-bpm {
+  font-size: 0.68rem;
+  color: #666;
+  flex-shrink: 0;
+}
+
+.track-progress {
+  font-size: 0.65rem;
+  color: #5b9cf6;
+}
+
+.track-current-pattern {
+  font-size: 0.65rem;
+  color: #8b5cf6;
+  font-style: italic;
+}
