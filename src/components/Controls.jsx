@@ -101,7 +101,7 @@ export default function Controls({
 
         <div className="controls-group">
           <button
-            className={`btn btn-countdown ${countdownOn ? 'active' : ''}`}
+            className={`btn btn-countdown ${countdownOn ? 'active' : 'off'}`}
             onClick={onCountdownToggle}
           >
             🚦

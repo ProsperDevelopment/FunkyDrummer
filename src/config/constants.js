@@ -9,7 +9,7 @@ export const BPM_STEP = 5
 export const REPS_MIN = 5
 export const REPS_MAX = 50
 
-export const COUNT_IN_BEATS = 4
+export const COUNT_IN_BEATS = 16
 
 export const PEDAL_CC = 4
 export const PEDAL_THRESHOLD = 64

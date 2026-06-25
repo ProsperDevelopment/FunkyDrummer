@@ -9,6 +9,7 @@ export function usePlayback(pattern, bpmOverride, stopAfterReps = 0, onDrumPlaye
   const [totalSteps, setTotalSteps] = useState(0);
   const [currentLoop, setCurrentLoop] = useState(0);
   const [repsComplete, setRepsComplete] = useState(false);
+  const [countdownCount, setCountdownCount] = useState(0);
   const intervalRef = useRef(null);
   const countdownTimerRef = useRef(null);
   const stepRef = useRef(0);
@@ -50,6 +51,7 @@ export function usePlayback(pattern, bpmOverride, stopAfterReps = 0, onDrumPlaye
     setIsPlaying(false);
     setIsCountdown(false);
     setCurrentStep(0);
+    setCountdownCount(0);
     stepRef.current = 0;
     loopCountRef.current = 0;
     setCurrentLoop(0);
@@ -130,13 +132,15 @@ export function usePlayback(pattern, bpmOverride, stopAfterReps = 0, onDrumPlaye
       setIsCountdown(true);
       let count = COUNT_IN_BEATS;
       const tick = () => {
-        playMetronomeClick(count === 4);
+        setCountdownCount(count);
+        if (count % 4 === 0) playMetronomeClick(true);
         count--;
         if (count > 0) {
           countdownTimerRef.current = setTimeout(tick, intervalMs);
         } else {
           countdownTimerRef.current = null;
           setIsCountdown(false);
+          setCountdownCount(0);
           startPattern(intervalMs);
         }
       };
@@ -168,5 +172,5 @@ export function usePlayback(pattern, bpmOverride, stopAfterReps = 0, onDrumPlaye
     setRepsComplete(false);
   }, []);
 
-  return { isPlaying, isCountdown, currentStep, totalSteps, currentLoop, repsComplete, togglePlay, stop, play, clearRepsComplete };
+  return { isPlaying, isCountdown, currentStep, totalSteps, currentLoop, repsComplete, countdownCount, togglePlay, stop, play, clearRepsComplete };
 }

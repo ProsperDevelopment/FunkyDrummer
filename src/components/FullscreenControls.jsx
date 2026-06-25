@@ -8,6 +8,7 @@ export default function FullscreenControls({
   trainingMode, onTrainingToggle,
   stopAfterReps, onStopAfterRepsChange, currentLoop,
   grooveOn, onGrooveToggle,
+  countdownOn, onCountdownToggle,
 }) {
   const [showBpm, setShowBpm] = useState(false);
   const [showReps, setShowReps] = useState(false);
@@ -82,6 +83,14 @@ export default function FullscreenControls({
           title={grooveOn ? 'Groove On' : 'Groove Off'}
         >
           🔀
+        </button>
+
+        <button
+          className={`fs-btn ${countdownOn ? 'active' : 'off'}`}
+          onClick={onCountdownToggle}
+          title={countdownOn ? 'Countdown On' : 'Countdown Off'}
+        >
+          🚦
         </button>
 
         <div className="fs-separator" />
