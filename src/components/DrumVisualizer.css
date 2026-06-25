@@ -9,8 +9,7 @@
 .drum-visualizer-svg {
   display: block;
   width: 100%;
-  height: auto;
-  max-height: 240px;
+  height: 100%;
   touch-action: none;
   -webkit-user-select: none;
   user-select: none;

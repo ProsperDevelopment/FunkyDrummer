@@ -38,6 +38,10 @@ export function useKeyboard(onNoteOn, actions = {}, disabled = false) {
           e.preventDefault();
           actions.onTrainingToggle?.();
           break;
+        case 'g':
+          e.preventDefault();
+          actions.onGrooveToggle?.();
+          break;
         case '+':
         case '=':
           e.preventDefault();

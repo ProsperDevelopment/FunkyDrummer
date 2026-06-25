@@ -11,7 +11,7 @@ function getScrollX(step, stageWidth) {
   return stageWidth / 2 - step * STEP_WIDTH - STEP_WIDTH / 2;
 }
 
-export default function Timeline({ pattern, currentStep, isPlaying, userHits = [], trainingMode = false }) {
+export default function Timeline({ pattern, currentStep, isPlaying, userHits = [], trainingMode = false, compact = false }) {
   const canvasRef = useRef(null);
   const containerRef = useRef(null);
   const [dimensions, setDimensions] = useState({ width: 800, height: 400 });
@@ -262,11 +262,11 @@ export default function Timeline({ pattern, currentStep, isPlaying, userHits = [
 
   return (
     <div className="timeline-container">
-      <div className="timeline-drum-labels" style={{ width: HEADER_WIDTH }}>
+      <div className="timeline-drum-labels" style={{ width: compact ? 32 : HEADER_WIDTH }}>
         {rows.map(drum => (
-          <div key={drum.id} className="drum-label" style={{ height: ROW_HEIGHT }}>
+          <div key={drum.id} className={`drum-label${compact ? ' compact' : ''}`} style={{ height: ROW_HEIGHT }}>
             <span className="drum-indicator" style={{ backgroundColor: drum.color }} />
-            {drum.name}
+            {!compact && drum.name}
           </div>
         ))}
       </div>

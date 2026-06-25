@@ -1,19 +1,11 @@
 import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
 import { STEPS_PER_MEASURE, TRAINING_HIT_TOLERANCE, TRAINING_SCORE_GOOD_WEIGHT, TRAINING_SCORE_MULTIPLIER } from '../config/constants';
 
-function computeStats(hits) {
-  if (hits.length === 0) return null;
-  const counts = { perfect: 0, good: 0, off: 0, miss: 0 };
-  for (const h of hits) counts[h.accuracy]++;
-  const total = hits.length;
-  const score = Math.round(((counts.perfect + counts.good * TRAINING_SCORE_GOOD_WEIGHT) / total) * TRAINING_SCORE_MULTIPLIER);
-  return { ...counts, total, score };
-}
-
 export function useTraining(pattern, currentStep) {
   const [trainingMode, setTrainingMode] = useState(false);
   const [userHits, setUserHits] = useState([]);
   const [missedHits, setMissedHits] = useState(0);
+  const runningCountsRef = useRef({ perfect: 0, good: 0, off: 0, miss: 0 });
   const hitIdRef = useRef(0);
   const currentStepRef = useRef(currentStep);
   const prevStepRef = useRef(currentStep);
@@ -29,6 +21,7 @@ export function useTraining(pattern, currentStep) {
       prevPatternIdRef.current = pattern?.id;
       setUserHits([]);
       setMissedHits(0);
+      runningCountsRef.current = { perfect: 0, good: 0, off: 0, miss: 0 };
     }
   }, [pattern?.id]);
 
@@ -36,6 +29,7 @@ export function useTraining(pattern, currentStep) {
     setUserHits([]);
     setMissedHits(0);
     missedStepsRef.current = new Set();
+    runningCountsRef.current = { perfect: 0, good: 0, off: 0, miss: 0 };
   }, []);
 
   const userHitsRef = useRef([]);
@@ -110,6 +104,9 @@ export function useTraining(pattern, currentStep) {
       }
     }
 
+    runningCountsRef.current[accuracy]++;
+    runningCountsRef.current.total = runningCountsRef.current.perfect + runningCountsRef.current.good + runningCountsRef.current.off + runningCountsRef.current.miss;
+
     const hit = {
       id: hitIdRef.current++,
       drumId,
@@ -129,6 +126,7 @@ export function useTraining(pattern, currentStep) {
       setUserHits([]);
       setMissedHits(0);
       missedStepsRef.current = new Set();
+      runningCountsRef.current = { perfect: 0, good: 0, off: 0, miss: 0 };
       return;
     }
     const interval = setInterval(() => {
@@ -138,7 +136,13 @@ export function useTraining(pattern, currentStep) {
     return () => clearInterval(interval);
   }, [trainingMode]);
 
-  const accuracyStats = useMemo(() => computeStats(userHits), [userHits]);
+  const accuracyStats = useMemo(() => {
+    const c = runningCountsRef.current;
+    const total = c.perfect + c.good + c.off + c.miss;
+    if (total === 0) return null;
+    const score = Math.round(((c.perfect + c.good * TRAINING_SCORE_GOOD_WEIGHT) / total) * TRAINING_SCORE_MULTIPLIER);
+    return { perfect: c.perfect, good: c.good, off: c.off, miss: c.miss, total, score };
+  }, [userHits]);
 
   return {
     trainingMode,
@@ -146,6 +150,7 @@ export function useTraining(pattern, currentStep) {
       setUserHits([]);
       setMissedHits(0);
       missedStepsRef.current = new Set();
+      runningCountsRef.current = { perfect: 0, good: 0, off: 0, miss: 0 };
       setTrainingMode(v);
     },
     userHits,

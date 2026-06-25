@@ -12,6 +12,7 @@ export default function Controls({
   metronomeOn, onToggleMetronome,
   drumPlaybackOn, onToggleDrumPlayback,
   countdownOn, onCountdownToggle,
+  grooveOn, onGrooveToggle,
 }) {
   const hasSessionResult = sessionResult && sessionResult.stats;
 
@@ -99,6 +100,15 @@ export default function Controls({
 
         <div className="controls-group">
           <button
+            className={`btn btn-groove ${grooveOn ? 'active' : ''}`}
+            onClick={onGrooveToggle}
+          >
+            {grooveOn ? '🔀 Groove On' : '🔀 Groove'}
+          </button>
+        </div>
+
+        <div className="controls-group">
+          <button
             className={`btn btn-metronome ${metronomeOn ? 'active' : ''}`}
             onClick={onToggleMetronome}
           >
@@ -174,6 +184,14 @@ export default function Controls({
           ) : (
             <div className="stats-box stats-box-empty">
               <span className="stat-label">Waiting for hits...</span>
+            </div>
+          )}
+          {stopAfterReps > 0 && (
+            <div className="reps-progress-bar">
+              <div
+                className="reps-progress-fill"
+                style={{ width: `${Math.min((currentLoop / stopAfterReps) * 100, 100)}%` }}
+              />
             </div>
           )}
         </div>

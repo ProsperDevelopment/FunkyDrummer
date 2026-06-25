@@ -7,6 +7,7 @@ export default function FullscreenControls({
   drumPlaybackOn, onToggleDrumPlayback,
   trainingMode, onTrainingToggle,
   stopAfterReps, onStopAfterRepsChange, currentLoop,
+  grooveOn, onGrooveToggle,
 }) {
   const [showBpm, setShowBpm] = useState(false);
   const [showReps, setShowReps] = useState(false);
@@ -73,6 +74,14 @@ export default function FullscreenControls({
           title={trainingMode ? 'Training On' : 'Training Off'}
         >
           🎯
+        </button>
+
+        <button
+          className={`fs-btn ${grooveOn ? 'active' : ''}`}
+          onClick={onGrooveToggle}
+          title={grooveOn ? 'Groove On' : 'Groove Off'}
+        >
+          🔀
         </button>
 
         <div className="fs-separator" />

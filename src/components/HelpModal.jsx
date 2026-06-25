@@ -15,21 +15,41 @@ export default function HelpModal({ onClose }) {
             <h3>Playback</h3>
             <table className="help-table">
               <tbody>
-                <tr><td>▶ Play / ⏸ Pause</td><td>Start/stop pattern</td></tr>
-                <tr><td>⏹ Stop</td><td>Stop and reset</td></tr>
-                <tr><td>🔊 Click</td><td>Toggle metronome</td></tr>
-                <tr><td>🥁 Pattern On/Off</td><td>Mute pattern drums</td></tr>
+                <tr><td>▶ Play / ⏸ Pause</td><td>Start or pause the pattern</td></tr>
+                <tr><td>⏹ Stop</td><td>Stop and reset to the start</td></tr>
+                <tr><td>🚦 Countdown</td><td>Play 4 metronome clicks before the pattern starts</td></tr>
+                <tr><td>🔊 Click</td><td>Toggle metronome click on/off</td></tr>
+                <tr><td>🥁 Pattern On/Off</td><td>Mute or unmute the pattern drums</td></tr>
               </tbody>
             </table>
           </section>
 
           <section className="help-section">
-            <h3>BPM</h3>
+            <h3>BPM & Reps</h3>
             <p>Use the slider or number input to adjust tempo (30–300). Switching patterns resets to the pattern's default BPM.</p>
+            <p>In training mode, set <strong>Reps</strong> to auto-stop after a number of pattern repetitions. A slim progress bar tracks your session progress.</p>
           </section>
 
           <section className="help-section">
             <h3>Keyboard Shortcuts</h3>
+            <table className="help-table">
+              <thead>
+                <tr><th>Key</th><th>Action</th></tr>
+              </thead>
+              <tbody>
+                <tr><td><kbd className="help-key">Space</kbd></td><td>Play / Pause</td></tr>
+                <tr><td><kbd className="help-key">Esc</kbd></td><td>Stop</td></tr>
+                <tr><td><kbd className="help-key">M</kbd></td><td>Toggle metronome</td></tr>
+                <tr><td><kbd className="help-key">P</kbd></td><td>Toggle pattern playback</td></tr>
+                <tr><td><kbd className="help-key">T</kbd></td><td>Toggle training mode</td></tr>
+                <tr><td><kbd className="help-key">G</kbd></td><td>Toggle groove</td></tr>
+                <tr><td><kbd className="help-key">+</kbd> / <kbd className="help-key">-</kbd></td><td>BPM up / down by 5</td></tr>
+              </tbody>
+            </table>
+          </section>
+
+          <section className="help-section">
+            <h3>Drum Keys</h3>
             <table className="help-table">
               <thead>
                 <tr><th>Key</th><th>Drum</th></tr>
@@ -47,12 +67,13 @@ export default function HelpModal({ onClose }) {
 
           <section className="help-section">
             <h3>MIDI</h3>
-            <p>Connect a USB MIDI controller, select it from the MIDI dropdown, and the pads map automatically. Use the <strong>Map</strong> dropdown to switch between General MIDI and Roland TD-02K note assignments.</p>
+            <p>Connect a USB MIDI controller and select it from <strong>Settings → MIDI Input</strong>. Pads map automatically using the selected note map. Use the <strong>Map</strong> dropdown to switch between General MIDI and Roland TD-02K assignments.</p>
+            <p>The hi-hat pedal (CC 4) opens and closes the hi-hat — press to close, release to open.</p>
           </section>
 
           <section className="help-section">
             <h3>Training Mode</h3>
-            <p>Enable training to track your hitting accuracy. Play along with the pattern and see real-time stats.</p>
+            <p>Enable training to track your hitting accuracy. Play along with the pattern and see real-time stats for Perfect, Good, Off, Extra, and Missed hits.</p>
             <table className="help-table">
               <thead>
                 <tr><th>Rating</th><th>Meaning</th></tr>
@@ -64,18 +85,39 @@ export default function HelpModal({ onClose }) {
                 <tr><td className="acc-miss">Extra</td><td>No matching pattern note</td></tr>
               </tbody>
             </table>
-            <p>Set <strong>Reps</strong> to auto-stop after a number of pattern repetitions. After stopping, a session summary shows your accuracy.</p>
+            <p>When reps are set, the session stops automatically after the last repetition and shows a summary with your overall accuracy score. Press any key to dismiss the summary.</p>
+          </section>
+
+          <section className="help-section">
+            <h3>Groove</h3>
+            <p>Turn on <strong>Groove (🔀)</strong> to add micro-timing offsets to each 16th-note position. Each pattern has a tailored groove profile — swing, shuffle, or funk feels — that shifts off-beat notes slightly behind the beat for a more human, organic rhythm. Toggle it on/off at any time, even during playback.</p>
+          </section>
+
+          <section className="help-section">
+            <h3>Fullscreen Mode</h3>
+            <p>Click the <strong>⛶</strong> button to enter fullscreen. The timeline, drum visualizer, and training stats fill the entire screen. Controls collapse into a compact header row. Click <strong>⛶</strong> again to exit.</p>
+          </section>
+
+          <section className="help-section">
+            <h3>Patterns</h3>
+            <p>Browse patterns grouped by style. Use the <strong>style filter</strong> dropdown above the list to show only patterns from a specific genre. Scroll the list to see all available patterns.</p>
           </section>
 
           <section className="help-section">
             <h3>Drum Visualizer</h3>
-            <p>Toggle the <strong>View</strong> button to show a top-down SVG drum kit. Tap or click any drum to play it. Drums light up when triggered by the pattern, MIDI, or keyboard. Multi-touch is supported on touch devices.</p>
-            <p>Use the <strong>Layout</strong> dropdown to switch between kit layouts (Standard, Roland TD-02K).</p>
+            <p>Toggle <strong>View</strong> to show a top-down SVG drum kit. Tap or click any drum to play it. Drums light up when triggered by the pattern, MIDI, or keyboard. Multi-touch supported on touch devices.</p>
+            <p>Switch kit <strong>Layout</strong> in Settings between Standard and Roland TD-02K layouts.</p>
           </section>
 
           <section className="help-section">
-            <h3>Drum Kits</h3>
-            <p>Switch between <strong>Stock Kit</strong> (synthesized) and <strong>Boom Bap</strong> (WAV samples) using the Kit dropdown.</p>
+            <h3>Settings</h3>
+            <p>Open <strong>Settings (⚙)</strong> to configure:</p>
+            <ul className="help-list">
+              <li>Drum Kit — Stock (synthesized) or Boom Bap (WAV samples)</li>
+              <li>Drum Layout — Standard or Roland TD-02K</li>
+              <li>MIDI Input — Select your controller</li>
+              <li>MIDI Map — Note assignment scheme</li>
+            </ul>
           </section>
         </div>
       </div>
