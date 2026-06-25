@@ -46,7 +46,8 @@ export default function Timeline({ pattern, currentStep, isPlaying, userHits = [
   );
 
   const steps = pattern ? pattern.measures * STEPS_PER_MEASURE : 0;
-  const totalWidth = steps * STEP_WIDTH;
+  const viewSteps = steps * 3;
+  const totalWidth = viewSteps * STEP_WIDTH;
 
   const userHitColors = {
     perfect: '#4ade80',
@@ -71,14 +72,20 @@ export default function Timeline({ pattern, currentStep, isPlaying, userHits = [
     }
 
     // beat dividers
-    for (let i = 0; i <= steps; i++) {
+    for (let i = 0; i <= viewSteps; i++) {
       const x = scrollX + i * STEP_WIDTH;
-      if (i % MEASURE_INTERVAL === 0) {
+      if (i > 0 && i < viewSteps && i % steps === 0) {
+        ctx.strokeStyle = '#6a4a9a';
+        ctx.lineWidth = 2;
+        ctx.setLineDash([6, 4]);
+      } else if (i % MEASURE_INTERVAL === 0) {
         ctx.strokeStyle = '#4a4a6a';
         ctx.lineWidth = 2;
+        ctx.setLineDash([]);
       } else if (i % BEAT_INTERVAL === 0) {
         ctx.strokeStyle = '#2a2a4a';
         ctx.lineWidth = 1;
+        ctx.setLineDash([]);
       } else {
         continue;
       }
@@ -86,13 +93,15 @@ export default function Timeline({ pattern, currentStep, isPlaying, userHits = [
       ctx.moveTo(x, 0);
       ctx.lineTo(x, contentH);
       ctx.stroke();
+      ctx.setLineDash([]);
     }
 
     // beat numbers
     ctx.font = `${CANVAS_BEAT_FONT_SIZE}px sans-serif`;
     ctx.fillStyle = '#555';
-    for (let i = 0; i < steps; i += BEAT_INTERVAL) {
-      ctx.fillText(`${Math.floor(i / BEAT_INTERVAL) + 1}`, scrollX + i * STEP_WIDTH + 4, 12);
+    const beatsPerPattern = Math.floor(steps / BEAT_INTERVAL);
+    for (let i = 0; i < viewSteps; i += BEAT_INTERVAL) {
+      ctx.fillText(`${(Math.floor(i / BEAT_INTERVAL) % beatsPerPattern) + 1}`, scrollX + i * STEP_WIDTH + 4, 12);
     }
 
     // row dividers
@@ -111,9 +120,10 @@ export default function Timeline({ pattern, currentStep, isPlaying, userHits = [
       const row = pattern.grid[drum.id];
       if (!row) continue;
       const rowIdx = rows.indexOf(drum);
-      for (let s = 0; s < steps; s++) {
-        if (row[s]) {
-          ctx.globalAlpha = 0.6 + row[s] * 0.4;
+      for (let s = 0; s < viewSteps; s++) {
+        const hit = row[s % steps];
+        if (hit) {
+          ctx.globalAlpha = 0.6 + hit * 0.4;
           ctx.fillStyle = drum.color;
           roundRect(ctx, scrollX + s * STEP_WIDTH + 4, rowIdx * ROW_HEIGHT + 4, STEP_WIDTH - 8, ROW_HEIGHT - 8, 4);
           ctx.fill();
@@ -123,7 +133,7 @@ export default function Timeline({ pattern, currentStep, isPlaying, userHits = [
     }
 
     // current step highlight
-    const offsetStep = currentStep % steps;
+    const offsetStep = steps + (currentStep % steps);
     ctx.fillStyle = 'rgba(255,255,255,0.03)';
     ctx.fillRect(scrollX + offsetStep * STEP_WIDTH, 0, STEP_WIDTH, contentH);
 
@@ -133,7 +143,7 @@ export default function Timeline({ pattern, currentStep, isPlaying, userHits = [
       for (const hit of userHits) {
         const rowIdx = rows.findIndex(r => r.id === hit.drumId);
         if (rowIdx === -1) continue;
-        const cx = scrollX + hit.step * STEP_WIDTH + STEP_WIDTH / 2;
+        const cx = scrollX + (steps + hit.step) * STEP_WIDTH + STEP_WIDTH / 2;
         const cy = rowIdx * ROW_HEIGHT + ROW_HEIGHT / 2;
         const color = userHitColors[hit.accuracy] || userHitColors.miss;
 
@@ -154,7 +164,7 @@ export default function Timeline({ pattern, currentStep, isPlaying, userHits = [
             }
           }
           if (nearestPatternStep >= 0 && nearestDist > 0) {
-            const px = scrollX + nearestPatternStep * STEP_WIDTH + STEP_WIDTH / 2;
+            const px = scrollX + (steps + nearestPatternStep) * STEP_WIDTH + STEP_WIDTH / 2;
             ctx.save();
             ctx.strokeStyle = color;
             ctx.globalAlpha = 0.25;
@@ -227,7 +237,7 @@ export default function Timeline({ pattern, currentStep, isPlaying, userHits = [
   useLayoutEffect(() => {
     const ctx = canvasRef.current?.getContext('2d');
     if (!ctx || !pattern) return;
-    const scrollX = getScrollX(currentStep % steps, canvasWidth);
+    const scrollX = getScrollX(steps + (currentStep % steps), canvasWidth);
     drawRef.current(ctx, scrollX);
   }, [currentStep, pattern, isPlaying, canvasWidth, rows, userHits, trainingMode, steps]);
 
@@ -238,7 +248,7 @@ export default function Timeline({ pattern, currentStep, isPlaying, userHits = [
     const ctx = canvas.getContext('2d');
 
     const tick = () => {
-      const s = stepRef.current % steps;
+      const s = steps + (stepRef.current % steps);
       const scrollX = getScrollX(s, canvasWidth);
       drawRef.current(ctx, scrollX);
       rafRef.current = requestAnimationFrame(tick);
