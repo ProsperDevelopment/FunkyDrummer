@@ -248,6 +248,8 @@ export const drumPatterns = [
           this.grid.hihat[o + j] = 0.5;
         }
         this.grid.hihat[o + 15] = 0.7;
+        this.grid.hihatOpen[o + 5] = 0.6;
+        this.grid.hihatOpen[o + 13] = 0.5;
       }
       return this;
     }
@@ -305,6 +307,7 @@ export const drumPatterns = [
       ['kick',  [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
       ['snare', [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
       ['hihat', [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+      ['hihatOpen', [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
       ['ride',  [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
     ),
     rebuild() {
@@ -313,6 +316,7 @@ export const drumPatterns = [
       this.grid.kick = new Array(steps).fill(0);
       this.grid.snare = new Array(steps).fill(0);
       this.grid.hihat = new Array(steps).fill(0);
+      this.grid.hihatOpen = new Array(steps).fill(0);
       this.grid.ride = new Array(steps).fill(0);
       for (let i = 0; i < m; i++) {
         const o = i * 16;
@@ -331,6 +335,8 @@ export const drumPatterns = [
           this.grid.ride[o + j] = 0.5;
         }
         this.grid.ride[o + 0] = 0.7;
+        this.grid.hihatOpen[o + 5] = 0.6;
+        this.grid.hihatOpen[o + 13] = 0.5;
       }
       return this;
     }
