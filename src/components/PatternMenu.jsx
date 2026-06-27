@@ -3,10 +3,14 @@ import { drumPatterns } from '../data/drumPatterns';
 import './PatternMenu.css';
 
 export default function PatternMenu({ selectedPatternId, onSelectPattern, embedded, activeStyles }) {
+  const visiblePatterns = useMemo(() =>
+    drumPatterns.filter(p => !p.id.endsWith('-edge')),
+  []);
+
   const grouped = useMemo(() => {
     const filtered = activeStyles.length === 0
-      ? drumPatterns
-      : drumPatterns.filter(p => activeStyles.includes(p.style));
+      ? visiblePatterns
+      : visiblePatterns.filter(p => activeStyles.includes(p.style));
     const map = {};
     for (const p of filtered) {
       const s = p.style || 'Other';

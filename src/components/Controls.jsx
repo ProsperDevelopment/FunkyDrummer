@@ -13,6 +13,7 @@ export default function Controls({
   drumPlaybackOn, onToggleDrumPlayback,
   countdownOn, onCountdownToggle,
   grooveOn, onGrooveToggle,
+  edgeMode, onEdgeModeToggle,
   trackMode, trackName, trackPart, trackTotalParts,
 }) {
   const [showBpm, setShowBpm] = useState(false);
@@ -168,6 +169,16 @@ export default function Controls({
             onClick={onGrooveToggle}
           >
             🔀
+          </button>
+        </div>
+
+        <div className="controls-group">
+          <button
+            className={`btn btn-edge ${edgeMode ? 'active' : 'off'}`}
+            onClick={onEdgeModeToggle}
+            title={`Edge mode: ${edgeMode ? 'ON' : 'OFF'} — replaces standard hi-hats with edge/top articulation`}
+          >
+            🎛
           </button>
         </div>
 

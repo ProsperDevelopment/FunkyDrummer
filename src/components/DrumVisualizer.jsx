@@ -1,6 +1,6 @@
 import { drumConfig } from '../config/drumConfig';
 import { getLayoutById } from '../config/drumLayouts';
-import { setUserPressingPedal } from '../audio/drumSounds';
+import { setUserPressingPedal, getHihatPedalAmount } from '../audio/drumSounds';
 import './DrumVisualizer.css';
 
 const drumColorMap = Object.fromEntries(
@@ -9,6 +9,7 @@ const drumColorMap = Object.fromEntries(
 
 const drumAbbr = {
   kick: 'KCK', snare: 'SNR', hihat: 'HH', hihatOpen: 'HO',
+  hihatEdge: 'ED', hihatMute: 'MU',
   crash: 'CR', ride: 'RD', tomHi: 'HT', tomMid: 'MT',
   tomLo: 'FT',
 };
@@ -42,13 +43,25 @@ export default function DrumVisualizer({ activeDrums, onDrumClick, layoutId, hih
   const pedalH = kickPos ? kickPos.r : 50;
   const pedalCx = kickPos ? kickPos.cx - kickPos.r - pedalW / 2 - 16 : 130;
   const pedalCy = kickPos ? kickPos.cy : 340;
+  const pedalAmount = getHihatPedalAmount();
   const pedalActive = hihatPedalPressed
     ? { active: true, color: drumColorMap.hihat, label: 'CL' }
     : { active: true, color: '#f39c12', label: 'OP' };
+  const hihatEdgeActive = activeDrums.get('hihatEdge') > 0;
+  const hihatMuteActive = activeDrums.get('hihatMute') > 0;
+  const hihatPos = layout.positions.find(p => p.id === 'hihat');
 
   return (
     <div className="drum-visualizer">
       <svg viewBox="0 0 600 410" className="drum-visualizer-svg">
+        {hihatPos && (
+          <defs>
+            <clipPath id="hihat-clip">
+              <circle cx={hihatPos.cx} cy={hihatPos.cy} r={hihatPos.r} />
+            </clipPath>
+          </defs>
+        )}
+
         {layout.positions.map(({ id, cx, cy, r, group }) => {
           const vel = getVel(id, group);
           const active = vel > 0;
@@ -76,6 +89,13 @@ export default function DrumVisualizer({ activeDrums, onDrumClick, layoutId, hih
                   className="drum-glow-ring"
                 />
               )}
+              {/* Edge hit indicator: red circle at bottom-right, cropped by hi-hat boundary */}
+              {id === 'hihat' && hihatEdgeActive && (
+                <g clipPath="url(#hihat-clip)">
+                  <circle cx={cx + r * 0.5} cy={cy + r * 0.5} r={r * 0.4} fill="#e74c3c" fillOpacity={0.7} />
+                </g>
+              )}
+
               <text
                 x={cx} y={cy}
                 textAnchor="middle"
@@ -90,12 +110,14 @@ export default function DrumVisualizer({ activeDrums, onDrumClick, layoutId, hih
             </g>
           );
         })}
+        {/* Pedal: fill opacity reflects pedal amount */}
         <rect
           x={pedalCx - pedalW / 2} y={pedalCy - pedalH / 2}
           width={pedalW} height={pedalH} rx={6}
           fill={pedalActive.active ? pedalActive.color : 'transparent'}
           stroke={pedalActive.active ? pedalActive.color : '#8a8aba'}
           strokeWidth={4}
+          fillOpacity={pedalAmount}
           opacity={pedalActive.active ? 1 : 0.7}
           className="drum-piece"
           style={{ cursor: 'pointer', touchAction: 'none' }}
@@ -122,6 +144,10 @@ export default function DrumVisualizer({ activeDrums, onDrumClick, layoutId, hih
           opacity={0.5}
           className="drum-glow-ring"
         />
+        {/* Mute indicator on pedal */}
+        {hihatMuteActive && (
+          <circle cx={pedalCx} cy={pedalCy} r={pedalH * 0.35} fill="#e74c3c" fillOpacity={0.3} stroke="#e74c3c" strokeWidth={3} />
+        )}
       </svg>
     </div>
   );

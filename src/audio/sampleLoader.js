@@ -20,6 +20,10 @@ export async function loadSample(url) {
   return audioBuf;
 }
 
+export function getBuffer(url) {
+  return bufferCache.get(url) || null;
+}
+
 export function playSampleBuffer(url, velocity = 0.8) {
   const buf = bufferCache.get(url);
   if (!buf) return;

@@ -1581,6 +1581,281 @@ export const drumPatterns = [
       return this;
     }
   },
+  {
+    id: 'amen-midi',
+    name: 'Amen Break MIDI',
+    style: "Breakbeat",
+    desc: "Classic Amen Break transcribed from MIDI — kick on 1,2,&,4e, snare with ghost notes, steady ride on 8ths",
+    groove: [0,2,0,3,0,2,0,3,0,2,0,3,0,2,0,3],
+    bpm: 136,
+    ...grid(2,
+      ['kick',  [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+      ['snare', [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+      ['ride',  [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+      ['hihat', [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+    ),
+    rebuild() {
+      const m = this.measures, steps = m * 16;
+      this.grid.kick = new Array(steps).fill(0);
+      this.grid.snare = new Array(steps).fill(0);
+      this.grid.ride = new Array(steps).fill(0);
+      this.grid.hihat = new Array(steps).fill(0);
+      for (let i = 0; i < m; i++) {
+        const o = i * 16;
+        this.grid.kick[o + 0] = 0.9;
+        this.grid.kick[o + 2] = 0.7;
+        this.grid.kick[o + 10] = 0.8;
+        this.grid.kick[o + 11] = 0.6;
+        this.grid.snare[o + 4] = 0.8;
+        this.grid.snare[o + 7] = 0.5;
+        this.grid.snare[o + 9] = 0.5;
+        this.grid.snare[o + 12] = 0.8;
+        this.grid.snare[o + 15] = 0.6;
+        for (let j = 0; j < 16; j += 2) {
+          this.grid.ride[o + j] = 0.3;
+        }
+        this.grid.hihat[o + 0] = 0.2;
+        this.grid.hihat[o + 6] = 0.2;
+        this.grid.hihat[o + 8] = 0.2;
+        this.grid.hihat[o + 14] = 0.2;
+      }
+      return this;
+    }
+  },
+  // --- Edge/Top articulation versions (replace originals when Edge Mode is on) ---
+  {
+    id: 'funk-edge',
+    name: 'Funk [Edge]',
+    style: "Funk",
+    desc: "Funk with hi-hat edge on downbeats — brighter, percussive closed-hat articulation",
+    groove: [0,3,1,4,0,3,1,4,0,3,1,4,0,3,1,4],
+    bpm: 100,
+    ...grid(2,
+      ['kick',  [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+      ['snare', [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+      ['hihat', [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+      ['hihatEdge', [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+      ['hihatMute', [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+    ),
+    rebuild() {
+      const m = this.measures, steps = m * 16;
+      this.grid.kick = new Array(steps).fill(0);
+      this.grid.snare = new Array(steps).fill(0);
+      this.grid.hihat = new Array(steps).fill(0);
+      this.grid.hihatEdge = new Array(steps).fill(0);
+      this.grid.hihatMute = new Array(steps).fill(0);
+      for (let i = 0; i < m; i++) {
+        const o = i * 16;
+        this.grid.kick[o + 0] = 1;
+        this.grid.kick[o + 6] = 1;
+        this.grid.kick[o + 10] = 1;
+        this.grid.snare[o + 4] = 1;
+        this.grid.snare[o + 12] = 1;
+        // Downbeats (0,4,8,12) → hihatEdge; offbeats (2,6,10) → hihat
+        this.grid.hihatEdge[o + 0] = 1;
+        this.grid.hihat[o + 2] = 1;
+        this.grid.hihatEdge[o + 4] = 1;
+        this.grid.hihat[o + 6] = 1;
+        this.grid.hihatEdge[o + 8] = 1;
+        this.grid.hihat[o + 10] = 1;
+        this.grid.hihatEdge[o + 12] = 1;
+      }
+      return this;
+    }
+  },
+  {
+    id: 'funky-drummer-edge',
+    name: 'Funky Drummer [Edge]',
+    style: "Funk",
+    desc: "Funky Drummer with edge hits on downbeats and muted chick on the & of 4 — enhanced articulation",
+    groove: [-2,0,1,3,13,11,9,7,10,8,6,4,-7,-5,-3,-1],
+    bpm: 100,
+    ...grid(2,
+      ['kick',  [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+      ['snare', [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+      ['hihat', [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+      ['hihatOpen', [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+      ['hihatEdge', [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+      ['hihatMute', [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+    ),
+    rebuild() {
+      const m = this.measures, steps = m * 16;
+      this.grid.kick = new Array(steps).fill(0);
+      this.grid.snare = new Array(steps).fill(0);
+      this.grid.hihat = new Array(steps).fill(0);
+      this.grid.hihatOpen = new Array(steps).fill(0);
+      this.grid.hihatEdge = new Array(steps).fill(0);
+      this.grid.hihatMute = new Array(steps).fill(0);
+      for (let i = 0; i < m; i++) {
+        const o = i * 16;
+        this.grid.kick[o + 0] = 0.9;
+        this.grid.kick[o + 6] = 0.7;
+        this.grid.kick[o + 10] = 0.6;
+        this.grid.kick[o + 12] = 0.7;
+        this.grid.kick[o + 14] = 0.8;
+        this.grid.snare[o + 4] = 0.8;
+        this.grid.snare[o + 12] = 0.8;
+        // Downbeats → edge, middle offbeats → hihat, last offbeat → mute
+        this.grid.hihatEdge[o + 0] = 0.5;
+        this.grid.hihat[o + 2] = 0.5;
+        this.grid.hihatEdge[o + 4] = 0.5;
+        this.grid.hihat[o + 6] = 0.5;
+        this.grid.hihatEdge[o + 8] = 0.5;
+        this.grid.hihat[o + 10] = 0.5;
+        this.grid.hihatEdge[o + 12] = 0.5;
+        this.grid.hihatMute[o + 15] = 0.5;
+        this.grid.hihatOpen[o + 5] = 0.6;
+        this.grid.hihatOpen[o + 13] = 0.5;
+      }
+      return this;
+    }
+  },
+  {
+    id: 'hiphop-edge',
+    name: 'Hip Hop [Edge]',
+    style: "Hip Hop",
+    desc: "Hip hop with crisp edge hits on beats and muted ghost notes on swung offbeats",
+    groove: [0,3,0,4,0,3,0,4,0,3,0,4,0,3,0,4],
+    bpm: 95,
+    ...grid(2,
+      ['kick',  [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+      ['snare', [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+      ['hihat', [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+      ['hihatEdge', [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+      ['hihatMute', [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+    ),
+    rebuild() {
+      const m = this.measures, steps = m * 16;
+      this.grid.kick = new Array(steps).fill(0);
+      this.grid.snare = new Array(steps).fill(0);
+      this.grid.hihat = new Array(steps).fill(0);
+      this.grid.hihatEdge = new Array(steps).fill(0);
+      this.grid.hihatMute = new Array(steps).fill(0);
+      for (let i = 0; i < m; i++) {
+        const o = i * 16;
+        this.grid.kick[o + 0] = 1.0;
+        this.grid.kick[o + 5] = 0.6;
+        this.grid.kick[o + 8] = 0.9;
+        this.grid.kick[o + 10] = 0.6;
+        this.grid.snare[o + 4] = 1.0;
+        this.grid.snare[o + 12] = 1.0;
+        // Downbeats → edge, offbeats → muted chick on grace notes
+        this.grid.hihatEdge[o + 0] = 0.5;
+        this.grid.hihat[o + 2] = 0.3;
+        this.grid.hihatEdge[o + 4] = 0.5;
+        this.grid.hihat[o + 6] = 0.3;
+        this.grid.hihatEdge[o + 8] = 0.5;
+        this.grid.hihat[o + 10] = 0.3;
+        this.grid.hihatEdge[o + 12] = 0.5;
+        this.grid.hihat[o + 14] = 0.3;
+      }
+      return this;
+    }
+  },
+  {
+    id: 'drum-bass-edge',
+    name: 'Drum & Bass [Edge]',
+    style: "Electronic",
+    desc: "D&B roller with edge hits on strong 8th notes and muted chicks on offbeats — crisp, articulate drum & bass",
+    groove: [0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1],
+    bpm: 170,
+    ...grid(2,
+      ['kick',  [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+      ['snare', [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+      ['hihat', [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+      ['crash', [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+      ['hihatEdge', [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+      ['hihatMute', [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+    ),
+    rebuild() {
+      const m = this.measures, steps = m * 16;
+      this.grid.kick = new Array(steps).fill(0);
+      this.grid.snare = new Array(steps).fill(0);
+      this.grid.hihat = new Array(steps).fill(0);
+      this.grid.crash = new Array(steps).fill(0);
+      this.grid.hihatEdge = new Array(steps).fill(0);
+      this.grid.hihatMute = new Array(steps).fill(0);
+      for (let i = 0; i < m; i++) {
+        const o = i * 16;
+        this.grid.kick[o + 0] = 1.0;
+        this.grid.kick[o + 3] = 0.6;
+        this.grid.kick[o + 6] = 0.7;
+        this.grid.kick[o + 10] = 0.5;
+        this.grid.kick[o + 14] = 0.6;
+        this.grid.snare[o + 4] = 1.0;
+        this.grid.snare[o + 12] = 1.0;
+        this.grid.snare[o + 15] = 0.4;
+        this.grid.crash[o + 0] = 0.8;
+        // Even 8th notes (0,2,4,6,8,10,12,14):
+        //   Downbeats (0,4,8,12) → edge, off-8ths (2,6,10,14) → hihat
+        // Odd 16th notes (1,5,9,13) → hihat (ghost)
+        this.grid.hihatEdge[o + 0] = 0.3;
+        this.grid.hihat[o + 1] = 0.15;
+        this.grid.hihat[o + 2] = 0.25;
+        this.grid.hihatEdge[o + 4] = 0.3;
+        this.grid.hihat[o + 5] = 0.15;
+        this.grid.hihat[o + 6] = 0.25;
+        this.grid.hihatEdge[o + 8] = 0.3;
+        this.grid.hihat[o + 9] = 0.15;
+        this.grid.hihat[o + 10] = 0.25;
+        this.grid.hihatEdge[o + 12] = 0.3;
+        this.grid.hihat[o + 13] = 0.15;
+        this.grid.hihat[o + 14] = 0.25;
+      }
+      return this;
+    }
+  },
+  {
+    id: 'trap-edge',
+    name: 'Trap [Edge]',
+    style: "Hip Hop",
+    desc: "Trap with edge hits on downbeats and muted chicks on offbeats — sharper, more percussive hi-hat articulation",
+    groove: [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    bpm: 140,
+    ...grid(2,
+      ['kick',  [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+      ['snare', [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+      ['hihat', [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+      ['hihatOpen', [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+      ['hihatEdge', [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+      ['hihatMute', [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
+    ),
+    rebuild() {
+      const m = this.measures, steps = m * 16;
+      this.grid.kick = new Array(steps).fill(0);
+      this.grid.snare = new Array(steps).fill(0);
+      this.grid.hihat = new Array(steps).fill(0);
+      this.grid.hihatOpen = new Array(steps).fill(0);
+      this.grid.hihatEdge = new Array(steps).fill(0);
+      this.grid.hihatMute = new Array(steps).fill(0);
+      for (let i = 0; i < m; i++) {
+        const o = i * 16;
+        this.grid.kick[o + 0] = 1.0;
+        this.grid.kick[o + 2] = 0.8;
+        this.grid.kick[o + 12] = 0.9;
+        this.grid.kick[o + 14] = 0.7;
+        this.grid.snare[o + 8] = 1.0;
+        // Downbeats → edge, offbeats → muted chick (except where open hat plays)
+        this.grid.hihatEdge[o + 0] = 0.4;
+        this.grid.hihatEdge[o + 4] = 0.2;
+        this.grid.hihatEdge[o + 8] = 0.4;
+        this.grid.hihatEdge[o + 12] = 0.2;
+        this.grid.hihat[o + 1] = 0.15;
+        this.grid.hihat[o + 2] = 0.15;
+        this.grid.hihat[o + 3] = 0.15;
+        this.grid.hihat[o + 5] = 0.15;
+        this.grid.hihat[o + 6] = 0.15;
+        this.grid.hihat[o + 7] = 0.15;
+        this.grid.hihat[o + 9] = 0.15;
+        this.grid.hihat[o + 10] = 0.15;
+        this.grid.hihat[o + 11] = 0.15;
+        this.grid.hihat[o + 14] = 0.15;
+        this.grid.hihatOpen[o + 13] = 0.5;
+        this.grid.hihatOpen[o + 15] = 0.5;
+      }
+      return this;
+    }
+  },
   // --- Extracted from JBK REX2 files ---
   {
     id: 'rex-trap-v1',

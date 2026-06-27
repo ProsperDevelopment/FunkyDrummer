@@ -17,6 +17,10 @@ export const midiConfigs = [
     id: 'td-02k',
     name: 'Roland TD-02K',
     noteMap: buildMap({
+      22: 'hihatEdge',
+      26: 'hihatEdge',
+      42: 'hihat',
+      46: 'hihat',
       48: 'tomLo',
       41: null,
     }),

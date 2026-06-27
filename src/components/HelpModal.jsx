@@ -43,6 +43,8 @@ export default function HelpModal({ onClose }) {
                 <tr><td><kbd className="help-key">P</kbd></td><td>Toggle pattern playback</td></tr>
                 <tr><td><kbd className="help-key">T</kbd></td><td>Toggle training mode</td></tr>
                 <tr><td><kbd className="help-key">G</kbd></td><td>Toggle groove</td></tr>
+                <tr><td><kbd className="help-key">X</kbd></td><td>Hi-hat edge (closed, percussive)</td></tr>
+                <tr><td><kbd className="help-key">Z</kbd></td><td>Hi-hat mute (chick sound)</td></tr>
                 <tr><td><kbd className="help-key">+</kbd> / <kbd className="help-key">-</kbd></td><td>BPM up / down by 5</td></tr>
               </tbody>
             </table>
@@ -68,7 +70,7 @@ export default function HelpModal({ onClose }) {
           <section className="help-section">
             <h3>MIDI</h3>
             <p>Connect a USB MIDI controller and select it from <strong>Settings → MIDI Input</strong>. Pads map automatically using the selected note map. Use the <strong>Map</strong> dropdown to switch between General MIDI and Roland TD-02K assignments.</p>
-            <p>The hi-hat pedal (CC 4) opens and closes the hi-hat — press to close, release to open.</p>
+            <p>The hi-hat pedal (CC 4) controls openness — press to close, release to open. Use <kbd className="help-key">X</kbd> for a closed edge hit or <kbd className="help-key">Z</kbd> for a muted chick sound. The hi-hat choke group ensures only one hi-hat voice plays at a time.</p>
           </section>
 
           <section className="help-section">

@@ -5,7 +5,7 @@ export const drumLayouts = [
     positions: [
       { id: 'crash',  cx: 100, cy: 62,  r: 46 },
       { id: 'ride',   cx: 500, cy: 62,  r: 46 },
-      { id: 'hihat',  cx: 92,  cy: 172, r: 36, group: ['hihatOpen'] },
+      { id: 'hihat',  cx: 92,  cy: 182, r: 44, group: ['hihatOpen', 'hihatEdge', 'hihatMute'] },
       { id: 'tomHi',  cx: 200, cy: 152, r: 38 },
       { id: 'tomMid', cx: 310, cy: 152, r: 38 },
       { id: 'tomLo',  cx: 420, cy: 172, r: 40 },
@@ -19,7 +19,7 @@ export const drumLayouts = [
     positions: [
       { id: 'crash',  cx: 80,  cy: 50,  r: 38 },
       { id: 'ride',   cx: 520, cy: 50,  r: 38 },
-      { id: 'hihat',  cx: 90,  cy: 155, r: 32, group: ['hihatOpen'] },
+      { id: 'hihat',  cx: 90,  cy: 165, r: 40, group: ['hihatOpen', 'hihatEdge', 'hihatMute'] },
       { id: 'tomHi',  cx: 195, cy: 125, r: 34 },
       { id: 'tomMid', cx: 300, cy: 118, r: 34 },
       { id: 'tomLo',  cx: 405, cy: 135, r: 36 },

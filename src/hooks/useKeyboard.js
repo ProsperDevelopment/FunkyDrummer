@@ -42,6 +42,10 @@ export function useKeyboard(onNoteOn, actions = {}, disabled = false) {
           e.preventDefault();
           actions.onGrooveToggle?.();
           break;
+        case 'e':
+          e.preventDefault();
+          actions.onEdgeModeToggle?.();
+          break;
         case '+':
         case '=':
           e.preventDefault();

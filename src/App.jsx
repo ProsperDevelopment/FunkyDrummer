@@ -21,7 +21,15 @@ import { drumLayouts } from './config/drumLayouts';
 import { BPM_MIN, BPM_MAX, BPM_STEP, REPS_MIN, PEDAL_CC, PEDAL_THRESHOLD, GOOD_SCORE_THRESHOLD, OK_SCORE_THRESHOLD } from './config/constants';
 import './App.css';
 
-function getPattern(id) {
+const edgePatternIds = new Set(
+  drumPatterns.filter(p => p.id.endsWith('-edge')).map(p => p.id.slice(0, -5))
+);
+
+function getPattern(id, edgeMode = false) {
+  if (edgeMode && edgePatternIds.has(id)) {
+    const edgeP = drumPatterns.find(p => p.id === id + '-edge');
+    if (edgeP) return edgeP;
+  }
   return drumPatterns.find(p => p.id === id) || drumPatterns[0];
 }
 
@@ -47,12 +55,13 @@ export default function App() {
   const [hihatPedalPressed, setHihatPedalPressedState] = useState(getHihatPedalPressed());
   const [countdownOn, setCountdownOn] = useState(false);
   const [grooveOn, setGrooveOn] = useState(false);
+  const [edgeMode, setEdgeMode] = useState(false);
   const sessionSetRef = useRef(false);
   const midiNoteMap = getNoteMap(midiConfigId);
 
   const { activeDrums, hit: hitVisualizer } = useActiveDrums();
 
-  const pattern = getPattern(selectedPatternId);
+  const pattern = getPattern(selectedPatternId, edgeMode);
 
   const onPatternDrumPlayed = useCallback((drumId, vel) => {
     hitVisualizer(drumId, vel);
@@ -232,6 +241,10 @@ export default function App() {
     setGrooveOn(v => !v);
   }, []);
 
+  const handleEdgeModeToggle = useCallback(() => {
+    setEdgeMode(v => !v);
+  }, []);
+
   const keyboardTogglePlay = useCallback(() => {
     if (isTrackMode) trackPlayback.togglePlay();
     else playback.togglePlay();
@@ -249,6 +262,7 @@ export default function App() {
     onToggleDrumPlayback: handleToggleDrumPlayback,
     onTrainingToggle: handleTrainingToggle,
     onGrooveToggle: handleGrooveToggle,
+    onEdgeModeToggle: handleEdgeModeToggle,
     onBpmUp: handleBpmUp,
     onBpmDown: handleBpmDown,
   }, showSettings);
@@ -332,6 +346,8 @@ export default function App() {
             onCountdownToggle={handleCountdownToggle}
             grooveOn={grooveOn}
             onGrooveToggle={handleGrooveToggle}
+            edgeMode={edgeMode}
+            onEdgeModeToggle={handleEdgeModeToggle}
             trackMode={isTrackMode}
             trackName={selectedTrack?.name ?? ''}
             trackPart={trackPlayback.currentPartIndex}
