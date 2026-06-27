@@ -22,6 +22,7 @@ export function usePlayback(pattern, bpmOverride, stopAfterReps = 0, onDrumPlaye
   const drumPlaybackRef = useRef(drumPlaybackOn);
   const countdownRef = useRef(countdownOn);
   const grooveOnRef = useRef(grooveOn);
+  const drumTimeoutsRef = useRef([]);
 
   useEffect(() => { bpmRef.current = bpmOverride; }, [bpmOverride]);
   useEffect(() => { stopAfterRef.current = stopAfterReps; }, [stopAfterReps]);
@@ -48,6 +49,8 @@ export function usePlayback(pattern, bpmOverride, stopAfterReps = 0, onDrumPlaye
       clearTimeout(countdownTimerRef.current);
       countdownTimerRef.current = null;
     }
+    for (const t of drumTimeoutsRef.current) clearTimeout(t);
+    drumTimeoutsRef.current = [];
     setIsPlaying(false);
     setIsCountdown(false);
     setCurrentStep(0);
@@ -60,24 +63,62 @@ export function usePlayback(pattern, bpmOverride, stopAfterReps = 0, onDrumPlaye
   const startPattern = useCallback((intervalMs) => {
     setIsPlaying(true);
 
-    let prevGrooveOffset = 0;
+    let hasPreScheduled = false;
+
+    const scheduleDrum = (drumId, vel, delay) => {
+      const t = setTimeout(() => {
+        if (!grooveOnRef.current) return;
+        playDrum(drumId, vel);
+        onDrumPlayed?.(drumId, vel);
+      }, delay);
+      drumTimeoutsRef.current.push(t);
+    };
 
     const tick = () => {
       const step = stepRef.current;
       const p2 = patternRef.current;
       if (!p2) return;
       const steps = stepsRef.current;
-
       const modStep = step % steps;
 
       if (drumPlaybackRef.current) {
+        const groove = p2.groove;
+        const grooveLen = groove ? groove.length : 16;
+
+        // Phase 1: pre-schedule next step's negative-groove hits (anticipatory)
+        if (grooveOnRef.current && groove) {
+          const nextModStep = (modStep + 1) % steps;
+          for (const [drumId, row] of Object.entries(p2.grid)) {
+            if (row[nextModStep]) {
+              const vel = row[nextModStep];
+              const nextGroove = groove[nextModStep % grooveLen] || 0;
+              if (nextGroove < 0) {
+                scheduleDrum(drumId, vel, intervalMs + nextGroove);
+              }
+            }
+          }
+        }
+
+        // Phase 2-4: current step hits
         for (const [drumId, row] of Object.entries(p2.grid)) {
           if (row[modStep]) {
             const vel = row[modStep];
-            playDrum(drumId, vel);
-            onDrumPlayed?.(drumId, vel);
+            const grooveOffset = grooveOnRef.current && groove ? (groove[modStep % grooveLen] || 0) : 0;
+            if (grooveOffset > 0) {
+              scheduleDrum(drumId, vel, grooveOffset);
+            } else if (grooveOffset === 0) {
+              playDrum(drumId, vel);
+              onDrumPlayed?.(drumId, vel);
+            } else if (!hasPreScheduled) {
+              // First tick: play negative-groove hits immediately
+              playDrum(drumId, vel);
+              onDrumPlayed?.(drumId, vel);
+            }
+            // else grooveOffset < 0 && hasPreScheduled: skipped (handled by Phase 1 of previous tick)
           }
         }
+
+        hasPreScheduled = true;
       }
 
       if (metronomeRef.current && modStep % BEAT_INTERVAL === 0) {
@@ -103,12 +144,7 @@ export function usePlayback(pattern, bpmOverride, stopAfterReps = 0, onDrumPlaye
         setCurrentStep(0);
       }
 
-      const grooveActive = grooveOnRef.current;
-      const currGrooveOffset = grooveActive && p2.groove ? (p2.groove[modStep % 16] || 0) : 0;
-      const delay = Math.max(1, intervalMs + currGrooveOffset - prevGrooveOffset);
-      prevGrooveOffset = currGrooveOffset;
-
-      intervalRef.current = setTimeout(tick, delay);
+      intervalRef.current = setTimeout(tick, intervalMs);
     };
 
     intervalRef.current = setTimeout(tick, intervalMs);
@@ -165,6 +201,7 @@ export function usePlayback(pattern, bpmOverride, stopAfterReps = 0, onDrumPlaye
     return () => {
       if (intervalRef.current) clearTimeout(intervalRef.current);
       if (countdownTimerRef.current) clearTimeout(countdownTimerRef.current);
+      for (const t of drumTimeoutsRef.current) clearTimeout(t);
     };
   }, []);
 

@@ -345,6 +345,7 @@ export default function App() {
             userHits={userHits}
             trainingMode={trainingMode}
             compact={false}
+            grooveOn={grooveOn}
           />
 
           {showVisualizer && (
@@ -548,6 +549,7 @@ export default function App() {
               userHits={userHits}
               trainingMode={trainingMode}
               compact={true}
+              grooveOn={grooveOn}
             />
             <div className="fs-viz-area">
               <DrumVisualizer activeDrums={activeDrums} onDrumClick={onDrumHit} layoutId={drumLayoutId} hihatPedalPressed={hihatPedalPressed} onHihatPedalDown={handleHihatPedalToggle} onHihatPedalUp={handleHihatPedalUp} />

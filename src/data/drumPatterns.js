@@ -13,37 +13,6 @@ function grid(measures, ...rows) {
 
 export const drumPatterns = [
   {
-    id: 'basic-rock',
-    name: 'Basic Rock',
-    style: "Rock",
-    desc: "Straight-ahead rock beat with kick on 1 & 3, snare backbeats, and steady 16th-note hi-hats",
-    groove: [0,2,0,2,0,2,0,2,0,2,0,2,0,2,0,2],
-    bpm: 120,
-    ...grid(2,
-      ['kick',  [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
-      ['snare', [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
-      ['hihat', [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
-    ),
-    rebuild() {
-      const m = this.measures;
-      const steps = m * 16;
-      this.grid.kick = new Array(steps).fill(0);
-      this.grid.snare = new Array(steps).fill(0);
-      this.grid.hihat = new Array(steps).fill(0);
-      for (let i = 0; i < m; i++) {
-        const offset = i * 16;
-        this.grid.kick[offset + 0] = 1;
-        this.grid.kick[offset + 8] = 1;
-        this.grid.snare[offset + 4] = 1;
-        this.grid.snare[offset + 12] = 1;
-        for (let j = 0; j < 16; j++) {
-          this.grid.hihat[offset + j] = 1;
-        }
-      }
-      return this;
-    }
-  },
-  {
     id: 'funk',
     name: 'Funk',
     style: "Funk",
@@ -220,7 +189,7 @@ export const drumPatterns = [
     name: 'Funky Drummer',
     style: "Funk",
     desc: "Inspired by Clyde Stubblefield — ghost notes, open hi-hat accents, and a syncopated kick-snare groove",
-    groove: [0,3,1,4,0,3,1,4,0,3,1,4,0,3,1,4],
+    groove: [-2,0,1,3,13,11,9,7,10,8,6,4,-7,-5,-3,-1],
     bpm: 100,
     ...grid(2,
       ['kick',  [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
@@ -346,7 +315,7 @@ export const drumPatterns = [
     name: 'Think Break',
     style: "Breakbeat",
     desc: "Soulful breakbeat with a driving kick-snare conversation and crisp hi-hat patterns",
-    groove: [0,2,0,3,0,2,0,3,0,2,0,3,0,2,0,3],
+    groove: [0,4,1,5,0,4,1,5,0,4,1,5,0,4,1,5],
     bpm: 112,
     ...grid(2,
       ['kick',  [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,  0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]],
@@ -490,6 +459,7 @@ export const drumPatterns = [
           this.grid.hihat[o + j] = 0.4;
         }
         this.grid.hihatOpen[o + 14] = 0.6;
+        this.grid.hihat[o + 14] = 0;
       }
       return this;
     }
@@ -616,6 +586,7 @@ export const drumPatterns = [
           this.grid.tomMid[o + 10] = 0.6;
           this.grid.tomLo[o + 12] = 0.6;
           this.grid.hihatOpen[o + 14] = 0.5;
+          this.grid.hihat[o + 14] = 0;
         }
       }
       return this;
@@ -1299,7 +1270,9 @@ export const drumPatterns = [
         this.grid.hihat[o + 0] = 0.4;
         this.grid.hihat[o + 8] = 0.4;
         this.grid.hihatOpen[o + 13] = 0.5;
+        this.grid.hihat[o + 13] = 0;
         this.grid.hihatOpen[o + 15] = 0.5;
+        this.grid.hihat[o + 15] = 0;
       }
       return this;
     }
@@ -1608,8 +1581,87 @@ export const drumPatterns = [
       return this;
     }
   },
+  // --- Extracted from JBK REX2 files ---
+  {
+    id: 'rex-trap-v1',
+    name: 'Trap V1',
+    style: "Breakbeat",
+    desc: "REX2 — 11 slices, 2 bar(s) @ 170 BPM",
+    groove: [0, 0, 0, 0, -4, 0, 0, 0, 5, 0, 5, 0, 5, 0, 5, 0],
+    bpm: 170,
+    ...grid(2,
+      ['kick',  [8, 16, 24]],
+      ['snare',  [4, 12, 20, 28]],
+      ['hihat',  [10, 14, 26, 30]],
+    ),
+  },
+  {
+    id: 'rex-distance',
+    name: 'Distance',
+    style: "Breakbeat",
+    desc: "REX2 — 6 slices, 1 bar(s) @ 166 BPM",
+    groove: [0, -5, 0, 0, 5, 0, 0, 0, 5, 0, 0, 3, 5, 0, 0, -5],
+    bpm: 166,
+    ...grid(1,
+      ['kick',  [8]],
+      ['snare',  [4, 12]],
+      ['hihat',  [1, 11, 15]],
+    ),
+  },
+  {
+    id: 'rex-transform',
+    name: 'Transform',
+    style: "Breakbeat",
+    desc: "REX2 — 13 slices, 2 bar(s) @ 168 BPM",
+    groove: [5, 0, 0, 0, 2, 0, 0, 5, 0, 0, 0, 0, 5, 0, 0, 5],
+    bpm: 168,
+    ...grid(2,
+      ['kick',  [0, 16]],
+      ['snare',  [4, 12, 20, 28]],
+      ['hihat',  [6, 7, 15, 22, 23, 31]],
+    ),
+  },
+  {
+    id: 'rex-stretch',
+    name: 'Stretch',
+    style: "Breakbeat",
+    desc: "REX2 — 15 slices, 2 bar(s) @ 162 BPM",
+    groove: [0, 0, 0, 0, -2, 0, 0, 0, 0, 0, -3, -5, -5, 0, 5, -5],
+    bpm: 162,
+    ...grid(2,
+      ['kick',  [8, 24]],
+      ['snare',  [4, 12, 20, 28]],
+      ['hihat',  [10, 11, 14, 26, 27, 30, 31]],
+    ),
+  },
+  {
+    id: 'rex-jb',
+    name: 'JB',
+    style: "Breakbeat",
+    desc: "REX2 — 13 slices, 2 bar(s) @ 168 BPM",
+    groove: [1, 0, 5, 0, 5, 0, 5, 0, 5, 0, 0, 0, 5, 0, 5, 0],
+    bpm: 168,
+    ...grid(2,
+      ['kick',  [8, 16, 24]],
+      ['snare',  [4, 12, 20, 28]],
+      ['hihat',  [2, 6, 14, 18, 22, 30]],
+    ),
+  },
+  {
+    id: 'rex-reload',
+    name: 'Reload',
+    style: "Breakbeat",
+    desc: "REX2 — 25 slices, 2 bar(s) @ 165 BPM",
+    groove: [0, 0, 0, 0, 2, 0, 0, 0, -4, 0, 2, -3, 2, 0, 1, -2],
+    bpm: 165,
+    ...grid(2,
+      ['kick',  [0, 8, 16, 24]],
+      ['snare',  [4, 12, 20, 28]],
+      ['hihat',  [7, 10, 11, 15, 23, 26, 27, 31]],
+    ),
+  },
 ];
 
 for (const pattern of drumPatterns) {
-  pattern.rebuild();
+  if (pattern.rebuild) pattern.rebuild();
 }

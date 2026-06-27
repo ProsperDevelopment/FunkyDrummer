@@ -6,12 +6,19 @@ import './Timeline.css';
 const STEP_WIDTH = CANVAS_STEP_WIDTH;
 const ROW_HEIGHT = CANVAS_ROW_HEIGHT;
 const HEADER_WIDTH = CANVAS_HEADER_WIDTH;
+const MAX_GROOVE = 5;
+const GROOVE_VISUAL_SCALE = 0.4;
 
 function getScrollX(step, stageWidth) {
   return stageWidth / 2 - step * STEP_WIDTH - STEP_WIDTH / 2;
 }
 
-export default function Timeline({ pattern, currentStep, isPlaying, userHits = [], trainingMode = false, compact = false }) {
+function getGrooveShift(groove, stepIdx) {
+  if (!groove) return 0;
+  return (groove[stepIdx % 16] || 0) / MAX_GROOVE * STEP_WIDTH * GROOVE_VISUAL_SCALE;
+}
+
+export default function Timeline({ pattern, currentStep, isPlaying, userHits = [], trainingMode = false, compact = false, grooveOn = false }) {
   const canvasRef = useRef(null);
   const containerRef = useRef(null);
   const [dimensions, setDimensions] = useState({ width: 800, height: 400 });
@@ -126,9 +133,10 @@ export default function Timeline({ pattern, currentStep, isPlaying, userHits = [
       const rowIdx = rows.indexOf(drum);
       for (let s = 0; s < viewSteps; s++) {
         if (row[s % steps]) {
+          const shift = grooveOn ? getGrooveShift(pattern.groove, s) : 0;
           ctx.globalAlpha = 0.6 + row[s % steps] * 0.4;
           ctx.fillStyle = drum.color;
-          roundRect(ctx, scrollX + s * STEP_WIDTH + 4, rowIdx * ROW_HEIGHT + 4, STEP_WIDTH - 8, ROW_HEIGHT - 8, 4);
+          roundRect(ctx, scrollX + s * STEP_WIDTH + 4 + shift, rowIdx * ROW_HEIGHT + 4, STEP_WIDTH - 8, ROW_HEIGHT - 8, 4);
           ctx.fill();
           ctx.globalAlpha = 1;
         }
@@ -242,7 +250,7 @@ export default function Timeline({ pattern, currentStep, isPlaying, userHits = [
     if (!ctx || !pattern) return;
     const scrollX = getScrollX(steps + (currentStep % steps), canvasWidth);
     drawRef.current(ctx, scrollX);
-  }, [currentStep, pattern, isPlaying, canvasWidth, rows, userHits, trainingMode, steps]);
+  }, [currentStep, pattern, isPlaying, canvasWidth, rows, userHits, trainingMode, steps, grooveOn]);
 
   // RAF loop during playback
   useEffect(() => {
@@ -267,7 +275,7 @@ export default function Timeline({ pattern, currentStep, isPlaying, userHits = [
         rafRef.current = null;
       }
     };
-  }, [pattern, isPlaying, canvasWidth, steps, rows]);
+  }, [pattern, isPlaying, canvasWidth, steps, rows, grooveOn]);
 
   if (!pattern) {
     return <div className="timeline-empty">Select a pattern to begin</div>;
