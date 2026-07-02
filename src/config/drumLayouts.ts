@@ -1,4 +1,6 @@
-export const drumLayouts = [
+import type { DrumLayout } from '../types';
+
+export const drumLayouts: DrumLayout[] = [
   {
     id: 'default',
     name: 'Standard',
@@ -29,6 +31,6 @@ export const drumLayouts = [
   },
 ];
 
-export function getLayoutById(id) {
+export function getLayoutById(id: string): DrumLayout {
   return drumLayouts.find(l => l.id === id) || drumLayouts[0];
 }

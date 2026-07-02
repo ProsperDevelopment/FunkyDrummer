@@ -1,4 +1,6 @@
-export const drumConfig = [
+import type { DrumDef } from '../types';
+
+export const drumConfig: DrumDef[] = [
   { id: 'kick',     name: 'Kick',        midiNote: 36, key: 'a', color: '#e74c3c' },
   { id: 'snare',    name: 'Snare',       midiNote: 38, key: 's', color: '#3498db' },
   { id: 'hihat',    name: 'Hi-Hat',      midiNote: 42, key: 'd', color: '#f1c40f' },
@@ -12,14 +14,14 @@ export const drumConfig = [
   { id: 'tomLo',    name: 'Floor Tom',   midiNote: 43, key: 'l', color: '#e67e22' },
 ];
 
-export const drumMap = Object.fromEntries(
+export const drumMap: Record<string, DrumDef> = Object.fromEntries(
   drumConfig.map(d => [d.id, d])
 );
 
-export const midiNoteToDrum = Object.fromEntries(
+export const midiNoteToDrum: Record<number, string> = Object.fromEntries(
   drumConfig.map(d => [d.midiNote, d.id])
 );
 
-export const keyToDrum = Object.fromEntries(
+export const keyToDrum: Record<string, string> = Object.fromEntries(
   drumConfig.map(d => [d.key, d.id])
 );

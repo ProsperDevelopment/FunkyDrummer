@@ -1,6 +1,41 @@
 import { useState, useRef, useEffect } from 'react';
 import { BPM_MIN, BPM_MAX, REPS_MIN, REPS_MAX, GOOD_SCORE_THRESHOLD, OK_SCORE_THRESHOLD } from '../config/constants';
+import type { SessionResult } from '../types';
 import './Controls.css';
+
+interface ControlsProps {
+  isPlaying: boolean;
+  onTogglePlay: () => void;
+  onStop: () => void;
+  bpm: number;
+  trainingMode: boolean;
+  onTrainingToggle: () => void;
+  accuracyStats?: { score: number; perfect: number; good: number; off: number; miss: number; total: number } | null;
+  missedHits: number;
+  bpmOverride: number | null;
+  onBpmChange: (bpm: number) => void;
+  stopAfterReps: number;
+  onStopAfterRepsChange: (reps: number) => void;
+  currentLoop: number;
+  sessionResult: SessionResult | null;
+  onDismissResult: () => void;
+  showVisualizer: boolean;
+  onToggleVisualizer: () => void;
+  metronomeOn: boolean;
+  onToggleMetronome: () => void;
+  drumPlaybackOn: boolean;
+  onToggleDrumPlayback: () => void;
+  countdownOn: boolean;
+  onCountdownToggle: () => void;
+  grooveOn: boolean;
+  onGrooveToggle: () => void;
+  edgeMode: boolean;
+  onEdgeModeToggle: () => void;
+  trackMode: boolean;
+  trackName?: string;
+  trackPart: number;
+  trackTotalParts: number;
+}
 
 export default function Controls({
   isPlaying, onTogglePlay, onStop, bpm,
@@ -15,46 +50,46 @@ export default function Controls({
   grooveOn, onGrooveToggle,
   edgeMode, onEdgeModeToggle,
   trackMode, trackName, trackPart, trackTotalParts,
-}) {
+}: ControlsProps) {
   const [showBpm, setShowBpm] = useState(false);
   const [showReps, setShowReps] = useState(false);
-  const bpmRef = useRef(null);
-  const repsRef = useRef(null);
+  const bpmRef = useRef<HTMLDivElement>(null);
+  const repsRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!showBpm) return;
-    const handler = (e) => {
-      if (bpmRef.current && !bpmRef.current.contains(e.target)) {
+    const handler = (e: MouseEvent) => {
+      if (bpmRef.current && !bpmRef.current.contains(e.target as Node)) {
         setShowBpm(false);
       }
     };
     document.addEventListener('mousedown', handler);
-    document.addEventListener('touchstart', handler);
+    document.addEventListener('touchstart', handler as EventListener);
     return () => {
       document.removeEventListener('mousedown', handler);
-      document.removeEventListener('touchstart', handler);
+      document.removeEventListener('touchstart', handler as EventListener);
     };
   }, [showBpm]);
 
   useEffect(() => {
     if (!showReps) return;
-    const handler = (e) => {
-      if (repsRef.current && !repsRef.current.contains(e.target)) {
+    const handler = (e: MouseEvent) => {
+      if (repsRef.current && !repsRef.current.contains(e.target as Node)) {
         setShowReps(false);
       }
     };
     document.addEventListener('mousedown', handler);
-    document.addEventListener('touchstart', handler);
+    document.addEventListener('touchstart', handler as EventListener);
     return () => {
       document.removeEventListener('mousedown', handler);
-      document.removeEventListener('touchstart', handler);
+      document.removeEventListener('touchstart', handler as EventListener);
     };
   }, [showReps]);
   const hasSessionResult = sessionResult && sessionResult.stats;
 
   useEffect(() => {
     if (!hasSessionResult) return;
-    const handler = (e) => {
+    const handler = (e: KeyboardEvent) => {
       if (e.code === 'Space') {
         e.preventDefault();
         onDismissResult();

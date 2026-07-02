@@ -1,6 +1,8 @@
+import type { DrumKit } from '../types';
+
 const base = import.meta.env.BASE_URL || '/';
 
-export const drumKits = [
+export const drumKits: DrumKit[] = [
   {
     id: 'stock',
     name: 'Stock Kit',

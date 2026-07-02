@@ -1,16 +1,17 @@
 import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
 import { STEPS_PER_MEASURE, TRAINING_HIT_TOLERANCE, TRAINING_SCORE_GOOD_WEIGHT, TRAINING_SCORE_MULTIPLIER } from '../config/constants';
+import type { DrumPattern, UserHit, TrainingStats } from '../types';
 
-export function useTraining(pattern, currentStep, isPlaying = false) {
-  const [trainingMode, setTrainingMode] = useState(false);
-  const [userHits, setUserHits] = useState([]);
+export function useTraining(pattern: DrumPattern, currentStep: number, isPlaying = false) {
+  const [trainingMode, setTrainingModeState] = useState(false);
+  const [userHits, setUserHits] = useState<UserHit[]>([]);
   const [missedHits, setMissedHits] = useState(0);
-  const runningCountsRef = useRef({ perfect: 0, good: 0, off: 0, miss: 0 });
+  const runningCountsRef = useRef<Record<string, number>>({ perfect: 0, good: 0, off: 0, miss: 0 });
   const hitIdRef = useRef(0);
   const currentStepRef = useRef(currentStep);
   const prevStepRef = useRef(currentStep);
   const patternRef = useRef(pattern);
-  const missedStepsRef = useRef(new Set());
+  const missedStepsRef = useRef(new Set<number>());
 
   useEffect(() => { currentStepRef.current = currentStep; }, [currentStep]);
   useEffect(() => { patternRef.current = pattern; }, [pattern]);
@@ -32,7 +33,7 @@ export function useTraining(pattern, currentStep, isPlaying = false) {
     runningCountsRef.current = { perfect: 0, good: 0, off: 0, miss: 0 };
   }, []);
 
-  const userHitsRef = useRef([]);
+  const userHitsRef = useRef<UserHit[]>([]);
   useEffect(() => { userHitsRef.current = userHits; }, [userHits]);
 
   useEffect(() => {
@@ -46,7 +47,7 @@ export function useTraining(pattern, currentStep, isPlaying = false) {
 
     if (prevMod === currMod || missedStepsRef.current.has(prevMod)) return;
 
-    const drumsWithNotes = [];
+    const drumsWithNotes: string[] = [];
     for (const [drumId, row] of Object.entries(p.grid)) {
       if (row[prevMod]) {
         drumsWithNotes.push(drumId);
@@ -70,7 +71,7 @@ export function useTraining(pattern, currentStep, isPlaying = false) {
     missedStepsRef.current.add(prevMod);
   }, [currentStep, trainingMode, isPlaying]);
 
-  const handleDrumHit = useCallback((drumId) => {
+  const handleDrumHit = useCallback((drumId: string) => {
     if (!trainingMode || !isPlaying) return;
 
     const p = patternRef.current;
@@ -80,7 +81,7 @@ export function useTraining(pattern, currentStep, isPlaying = false) {
     const steps = p.measures * 16;
     const modStep = step % steps;
 
-    let accuracy;
+    let accuracy: string;
     if (!p.grid[drumId]) {
       accuracy = 'miss';
     } else {
@@ -107,7 +108,7 @@ export function useTraining(pattern, currentStep, isPlaying = false) {
     runningCountsRef.current[accuracy]++;
     runningCountsRef.current.total = runningCountsRef.current.perfect + runningCountsRef.current.good + runningCountsRef.current.off + runningCountsRef.current.miss;
 
-    const hit = {
+    const hit: UserHit = {
       id: hitIdRef.current++,
       drumId,
       step: modStep,
@@ -120,7 +121,7 @@ export function useTraining(pattern, currentStep, isPlaying = false) {
       return next.slice(-200);
     });
   }, [trainingMode, isPlaying]);
- 
+
   useEffect(() => {
     if (!trainingMode) {
       setUserHits([]);
@@ -136,9 +137,9 @@ export function useTraining(pattern, currentStep, isPlaying = false) {
     return () => clearInterval(interval);
   }, [trainingMode]);
 
-  const accuracyStats = useMemo(() => {
+  const accuracyStats: TrainingStats | null = useMemo(() => {
     const c = runningCountsRef.current;
-    const total = c.perfect + c.good + c.off + c.miss;
+    const total = (c.perfect || 0) + (c.good || 0) + (c.off || 0) + (c.miss || 0);
     if (total === 0) return null;
     const score = Math.round(((c.perfect + c.good * TRAINING_SCORE_GOOD_WEIGHT) / total) * TRAINING_SCORE_MULTIPLIER);
     return { perfect: c.perfect, good: c.good, off: c.off, miss: c.miss, total, score };
@@ -146,12 +147,12 @@ export function useTraining(pattern, currentStep, isPlaying = false) {
 
   return {
     trainingMode,
-    setTrainingMode: (v) => {
+    setTrainingMode: (v: boolean) => {
       setUserHits([]);
       setMissedHits(0);
       missedStepsRef.current = new Set();
       runningCountsRef.current = { perfect: 0, good: 0, off: 0, miss: 0 };
-      setTrainingMode(v);
+      setTrainingModeState(v);
     },
     userHits,
     handleDrumHit,

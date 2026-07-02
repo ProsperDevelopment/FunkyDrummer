@@ -1,7 +1,11 @@
 import { drumConfig } from '../config/drumConfig';
 import './HelpModal.css';
 
-export default function HelpModal({ onClose }) {
+interface HelpModalProps {
+  onClose: () => void;
+}
+
+export default function HelpModal({ onClose }: HelpModalProps) {
   return (
     <div className="help-overlay" onClick={onClose}>
       <div className="help-modal" onClick={e => e.stopPropagation()}>

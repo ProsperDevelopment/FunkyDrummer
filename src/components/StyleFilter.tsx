@@ -3,19 +3,24 @@ import './StyleFilter.css';
 
 const ALL_STYLES = ['Rock', 'Funk', 'Electronic', 'Techno', 'Electro', 'Breakbeat', 'Jazz', 'Metal', 'Hip Hop', 'World', 'Practice', 'Punk', 'Blues', 'Latin'];
 
-export default function StyleFilter({ activeStyles, onChange }) {
+interface StyleFilterProps {
+  activeStyles: string[];
+  onChange: (styles: string[]) => void;
+}
+
+export default function StyleFilter({ activeStyles, onChange }: StyleFilterProps) {
   const [open, setOpen] = useState(false);
-  const ref = useRef(null);
+  const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const handler = (e) => {
-      if (ref.current && !ref.current.contains(e.target)) setOpen(false);
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
     };
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
   }, []);
 
-  const toggle = (style) => {
+  const toggle = (style: string) => {
     const next = activeStyles.includes(style)
       ? activeStyles.filter(s => s !== style)
       : [...activeStyles, style];

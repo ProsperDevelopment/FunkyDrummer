@@ -1,6 +1,7 @@
 import { useRef, useEffect, useLayoutEffect, useState, useMemo } from 'react';
 import { drumConfig } from '../config/drumConfig';
 import { STEPS_PER_MEASURE, BEAT_INTERVAL, MEASURE_INTERVAL, CANVAS_STEP_WIDTH, CANVAS_ROW_HEIGHT, CANVAS_HEADER_WIDTH, CANVAS_HIT_RADIUS, CANVAS_HIT_FONT_SIZE, CANVAS_BEAT_FONT_SIZE } from '../config/constants';
+import type { DrumPattern, UserHit, DrumDef } from '../types';
 import './Timeline.css';
 
 const STEP_WIDTH = CANVAS_STEP_WIDTH;
@@ -9,22 +10,32 @@ const HEADER_WIDTH = CANVAS_HEADER_WIDTH;
 const MAX_GROOVE = 5;
 const GROOVE_VISUAL_SCALE = 0.4;
 
-function getScrollX(step, stageWidth) {
+function getScrollX(step: number, stageWidth: number) {
   return stageWidth / 2 - step * STEP_WIDTH - STEP_WIDTH / 2;
 }
 
-function getGrooveShift(groove, stepIdx) {
+function getGrooveShift(groove: number[] | undefined, stepIdx: number) {
   if (!groove) return 0;
   return (groove[stepIdx % 16] || 0) / MAX_GROOVE * STEP_WIDTH * GROOVE_VISUAL_SCALE;
 }
 
-export default function Timeline({ pattern, currentStep, isPlaying, userHits = [], trainingMode = false, compact = false, grooveOn = false }) {
-  const canvasRef = useRef(null);
-  const containerRef = useRef(null);
+interface TimelineProps {
+  pattern: DrumPattern | null;
+  currentStep: number;
+  isPlaying: boolean;
+  userHits?: UserHit[];
+  trainingMode?: boolean;
+  compact?: boolean;
+  grooveOn?: boolean;
+}
+
+export default function Timeline({ pattern, currentStep, isPlaying, userHits = [], trainingMode = false, compact = false, grooveOn = false }: TimelineProps) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const [dimensions, setDimensions] = useState({ width: 800, height: 400 });
   const stepRef = useRef(currentStep);
   const patternRef = useRef(pattern);
-  const rafRef = useRef(null);
+  const rafRef = useRef<number>(0);
 
   stepRef.current = currentStep;
   patternRef.current = pattern;
@@ -47,7 +58,7 @@ export default function Timeline({ pattern, currentStep, isPlaying, userHits = [
     return () => ro.disconnect();
   }, [pattern]);
 
-  const rows = useMemo(() =>
+  const rows: DrumDef[] = useMemo(() =>
     pattern ? drumConfig.filter(d => d.id in pattern.grid) : [],
     [pattern]
   );
@@ -55,14 +66,14 @@ export default function Timeline({ pattern, currentStep, isPlaying, userHits = [
   const steps = pattern ? pattern.measures * STEPS_PER_MEASURE : 0;
   const totalWidth = steps * 3 * STEP_WIDTH;
 
-  const userHitColors = {
+  const userHitColors: Record<string, string> = {
     perfect: '#4ade80',
     good: '#fbbf24',
     off: '#fb923c',
     miss: '#f87171',
   };
 
-  function draw(ctx, scrollX) {
+  function draw(ctx: CanvasRenderingContext2D, scrollX: number) {
     const w = canvasWidth;
     const h = canvasHeight;
     ctx.clearRect(0, 0, w, h);
@@ -71,7 +82,6 @@ export default function Timeline({ pattern, currentStep, isPlaying, userHits = [
 
     if (!pattern) return;
 
-    // backgrounds for 3 iterations
     for (let i = 0; i < rows.length; i++) {
       ctx.fillStyle = '#16162a';
       ctx.fillRect(scrollX, i * ROW_HEIGHT, totalWidth, ROW_HEIGHT);
@@ -79,7 +89,6 @@ export default function Timeline({ pattern, currentStep, isPlaying, userHits = [
 
     const viewSteps = steps * 3;
 
-    // beat dividers
     for (let i = 0; i <= viewSteps; i++) {
       const x = scrollX + i * STEP_WIDTH;
       if (i > 0 && i < viewSteps && i % steps === 0) {
@@ -108,14 +117,12 @@ export default function Timeline({ pattern, currentStep, isPlaying, userHits = [
       ctx.stroke();
     }
 
-    // beat numbers
     ctx.font = `${CANVAS_BEAT_FONT_SIZE}px sans-serif`;
     ctx.fillStyle = '#555';
     for (let i = 0; i < viewSteps; i += BEAT_INTERVAL) {
       ctx.fillText(`${Math.floor((i % steps) / BEAT_INTERVAL) + 1}`, scrollX + i * STEP_WIDTH + 4, 12);
     }
 
-    // row dividers
     ctx.strokeStyle = '#1e1e3a';
     ctx.lineWidth = 1;
     for (let i = 1; i < rows.length; i++) {
@@ -126,7 +133,6 @@ export default function Timeline({ pattern, currentStep, isPlaying, userHits = [
       ctx.stroke();
     }
 
-    // drum hit blocks (3 iterations)
     for (const drum of rows) {
       const row = pattern.grid[drum.id];
       if (!row) continue;
@@ -143,14 +149,12 @@ export default function Timeline({ pattern, currentStep, isPlaying, userHits = [
       }
     }
 
-    // current step highlight (middle iteration)
     const offsetStep = steps + (currentStep % steps);
     ctx.fillStyle = 'rgba(255,255,255,0.03)';
     ctx.fillRect(scrollX + offsetStep * STEP_WIDTH, 0, STEP_WIDTH, contentH);
 
-    // user hits (training mode) — drawn in the middle iteration
     if (trainingMode && userHits.length > 0) {
-      const accLabels = { perfect: 'P', good: 'G', off: 'O', miss: 'X' };
+      const accLabels: Record<string, string> = { perfect: 'P', good: 'G', off: 'O', miss: 'X' };
       for (const hit of userHits) {
         const rowIdx = rows.findIndex(r => r.id === hit.drumId);
         if (rowIdx === -1) continue;
@@ -158,7 +162,6 @@ export default function Timeline({ pattern, currentStep, isPlaying, userHits = [
         const cy = rowIdx * ROW_HEIGHT + ROW_HEIGHT / 2;
         const color = userHitColors[hit.accuracy] || userHitColors.miss;
 
-        // faint line to nearest pattern note (show offset)
         const patternRow = pattern.grid[hit.drumId];
         if (patternRow && hit.accuracy !== 'miss') {
           let nearestPatternStep = -1;
@@ -214,7 +217,6 @@ export default function Timeline({ pattern, currentStep, isPlaying, userHits = [
       }
     }
 
-    // playhead (fixed)
     const midX = w / 2;
     ctx.strokeStyle = '#fff';
     ctx.lineWidth = 2;
@@ -230,7 +232,6 @@ export default function Timeline({ pattern, currentStep, isPlaying, userHits = [
   const drawRef = useRef(draw);
   drawRef.current = draw;
 
-  // handle DPI scaling — must run BEFORE draw useLayoutEffect below
   useLayoutEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas || !containerRef.current) return;
@@ -241,10 +242,9 @@ export default function Timeline({ pattern, currentStep, isPlaying, userHits = [
     canvas.style.width = rect.width + 'px';
     canvas.style.height = rect.height + 'px';
     const ctx = canvas.getContext('2d');
-    ctx.scale(dpr, dpr);
+    if (ctx) ctx.scale(dpr, dpr);
   }, [dimensions, pattern]);
 
-  // immediate draw on step/pattern/isPlaying change
   useLayoutEffect(() => {
     const ctx = canvasRef.current?.getContext('2d');
     if (!ctx || !pattern) return;
@@ -252,11 +252,11 @@ export default function Timeline({ pattern, currentStep, isPlaying, userHits = [
     drawRef.current(ctx, scrollX);
   }, [currentStep, pattern, isPlaying, canvasWidth, rows, userHits, trainingMode, steps, grooveOn]);
 
-  // RAF loop during playback
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas || !pattern) return;
     const ctx = canvas.getContext('2d');
+    if (!ctx) return;
 
     const tick = () => {
       const s = steps + (stepRef.current % steps);
@@ -272,7 +272,7 @@ export default function Timeline({ pattern, currentStep, isPlaying, userHits = [
     return () => {
       if (rafRef.current) {
         cancelAnimationFrame(rafRef.current);
-        rafRef.current = null;
+        rafRef.current = 0;
       }
     };
   }, [pattern, isPlaying, canvasWidth, steps, rows, grooveOn]);
@@ -298,7 +298,7 @@ export default function Timeline({ pattern, currentStep, isPlaying, userHits = [
   );
 }
 
-function roundRect(ctx, x, y, w, h, r) {
+function roundRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number) {
   ctx.beginPath();
   ctx.moveTo(x + r, y);
   ctx.lineTo(x + w - r, y);

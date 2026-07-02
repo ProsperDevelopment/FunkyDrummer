@@ -1,7 +1,8 @@
 import { loadSample, playSampleBuffer, getContext, getBuffer } from './sampleLoader';
 import { drumKits } from '../config/drumKits';
+import type { DrumKit, Voice } from '../types';
 
-function noiseBuffer(ctx, length) {
+function noiseBuffer(ctx: AudioContext, length: number): AudioBuffer {
   const size = ctx.sampleRate * length;
   const buf = ctx.createBuffer(1, size, ctx.sampleRate);
   const data = buf.getChannelData(0);
@@ -11,7 +12,7 @@ function noiseBuffer(ctx, length) {
   return buf;
 }
 
-function playNoise(ctx, duration, filterFreq, gain) {
+function playNoise(ctx: AudioContext, duration: number, filterFreq: number, gain: number): void {
   const noise = noiseBuffer(ctx, duration);
   const source = ctx.createBufferSource();
   source.buffer = noise;
@@ -32,7 +33,7 @@ function playNoise(ctx, duration, filterFreq, gain) {
   source.stop(ctx.currentTime + duration);
 }
 
-function playTone(ctx, freq, duration, gain, type = 'sine') {
+function playTone(ctx: AudioContext, freq: number, duration: number, gain: number, type: OscillatorType = 'sine'): void {
   const osc = ctx.createOscillator();
   osc.type = type;
   osc.frequency.setValueAtTime(freq, ctx.currentTime);
@@ -49,7 +50,7 @@ function playTone(ctx, freq, duration, gain, type = 'sine') {
 
 const CHICK_DURATION = 0.015;
 
-function playSampleChick(ctx) {
+function playSampleChick(ctx: AudioContext): Voice {
   const noise = noiseBuffer(ctx, CHICK_DURATION);
   const source = ctx.createBufferSource();
   source.buffer = noise;
@@ -69,13 +70,12 @@ function playSampleChick(ctx) {
   gn.connect(ctx.destination);
   source.start(ctx.currentTime);
   source.stop(ctx.currentTime + CHICK_DURATION);
-  return { stop: () => { try { source.stop(); } catch (e) {} } };
+  return { stop: () => { try { source.stop(); } catch (_e) { /* ignore */ } } };
 }
 
-// Track active voices for choke groups
-const activeVoices = {};
+const activeVoices: Record<string, Voice> = {};
 
-function chokeHihat(excludeId) {
+function chokeHihat(excludeId: string): void {
   const chokeGroup = ['hihat', 'hihatOpen', 'hihatMute', 'hihatEdge'];
   for (const id of chokeGroup) {
     if (id !== excludeId && activeVoices[id]) {
@@ -85,15 +85,15 @@ function chokeHihat(excludeId) {
   }
 }
 
-function registerVoice(id, voice) {
+function registerVoice(id: string, voice: Voice): void {
   chokeHihat(id);
   if (activeVoices[id]) {
-    try { activeVoices[id].stop(); } catch (e) {}
+    try { activeVoices[id].stop(); } catch (_e) { /* ignore */ }
   }
   activeVoices[id] = voice;
 }
 
-function playSampleTracked(url, velocity) {
+function playSampleTracked(url: string, velocity: number): Voice {
   const ctx = getContext();
   const buf = getBuffer(url);
   if (!buf) {
@@ -115,12 +115,12 @@ function playSampleTracked(url, velocity) {
       gn.gain.setValueAtTime(gn.gain.value, ctx.currentTime);
       gn.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.005);
       source.stop(ctx.currentTime + 0.005);
-    } catch (e) {}
+    } catch (_e) { /* ignore */ }
   };
   return { stop };
 }
 
-const synthSounds = {
+const synthSounds: Record<string, (velocity?: number) => void> = {
   kick(velocity = 0.8) {
     const ctx = getContext();
     const v = Math.min(1, velocity) * 0.8;
@@ -166,7 +166,7 @@ const synthSounds = {
     playNoise(ctx, 0.01, 18000, v * 0.3);
   },
 
-  hihatMute(velocity = 0.6) {
+  hihatMute(_velocity = 0.6) {
     playSampleChick(getContext());
   },
 
@@ -206,52 +206,52 @@ const synthSounds = {
   },
 };
 
-let activeKit = drumKits[0];
+let activeKit: DrumKit = drumKits[0];
 let kitLoading = false;
-let loadCallbacks = [];
+let loadCallbacks: Array<() => void> = [];
 let hihatPedalPressed = true;
 let hihatPedalAmount = 1;
 let userPressingPedal = false;
 
-export function getActiveKit() {
+export function getActiveKit(): DrumKit {
   return activeKit;
 }
 
-export function isKitLoading() {
+export function isKitLoading(): boolean {
   return kitLoading;
 }
 
-export function getHihatPedalPressed() {
+export function getHihatPedalPressed(): boolean {
   return hihatPedalPressed;
 }
 
-export function setHihatPedalPressed(pressed) {
+export function setHihatPedalPressed(pressed: boolean): void {
   hihatPedalPressed = pressed;
 }
 
-export function getHihatPedalAmount() {
+export function getHihatPedalAmount(): number {
   return hihatPedalAmount;
 }
 
-export function setHihatPedalAmount(amount) {
+export function setHihatPedalAmount(amount: number): void {
   hihatPedalAmount = amount;
   hihatPedalPressed = amount >= 0.5;
 }
 
-export function setUserPressingPedal(pressing) {
+export function setUserPressingPedal(pressing: boolean): void {
   userPressingPedal = pressing;
 }
 
-export function getUserPressingPedal() {
+export function getUserPressingPedal(): boolean {
   return userPressingPedal;
 }
 
-export function onKitLoaded(cb) {
+export function onKitLoaded(cb: () => void): void {
   if (!kitLoading) cb();
   else loadCallbacks.push(cb);
 }
 
-export async function setKit(kitId) {
+export async function setKit(kitId: string): Promise<void> {
   const kit = drumKits.find(k => k.id === kitId);
   if (!kit || kit.id === activeKit.id) return;
   activeKit = kit;
@@ -274,7 +274,7 @@ export async function setKit(kitId) {
   loadCallbacks = [];
 }
 
-function playCrossfadeHihat(velocity) {
+function playCrossfadeHihat(velocity: number): Voice {
   const ctx = getContext();
   if (ctx.state === 'suspended') ctx.resume();
   const kit = activeKit;
@@ -287,7 +287,7 @@ function playCrossfadeHihat(velocity) {
     const closedGain = hihatPedalAmount;
     const openGain = 1 - hihatPedalAmount;
 
-    const stopFns = [];
+    const stopFns: Array<() => void> = [];
 
     if (closedBuf) {
       const src = ctx.createBufferSource();
@@ -304,7 +304,7 @@ function playCrossfadeHihat(velocity) {
           gn.gain.setValueAtTime(gn.gain.value, ctx.currentTime);
           gn.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.005);
           src.stop(ctx.currentTime + 0.005);
-        } catch (e) {}
+        } catch (_e) { /* ignore */ }
       });
     }
 
@@ -323,7 +323,7 @@ function playCrossfadeHihat(velocity) {
           gn2.gain.setValueAtTime(gn2.gain.value, ctx.currentTime);
           gn2.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.005);
           src2.stop(ctx.currentTime + 0.005);
-        } catch (e) {}
+        } catch (_e) { /* ignore */ }
       });
     }
 
@@ -333,7 +333,7 @@ function playCrossfadeHihat(velocity) {
       },
     };
   }
-  // Synth fallback: adjust noise duration based on pedal
+  // Synth fallback
   const dur = 0.02 + hihatPedalAmount * 0.05;
   playNoise(ctx, dur, 12000, v * 0.4);
   if (hihatPedalAmount < 0.5) {
@@ -342,7 +342,7 @@ function playCrossfadeHihat(velocity) {
   return { stop() {} };
 }
 
-export function playDrum(drumId, velocity = 0.8) {
+export function playDrum(drumId: string, velocity = 0.8): void {
   const ctx = getContext();
   if (ctx.state === 'suspended') ctx.resume();
   const kit = activeKit;
@@ -352,13 +352,11 @@ export function playDrum(drumId, velocity = 0.8) {
     hihatPedalAmount = drumId === 'hihat' ? 1 : 0;
   }
 
-  // Choke: hihatEdge and hihatMute are in the hi-hat choke group
   if (['hihat', 'hihatOpen', 'hihatEdge', 'hihatMute'].includes(drumId)) {
     chokeHihat(drumId);
   }
 
   if (drumId === 'hihatEdge') {
-    const kit = activeKit;
     if (kit.type === 'samples' && kit.samples && kit.samples.hihatEdge) {
       const voice = playSampleTracked(kit.samples.hihatEdge, velocity);
       registerVoice(drumId, voice);
@@ -388,7 +386,7 @@ export function playDrum(drumId, velocity = 0.8) {
   }
 }
 
-export function playMetronomeClick(accent = false) {
+export function playMetronomeClick(accent = false): void {
   const ctx = getContext();
   if (ctx.state === 'suspended') ctx.resume();
   const osc = ctx.createOscillator();

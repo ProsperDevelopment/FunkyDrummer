@@ -1,13 +1,14 @@
+import type { MidiConfig } from '../types';
 import { drumConfig } from './drumConfig';
 
-function buildMap(overrides) {
-  const base = Object.fromEntries(
+function buildMap(overrides: Record<number, string | null>): Record<number, string | null> {
+  const base: Record<number, string | null> = Object.fromEntries(
     drumConfig.map(d => [d.midiNote, d.id])
   );
   return { ...base, ...overrides };
 }
 
-export const midiConfigs = [
+export const midiConfigs: MidiConfig[] = [
   {
     id: 'default',
     name: 'Default (GM)',
@@ -27,7 +28,7 @@ export const midiConfigs = [
   },
 ];
 
-export function getNoteMap(configId) {
+export function getNoteMap(configId: string): Record<number, string | null> {
   const c = midiConfigs.find(m => m.id === configId) || midiConfigs[0];
   return c.noteMap;
 }

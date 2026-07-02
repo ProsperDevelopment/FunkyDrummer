@@ -2,31 +2,49 @@ import { useState, useRef, useCallback, useEffect } from 'react';
 import { playDrum, playMetronomeClick } from '../audio/drumSounds';
 import { drumPatterns } from '../data/drumPatterns';
 import { STEPS_PER_MEASURE, BEAT_INTERVAL, MEASURE_INTERVAL } from '../config/constants';
+import type { Track, DrumPattern } from '../types';
 
-function getPattern(id) {
+function getPattern(id: string): DrumPattern {
   return drumPatterns.find(p => p.id === id) || drumPatterns[0];
 }
 
-export function useLessonPlayback(track, onDrumPlayed, metronomeOn = false, drumPlaybackOn = true) {
+export function useTrackPlayback(
+  track: Track | null,
+  onDrumPlayed?: (drumId: string, vel: number) => void,
+  metronomeOn = false,
+  drumPlaybackOn = true,
+  bpmOverride: number | null = null
+) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
   const [currentPartIndex, setCurrentPartIndex] = useState(0);
-  const [currentPattern, setCurrentPattern] = useState(null);
+  const [currentPattern, setCurrentPattern] = useState<DrumPattern | null>(null);
   const [isFinished, setIsFinished] = useState(false);
 
-  const intervalRef = useRef(null);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const stepRef = useRef(0);
   const partIndexRef = useRef(0);
   const repeatRef = useRef(0);
   const trackRef = useRef(track);
   const metronomeRef = useRef(metronomeOn);
   const drumPlaybackRef = useRef(drumPlaybackOn);
+  const bpmOverrideRef = useRef(bpmOverride);
 
   useEffect(() => { metronomeRef.current = metronomeOn; }, [metronomeOn]);
   useEffect(() => { drumPlaybackRef.current = drumPlaybackOn; }, [drumPlaybackOn]);
+  useEffect(() => { bpmOverrideRef.current = bpmOverride; }, [bpmOverride]);
 
   useEffect(() => {
     trackRef.current = track;
+    if (track && track.parts && track.parts.length > 0) {
+      const firstPart = track.parts[0];
+      const firstPattern = getPattern(firstPart.patternId);
+      setCurrentPattern(firstPattern);
+      setCurrentPartIndex(0);
+      partIndexRef.current = 0;
+      setCurrentStep(0);
+      stepRef.current = 0;
+    }
   }, [track]);
 
   const stop = useCallback(() => {
@@ -48,7 +66,7 @@ export function useLessonPlayback(track, onDrumPlayed, metronomeOn = false, drum
     const t = trackRef.current;
     if (!t || !t.parts || t.parts.length === 0) return;
 
-    const bpm = t.bpm;
+    const bpm = bpmOverrideRef.current || t.bpm;
     const intervalMs = (60 / bpm) * 1000 / 4;
 
     stepRef.current = 0;
@@ -127,6 +145,12 @@ export function useLessonPlayback(track, onDrumPlayed, metronomeOn = false, drum
       }
     }, intervalMs);
   }, [stop, onDrumPlayed]);
+
+  useEffect(() => {
+    if (isPlaying) {
+      play();
+    }
+  }, [bpmOverride]);
 
   useEffect(() => {
     return () => {

@@ -1,8 +1,18 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { playDrum, playMetronomeClick } from '../audio/drumSounds';
 import { STEPS_PER_MEASURE, BEAT_INTERVAL, MEASURE_INTERVAL, COUNT_IN_BEATS } from '../config/constants';
+import type { DrumPattern } from '../types';
 
-export function usePlayback(pattern, bpmOverride, stopAfterReps = 0, onDrumPlayed, metronomeOn = false, drumPlaybackOn = true, countdownOn = false, grooveOn = false) {
+export function usePlayback(
+  pattern: DrumPattern,
+  bpmOverride: number | null,
+  stopAfterReps = 0,
+  onDrumPlayed?: (drumId: string, vel: number) => void,
+  metronomeOn = false,
+  drumPlaybackOn = true,
+  countdownOn = false,
+  grooveOn = false
+) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isCountdown, setIsCountdown] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
@@ -10,8 +20,8 @@ export function usePlayback(pattern, bpmOverride, stopAfterReps = 0, onDrumPlaye
   const [currentLoop, setCurrentLoop] = useState(0);
   const [repsComplete, setRepsComplete] = useState(false);
   const [countdownCount, setCountdownCount] = useState(0);
-  const intervalRef = useRef(null);
-  const countdownTimerRef = useRef(null);
+  const intervalRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const countdownTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const stepRef = useRef(0);
   const stepsRef = useRef(STEPS_PER_MEASURE * 2);
   const patternRef = useRef(pattern);
@@ -22,7 +32,7 @@ export function usePlayback(pattern, bpmOverride, stopAfterReps = 0, onDrumPlaye
   const drumPlaybackRef = useRef(drumPlaybackOn);
   const countdownRef = useRef(countdownOn);
   const grooveOnRef = useRef(grooveOn);
-  const drumTimeoutsRef = useRef([]);
+  const drumTimeoutsRef = useRef<ReturnType<typeof setTimeout>[]>([]);
 
   useEffect(() => { bpmRef.current = bpmOverride; }, [bpmOverride]);
   useEffect(() => { stopAfterRef.current = stopAfterReps; }, [stopAfterReps]);
@@ -60,12 +70,12 @@ export function usePlayback(pattern, bpmOverride, stopAfterReps = 0, onDrumPlaye
     setCurrentLoop(0);
   }, []);
 
-  const startPattern = useCallback((intervalMs) => {
+  const startPattern = useCallback((intervalMs: number) => {
     setIsPlaying(true);
 
     let hasPreScheduled = false;
 
-    const scheduleDrum = (drumId, vel, delay) => {
+    const scheduleDrum = (drumId: string, vel: number, delay: number) => {
       const t = setTimeout(() => {
         if (!grooveOnRef.current) return;
         playDrum(drumId, vel);
@@ -85,7 +95,6 @@ export function usePlayback(pattern, bpmOverride, stopAfterReps = 0, onDrumPlaye
         const groove = p2.groove;
         const grooveLen = groove ? groove.length : 16;
 
-        // Phase 1: pre-schedule next step's negative-groove hits (anticipatory)
         if (grooveOnRef.current && groove) {
           const nextModStep = (modStep + 1) % steps;
           for (const [drumId, row] of Object.entries(p2.grid)) {
@@ -99,7 +108,6 @@ export function usePlayback(pattern, bpmOverride, stopAfterReps = 0, onDrumPlaye
           }
         }
 
-        // Phase 2-4: current step hits
         for (const [drumId, row] of Object.entries(p2.grid)) {
           if (row[modStep]) {
             const vel = row[modStep];
@@ -110,11 +118,9 @@ export function usePlayback(pattern, bpmOverride, stopAfterReps = 0, onDrumPlaye
               playDrum(drumId, vel);
               onDrumPlayed?.(drumId, vel);
             } else if (!hasPreScheduled) {
-              // First tick: play negative-groove hits immediately
               playDrum(drumId, vel);
               onDrumPlayed?.(drumId, vel);
             }
-            // else grooveOffset < 0 && hasPreScheduled: skipped (handled by Phase 1 of previous tick)
           }
         }
 

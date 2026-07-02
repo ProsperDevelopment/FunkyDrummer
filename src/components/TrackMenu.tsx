@@ -2,12 +2,23 @@ import { useMemo } from 'react';
 import { trackList } from '../data/trackList';
 import './TrackMenu.css';
 
-export default function TrackMenu({ selectedTrackId, currentTrackName, onSelectTrack, isPlayingTrack, trackPart, trackTotalParts, embedded, activeStyles }) {
+interface TrackMenuProps {
+  selectedTrackId: string | null;
+  currentTrackName?: string;
+  onSelectTrack: (id: string) => void;
+  isPlayingTrack: boolean;
+  trackPart: number;
+  trackTotalParts: number;
+  embedded?: boolean;
+  activeStyles: string[];
+}
+
+export default function TrackMenu({ selectedTrackId, currentTrackName, onSelectTrack, isPlayingTrack, trackPart, trackTotalParts, embedded, activeStyles }: TrackMenuProps) {
   const grouped = useMemo(() => {
     const filtered = activeStyles.length === 0
       ? trackList
       : trackList.filter(t => activeStyles.includes(t.style));
-    const map = {};
+    const map: Record<string, typeof trackList> = {};
     for (const t of filtered) {
       const s = t.style || 'Other';
       if (!map[s]) map[s] = [];

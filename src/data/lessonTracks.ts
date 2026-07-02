@@ -1,8 +1,11 @@
-export const lessonTracks = [
+import type { Track } from '../types';
+
+export const lessonTracks: Track[] = [
   {
     id: 'beginner-switch',
     name: 'Beginner: Rock to Funk',
     bpm: 100,
+    style: 'Practice',
     parts: [
       { patternId: 'basic-rock', repeats: 4 },
       { patternId: 'funk', repeats: 4 },
@@ -15,6 +18,7 @@ export const lessonTracks = [
     id: 'groove-essentials',
     name: 'Groove Essentials',
     bpm: 110,
+    style: 'Funk',
     parts: [
       { patternId: 'funk', repeats: 4 },
       { patternId: 'reggae', repeats: 4 },
@@ -27,6 +31,7 @@ export const lessonTracks = [
     id: 'speed-builder',
     name: 'Speed Builder',
     bpm: 140,
+    style: 'Metal',
     parts: [
       { patternId: 'basic-rock', repeats: 2 },
       { patternId: 'metal', repeats: 2 },
@@ -39,6 +44,7 @@ export const lessonTracks = [
     id: 'break-beat-journey',
     name: 'Break Beat Journey',
     bpm: 120,
+    style: 'Breakbeat',
     parts: [
       { patternId: 'hot-pants', repeats: 2 },
       { patternId: 'think-break', repeats: 2 },
@@ -52,6 +58,7 @@ export const lessonTracks = [
     id: 'time-signature-warmup',
     name: 'Time Signature Warmup',
     bpm: 120,
+    style: 'Practice',
     parts: [
       { patternId: 'disco', repeats: 2 },
       { patternId: 'half-time', repeats: 2 },
@@ -64,6 +71,7 @@ export const lessonTracks = [
     id: 'uk-garage-roller',
     name: 'UK Garage Roller',
     bpm: 132,
+    style: 'Electronic',
     parts: [
       { patternId: 'uk-garage', repeats: 2 },
       { patternId: 'two-step', repeats: 2 },

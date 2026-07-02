@@ -3,39 +3,47 @@ import { getLayoutById } from '../config/drumLayouts';
 import { setUserPressingPedal, getHihatPedalAmount } from '../audio/drumSounds';
 import './DrumVisualizer.css';
 
-const drumColorMap = Object.fromEntries(
+const drumColorMap: Record<string, string> = Object.fromEntries(
   drumConfig.map(d => [d.id, d.color])
 );
 
-const drumAbbr = {
+const drumAbbr: Record<string, string> = {
   kick: 'KCK', snare: 'SNR', hihat: 'HH', hihatOpen: 'HO',
   hihatEdge: 'ED', hihatMute: 'MU',
   crash: 'CR', ride: 'RD', tomHi: 'HT', tomMid: 'MT',
   tomLo: 'FT',
 };
 
-function handlePointerDown(id, onDrumClick, e) {
+function handlePointerDown(id: string, onDrumClick: ((id: string) => void) | undefined, e: React.PointerEvent) {
   e.preventDefault();
-  e.target.setPointerCapture(e.pointerId);
+  (e.target as HTMLElement).setPointerCapture(e.pointerId);
   onDrumClick?.(id);
 }
 
-function handlePedalToggle(onHihatPedalDown, e) {
+function handlePedalToggle(onHihatPedalDown: (() => void) | undefined, e: React.PointerEvent) {
   e.preventDefault();
-  e.target.setPointerCapture(e.pointerId);
+  (e.target as HTMLElement).setPointerCapture(e.pointerId);
   setUserPressingPedal(true);
   onHihatPedalDown?.();
 }
 
-function handlePedalRelease(e) {
-  e.target.releasePointerCapture(e.pointerId);
+function handlePedalRelease(e: React.PointerEvent) {
+  (e.target as HTMLElement).releasePointerCapture(e.pointerId);
   setUserPressingPedal(false);
 }
 
-export default function DrumVisualizer({ activeDrums, onDrumClick, layoutId, hihatPedalPressed, onHihatPedalDown, onHihatPedalUp }) {
+interface DrumVisualizerProps {
+  activeDrums: Map<string, number>;
+  onDrumClick: (id: string, velocity?: number) => void;
+  layoutId: string;
+  hihatPedalPressed: boolean;
+  onHihatPedalDown: () => void;
+}
+
+export default function DrumVisualizer({ activeDrums, onDrumClick, layoutId, hihatPedalPressed, onHihatPedalDown }: DrumVisualizerProps) {
   const layout = getLayoutById(layoutId);
-  const getVel = (id, group) => {
-    const v = activeDrums.get(id) || (group || []).reduce((a, g) => a || activeDrums.get(g), 0);
+  const getVel = (id: string, group?: string[]) => {
+    const v = activeDrums.get(id) || (group || []).reduce((a, g) => a || activeDrums.get(g) || 0, 0);
     return v || 0;
   };
   const kickPos = layout.positions.find(p => p.id === 'kick');
@@ -45,10 +53,10 @@ export default function DrumVisualizer({ activeDrums, onDrumClick, layoutId, hih
   const pedalCy = kickPos ? kickPos.cy : 340;
   const pedalAmount = getHihatPedalAmount();
   const pedalActive = hihatPedalPressed
-    ? { active: true, color: drumColorMap.hihat, label: 'CL' }
+    ? { active: true, color: drumColorMap.hihat || '#888', label: 'CL' }
     : { active: true, color: '#f39c12', label: 'OP' };
-  const hihatEdgeActive = activeDrums.get('hihatEdge') > 0;
-  const hihatMuteActive = activeDrums.get('hihatMute') > 0;
+  const hihatEdgeActive = (activeDrums.get('hihatEdge') || 0) > 0;
+  const hihatMuteActive = (activeDrums.get('hihatMute') || 0) > 0;
   const hihatPos = layout.positions.find(p => p.id === 'hihat');
 
   return (
@@ -89,7 +97,6 @@ export default function DrumVisualizer({ activeDrums, onDrumClick, layoutId, hih
                   className="drum-glow-ring"
                 />
               )}
-              {/* Edge hit indicator: red circle at bottom-right, cropped by hi-hat boundary */}
               {id === 'hihat' && hihatEdgeActive && (
                 <g clipPath="url(#hihat-clip)">
                   <circle cx={cx + r * 0.5} cy={cy + r * 0.5} r={r * 0.4} fill="#e74c3c" fillOpacity={0.7} />
@@ -110,7 +117,6 @@ export default function DrumVisualizer({ activeDrums, onDrumClick, layoutId, hih
             </g>
           );
         })}
-        {/* Pedal: fill opacity reflects pedal amount */}
         <rect
           x={pedalCx - pedalW / 2} y={pedalCy - pedalH / 2}
           width={pedalW} height={pedalH} rx={6}
@@ -144,7 +150,6 @@ export default function DrumVisualizer({ activeDrums, onDrumClick, layoutId, hih
           opacity={0.5}
           className="drum-glow-ring"
         />
-        {/* Mute indicator on pedal */}
         {hihatMuteActive && (
           <circle cx={pedalCx} cy={pedalCy} r={pedalH * 0.35} fill="#e74c3c" fillOpacity={0.3} stroke="#e74c3c" strokeWidth={3} />
         )}

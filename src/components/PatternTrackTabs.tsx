@@ -4,9 +4,20 @@ import TrackMenu from './TrackMenu';
 import StyleFilter from './StyleFilter';
 import './PatternTrackTabs.css';
 
-export default function PatternTrackTabs(props) {
-  const [tab, setTab] = useState('patterns');
-  const [activeStyles, setActiveStyles] = useState([]);
+interface PatternTrackTabsProps {
+  selectedPatternId: string;
+  onSelectPattern: (id: string) => void;
+  selectedTrackId: string | null;
+  currentTrackName?: string;
+  onSelectTrack: (id: string) => void;
+  isPlayingTrack: boolean;
+  trackPart: number;
+  trackTotalParts: number;
+}
+
+export default function PatternTrackTabs(props: PatternTrackTabsProps) {
+  const [tab, setTab] = useState<'patterns' | 'tracks'>('patterns');
+  const [activeStyles, setActiveStyles] = useState<string[]>([]);
 
   return (
     <div className="pattern-track-tabs">

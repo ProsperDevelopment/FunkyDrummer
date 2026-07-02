@@ -2,6 +2,25 @@ import { useState, useRef, useEffect } from 'react';
 import { BPM_MIN, BPM_MAX, REPS_MIN, REPS_MAX } from '../config/constants';
 import './FullscreenControls.css';
 
+interface FullscreenControlsProps {
+  isPlaying: boolean;
+  onTogglePlay: () => void;
+  onStop: () => void;
+  bpm: number;
+  onBpmChange: (bpm: number) => void;
+  drumPlaybackOn: boolean;
+  onToggleDrumPlayback: () => void;
+  trainingMode: boolean;
+  onTrainingToggle: () => void;
+  stopAfterReps: number;
+  onStopAfterRepsChange: (reps: number) => void;
+  currentLoop: number;
+  grooveOn: boolean;
+  onGrooveToggle: () => void;
+  countdownOn: boolean;
+  onCountdownToggle: () => void;
+}
+
 export default function FullscreenControls({
   isPlaying, onTogglePlay, onStop, bpm, onBpmChange,
   drumPlaybackOn, onToggleDrumPlayback,
@@ -9,39 +28,39 @@ export default function FullscreenControls({
   stopAfterReps, onStopAfterRepsChange, currentLoop,
   grooveOn, onGrooveToggle,
   countdownOn, onCountdownToggle,
-}) {
+}: FullscreenControlsProps) {
   const [showBpm, setShowBpm] = useState(false);
   const [showReps, setShowReps] = useState(false);
-  const bpmRef = useRef(null);
-  const repsRef = useRef(null);
+  const bpmRef = useRef<HTMLDivElement>(null);
+  const repsRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!showBpm) return;
-    const handler = (e) => {
-      if (bpmRef.current && !bpmRef.current.contains(e.target)) {
+    const handler = (e: MouseEvent) => {
+      if (bpmRef.current && !bpmRef.current.contains(e.target as Node)) {
         setShowBpm(false);
       }
     };
     document.addEventListener('mousedown', handler);
-    document.addEventListener('touchstart', handler);
+    document.addEventListener('touchstart', handler as EventListener);
     return () => {
       document.removeEventListener('mousedown', handler);
-      document.removeEventListener('touchstart', handler);
+      document.removeEventListener('touchstart', handler as EventListener);
     };
   }, [showBpm]);
 
   useEffect(() => {
     if (!showReps) return;
-    const handler = (e) => {
-      if (repsRef.current && !repsRef.current.contains(e.target)) {
+    const handler = (e: MouseEvent) => {
+      if (repsRef.current && !repsRef.current.contains(e.target as Node)) {
         setShowReps(false);
       }
     };
     document.addEventListener('mousedown', handler);
-    document.addEventListener('touchstart', handler);
+    document.addEventListener('touchstart', handler as EventListener);
     return () => {
       document.removeEventListener('mousedown', handler);
-      document.removeEventListener('touchstart', handler);
+      document.removeEventListener('touchstart', handler as EventListener);
     };
   }, [showReps]);
 

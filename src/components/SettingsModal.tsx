@@ -3,6 +3,22 @@ import { drumKits } from '../config/drumKits';
 import { drumLayouts } from '../config/drumLayouts';
 import { midiConfigs } from '../config/midiConfigs';
 import './SettingsModal.css';
+import type { MidiInput } from '../types';
+
+interface SettingsModalProps {
+  onClose: () => void;
+  activeKitId: string;
+  onKitChange: (id: string) => void;
+  kitBusy: boolean;
+  drumLayoutId: string;
+  onLayoutChange: (id: string) => void;
+  showVisualizer: boolean;
+  midiInputs: MidiInput[];
+  activeInput: string | null;
+  onInputChange: (id: string) => void;
+  midiConfigId: string;
+  onMidiConfigChange: (id: string) => void;
+}
 
 export default function SettingsModal({
   onClose,
@@ -11,11 +27,11 @@ export default function SettingsModal({
   showVisualizer,
   midiInputs, activeInput, onInputChange,
   midiConfigId, onMidiConfigChange,
-}) {
-  const overlayRef = useRef(null);
+}: SettingsModalProps) {
+  const overlayRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const handler = (e) => {
+    const handler = (e: MouseEvent) => {
       if (e.target === overlayRef.current) onClose();
     };
     const el = overlayRef.current;
@@ -24,7 +40,7 @@ export default function SettingsModal({
   }, [onClose]);
 
   useEffect(() => {
-    const handler = (e) => {
+    const handler = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
     };
     document.addEventListener('keydown', handler);
@@ -53,7 +69,7 @@ export default function SettingsModal({
                   <option key={kit.id} value={kit.id}>{kit.name}</option>
                 ))}
               </select>
-              {kitBusy && <span className="settings-loading">loading…</span>}
+              {kitBusy && <span className="settings-loading">loading&hellip;</span>}
             </div>
           </div>
 

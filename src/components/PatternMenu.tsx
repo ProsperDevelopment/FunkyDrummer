@@ -2,7 +2,14 @@ import { useMemo } from 'react';
 import { drumPatterns } from '../data/drumPatterns';
 import './PatternMenu.css';
 
-export default function PatternMenu({ selectedPatternId, onSelectPattern, embedded, activeStyles }) {
+interface PatternMenuProps {
+  selectedPatternId: string;
+  onSelectPattern: (id: string) => void;
+  embedded?: boolean;
+  activeStyles: string[];
+}
+
+export default function PatternMenu({ selectedPatternId, onSelectPattern, embedded, activeStyles }: PatternMenuProps) {
   const visiblePatterns = useMemo(() =>
     drumPatterns.filter(p => !p.id.endsWith('-edge')),
   []);
@@ -11,7 +18,7 @@ export default function PatternMenu({ selectedPatternId, onSelectPattern, embedd
     const filtered = activeStyles.length === 0
       ? visiblePatterns
       : visiblePatterns.filter(p => activeStyles.includes(p.style));
-    const map = {};
+    const map: Record<string, typeof drumPatterns> = {};
     for (const p of filtered) {
       const s = p.style || 'Other';
       if (!map[s]) map[s] = [];

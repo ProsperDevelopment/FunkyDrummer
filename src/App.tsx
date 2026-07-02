@@ -14,18 +14,18 @@ import { usePlayback } from './hooks/usePlayback';
 import { useTrackPlayback } from './hooks/useTrackPlayback';
 import { useTraining } from './hooks/useTraining';
 import { useActiveDrums } from './hooks/useActiveDrums';
-import { playDrum, setKit, getActiveKit, isKitLoading, getHihatPedalPressed, setHihatPedalPressed } from './audio/drumSounds';
-import { drumKits } from './config/drumKits';
+import { playDrum, setKit, getActiveKit, getHihatPedalPressed, setHihatPedalPressed } from './audio/drumSounds';
 import { midiConfigs, getNoteMap } from './config/midiConfigs';
 import { drumLayouts } from './config/drumLayouts';
 import { BPM_MIN, BPM_MAX, BPM_STEP, REPS_MIN, PEDAL_CC, PEDAL_THRESHOLD, GOOD_SCORE_THRESHOLD, OK_SCORE_THRESHOLD } from './config/constants';
+import type { DrumPattern, SessionResult, Track } from './types';
 import './App.css';
 
 const edgePatternIds = new Set(
   drumPatterns.filter(p => p.id.endsWith('-edge')).map(p => p.id.slice(0, -5))
 );
 
-function getPattern(id, edgeMode = false) {
+function getPattern(id: string, edgeMode = false): DrumPattern {
   if (edgeMode && edgePatternIds.has(id)) {
     const edgeP = drumPatterns.find(p => p.id === id + '-edge');
     if (edgeP) return edgeP;
@@ -35,12 +35,12 @@ function getPattern(id, edgeMode = false) {
 
 export default function App() {
   const [selectedPatternId, setSelectedPatternId] = useState(drumPatterns[0].id);
-  const [selectedTrackId, setSelectedTrackId] = useState(null);
+  const [selectedTrackId, setSelectedTrackId] = useState<string | null>(null);
   const isTrackMode = selectedTrackId !== null;
-  const selectedTrack = isTrackMode ? trackList.find(t => t.id === selectedTrackId) : null;
-  const [bpmOverride, setBpmOverride] = useState(null);
+  const selectedTrack: Track | null = isTrackMode ? trackList.find(t => t.id === selectedTrackId) || null : null;
+  const [bpmOverride, setBpmOverride] = useState<number | null>(null);
   const [stopAfterReps, setStopAfterReps] = useState(REPS_MIN);
-  const [sessionResult, setSessionResult] = useState(null);
+  const [sessionResult, setSessionResult] = useState<SessionResult | null>(null);
   const [activeKitId, setActiveKitId] = useState(getActiveKit().id);
   const [kitBusy, setKitBusy] = useState(false);
   const [showVisualizer, setShowVisualizer] = useState(false);
@@ -63,7 +63,7 @@ export default function App() {
 
   const pattern = getPattern(selectedPatternId, edgeMode);
 
-  const onPatternDrumPlayed = useCallback((drumId, vel) => {
+  const onPatternDrumPlayed = useCallback((drumId: string, vel: number) => {
     hitVisualizer(drumId, vel);
     setHihatPedalPressedState(getHihatPedalPressed());
   }, [hitVisualizer]);
@@ -76,7 +76,7 @@ export default function App() {
   const defaultBpm = isTrackMode ? trackDefaultBpm : patternDefaultBpm;
   const effectiveBpm = bpmOverride || defaultBpm;
 
-  const trainingPattern = isTrackMode ? trackPlayback.currentPattern : pattern;
+  const trainingPattern = isTrackMode ? (trackPlayback.currentPattern || pattern) : pattern;
   const trainingCurrentStep = isTrackMode ? trackPlayback.currentStep : playback.currentStep;
   const trainingIsPlaying = isTrackMode ? trackPlayback.isPlaying : playback.isPlaying;
   const {
@@ -89,7 +89,7 @@ export default function App() {
     missedHits,
   } = useTraining(trainingPattern, trainingCurrentStep, trainingIsPlaying);
 
-  const onDrumHit = useCallback((drumId, velocity) => {
+  const onDrumHit = useCallback((drumId: string, velocity = 0.8) => {
     const resolvedId = drumId === 'hihat'
       ? (hihatPedalPressed ? 'hihat' : 'hihatOpen')
       : drumId;
@@ -103,7 +103,7 @@ export default function App() {
     }
   }, [handleDrumHit, hitVisualizer, hihatPedalPressed]);
 
-  const handleCC = useCallback((controller, value) => {
+  const handleCC = useCallback((controller: number, value: number) => {
     if (controller === PEDAL_CC) {
       const pressed = value >= PEDAL_THRESHOLD;
       setHihatPedalPressedState(pressed);
@@ -113,6 +113,7 @@ export default function App() {
   }, []);
 
   const { inputs, activeInput, setActiveInput } = useMIDI(onDrumHit, midiNoteMap, handleCC);
+
   const handleBpmUp = useCallback(() => {
     const next = Math.min(BPM_MAX, effectiveBpm + BPM_STEP);
     setBpmOverride(next === defaultBpm ? null : next);
@@ -151,7 +152,7 @@ export default function App() {
     clearHits();
   }, [clearHits, playback.clearRepsComplete, trackPlayback.stop]);
 
-  const handlePatternSelect = useCallback((id) => {
+  const handlePatternSelect = useCallback((id: string) => {
     playback.stop();
     trackPlayback.stop();
     setSelectedTrackId(null);
@@ -161,7 +162,7 @@ export default function App() {
     sessionSetRef.current = false;
   }, [playback.stop, trackPlayback.stop]);
 
-  const handleTrackSelect = useCallback((id) => {
+  const handleTrackSelect = useCallback((id: string) => {
     playback.stop();
     trackPlayback.stop();
     setSelectedTrackId(id);
@@ -170,7 +171,7 @@ export default function App() {
     sessionSetRef.current = false;
   }, [playback.stop, trackPlayback.stop]);
 
-  const handleBpmChange = useCallback((value) => {
+  const handleBpmChange = useCallback((value: number) => {
     setBpmOverride(value === defaultBpm ? null : value);
   }, [defaultBpm]);
 
@@ -186,11 +187,11 @@ export default function App() {
     setDrumPlaybackOn(v => !v);
   }, []);
 
-  const handleMidiConfigChange = useCallback((id) => {
+  const handleMidiConfigChange = useCallback((id: string) => {
     setMidiConfigId(id);
   }, []);
 
-  const handleLayoutChange = useCallback((id) => {
+  const handleLayoutChange = useCallback((id: string) => {
     setDrumLayoutId(id);
   }, []);
 
@@ -200,11 +201,7 @@ export default function App() {
     setHihatPedalPressed(next);
   }, []);
 
-  const handleHihatPedalUp = useCallback(() => {
-    // release only — no state change
-  }, []);
-
-  const handleKitChange = useCallback(async (kitId) => {
+  const handleKitChange = useCallback(async (kitId: string) => {
     if (kitId === activeKitId) return;
     setKitBusy(true);
     await setKit(kitId);
@@ -327,7 +324,7 @@ export default function App() {
             bpm={effectiveBpm}
             trainingMode={trainingMode}
             onTrainingToggle={handleTrainingToggle}
-            accuracyStats={accuracyStats}
+            accuracyStats={accuracyStats ?? undefined}
             missedHits={missedHits}
             bpmOverride={bpmOverride}
             onBpmChange={handleBpmChange}
@@ -365,7 +362,7 @@ export default function App() {
           />
 
           {showVisualizer && (
-            <DrumVisualizer activeDrums={activeDrums} onDrumClick={onDrumHit} layoutId={drumLayoutId} hihatPedalPressed={hihatPedalPressed} onHihatPedalDown={handleHihatPedalToggle} onHihatPedalUp={handleHihatPedalUp} />
+            <DrumVisualizer activeDrums={activeDrums} onDrumClick={onDrumHit} layoutId={drumLayoutId} hihatPedalPressed={hihatPedalPressed} onHihatPedalDown={handleHihatPedalToggle} />
           )}
           {trainingMode && (
             <div className="fs-stats-stack">
@@ -568,7 +565,7 @@ export default function App() {
               grooveOn={grooveOn}
             />
             <div className="fs-viz-area">
-              <DrumVisualizer activeDrums={activeDrums} onDrumClick={onDrumHit} layoutId={drumLayoutId} hihatPedalPressed={hihatPedalPressed} onHihatPedalDown={handleHihatPedalToggle} onHihatPedalUp={handleHihatPedalUp} />
+              <DrumVisualizer activeDrums={activeDrums} onDrumClick={onDrumHit} layoutId={drumLayoutId} hihatPedalPressed={hihatPedalPressed} onHihatPedalDown={handleHihatPedalToggle} />
             </div>
           </div>
         </div>

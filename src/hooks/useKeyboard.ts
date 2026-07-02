@@ -1,13 +1,14 @@
 import { useEffect } from 'react';
 import { keyToDrum } from '../config/drumConfig';
 import { DEFAULT_VELOCITY } from '../config/constants';
+import type { KeyboardActions } from '../types';
 
-export function useKeyboard(onNoteOn, actions = {}, disabled = false) {
+export function useKeyboard(onNoteOn: (drumId: string, velocity: number) => void, actions: KeyboardActions = {}, disabled = false): void {
   useEffect(() => {
     if (disabled) return;
-    const handler = (e) => {
+    const handler = (e: KeyboardEvent) => {
       if (e.repeat) return;
-      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') return;
+      if (e.target instanceof HTMLElement && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT')) return;
 
       const key = e.key.toLowerCase();
       const drumId = keyToDrum[key];

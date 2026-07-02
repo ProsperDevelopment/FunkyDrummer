@@ -1,4 +1,6 @@
-export const trackList = [
+import type { Track } from '../types';
+
+export const trackList: Track[] = [
   {
     id: 'basic-to-funk',
     name: 'Rock to Funk',
