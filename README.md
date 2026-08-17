@@ -1,23 +1,31 @@
 # Funky Drummer
 
-A browser-based drum machine and practice trainer with a scrolling timeline, MIDI support, and accuracy scoring.
+A browser-based drum machine and practice trainer with a scrolling timeline, MIDI support, hi-hat articulation, edge/top mode, and accuracy scoring.
 
 **Live demo:** https://ProsperDevelopment.github.io/FunkyDrummer/
 
 ## Features
 
 - **Scrolling timeline** — Canvas-based pattern grid with centered playhead
-- **15 drum patterns** — Basic Rock, Funk, Half-Time Shuffle, Metal, Jazz, Reggae, Disco, Funky Drummer, Amen Break, Hot Pants Break, Think Break, 2-Step, UK Garage, House, Hip Hop
-- **MIDI support** — Connect any USB/MIDI drum controller
-- **Configurable MIDI mapping** — Presets for General MIDI and Roland TD-02K
+- **41 drum patterns** — Rock, Funk, Jazz, Metal, Hip Hop, Drum & Bass, House, Breakbeats, and more
+- **5 edge-mode variants** — Patterns with hi-hat edge articulation on downbeats
+- **Hi-hat articulation** — Edge, top, open, mute, half-open, and choke groups
+- **MIDI support** — Connect any USB/MIDI drum controller (General MIDI + Roland TD-02K presets)
+- **MIDI pedal control** — Continuous hi-hat pedal (CC 4) with half-open support
 - **Keyboard controls** — Play drums from your computer keyboard
 - **Metronome** — Togglable click track with accented downbeats
+- **Groove** — Togglable micro-timing variations per pattern
 - **Pattern mute** — Mute the pattern playback to practice along with just the metronome
 - **Training mode** — Real-time accuracy scoring (Perfect/Good/Off/Extra) with session results
+- **Track mode** — Multi-pattern arrangements with configurable repeats
 - **Drum visualizer** — Top-down SVG drum kit that lights up on each hit
-- **Drum kit switching** — Stock synthesized sounds or Boom Bap sample kit
+- **Edge/top mode toggle** — Swap patterns to edge articulation variants
+- **5 drum kits** — Stock synthesized, Boom Bap, Jungle Classic, Heavy Jungle, Old School Jungle
+- **Countdown timer** — 4-beat lead-in before playback starts
+- **Fullscreen mode** — Focused practice view with compact timeline and stats
 - **Adjustable BPM** — Tempo slider from 30–300 BPM
 - **Repetition counter** — Auto-stop after N pattern repetitions (training mode)
+- **Built with TypeScript** — Full type safety across all modules
 
 ## Quick Start
 
@@ -36,6 +44,12 @@ Open the URL shown in the terminal (default: http://localhost:5173).
 | ▶ Play / ⏸ Pause | Start/stop pattern playback |
 | ⏹ Stop | Stop and reset to beginning |
 
+### Play Mode
+| Button | Description |
+|--------|-------------|
+| **Pattern** | Single-pattern practice mode |
+| **Track** | Multi-pattern arrangement mode |
+
 ### BPM
 Use the slider or number input to adjust tempo (30–300). Each pattern has a default BPM that resets when you switch patterns.
 
@@ -46,27 +60,129 @@ Use the slider or number input to adjust tempo (30–300). Each pattern has a de
 | S | Snare |
 | D | Hi-Hat (closed) |
 | F | Hi-Hat (open) |
+| X | Hi-Hat (edge) |
+| Z | Hi-Hat (mute) |
 | G | Crash |
 | H | Ride |
 | J | Hi Tom |
 | K | Mid Tom |
 | L | Floor Tom |
-| ; | Clap |
 
 ### MIDI
 Connect a USB MIDI controller, select it from the MIDI dropdown, and the pads map automatically. Use the **Map** dropdown to switch between General MIDI and Roland TD-02K note assignments.
 
+**Pedal:** Connect a hi-hat pedal (MIDI CC 4) for continuous half-open control.
+
 ### Metronome
-Toggle the **Click** button to hear a metronome tick on every quarter note, with an accented tick on beat 1. Works during pattern playback and training.
+Toggle the **Click** button to hear a metronome tick on every quarter note, with an accented tick on beat 1.
+
+### Groove
+Toggle the **Groove** button to apply each pattern's built-in micro-timing deviations for a more human feel.
+
+### Countdown
+Toggle the **Count** button for a 4-beat lead-in before playback begins.
 
 ### Pattern Mute
-Toggle the **Pattern On/Off** button to silence the pattern's drum sounds while keeping the sequencer running. Useful for practicing along with just the metronome.
+Toggle the **Pattern** button to silence the pattern's drum sounds while keeping the sequencer running. Useful for practicing along with just the metronome.
 
-### Drum Kits
-Switch between **Stock Kit** (synthesized sounds) and **Boom Bap** (WAV samples) using the Kit dropdown. Sample kits load asynchronously — a "loading..." indicator appears while samples are fetched and decoded.
+### Edge/Top Mode
+Toggle the **🎛** button to swap patterns to their edge articulation variants. When active, compatible patterns (Funk, Funky Drummer, Hip Hop, Drum & Bass, Trap) play with hi-hat edge hits on downbeats and muted/softer hi-hat on offbeats. Edge variants are hidden from the pattern menu — the toggle happens transparently.
 
-### Drum Visualizer
-Toggle the **View** button to show a top-down SVG drum kit illustration. Drums light up in real-time when hit via the pattern playback, MIDI pads, or keyboard. Each drum is color-coded and positioned from the drummer's perspective.
+### Fullscreen
+Click **⛶** or press `F` to enter fullscreen practice mode with a compact timeline, drum visualizer, and training stats.
+
+## Hi-Hat Articulation
+
+The hi-hat supports five distinct articulations, all feeding into a shared choke group:
+
+| Articulation | Trigger | Description |
+|-------------|---------|-------------|
+| **Top** | Key D / MIDI 42/46 | Standard closed hat (respects pedal for half-open) |
+| **Open** | Key F / MIDI 46 (GM) | Sustained open hat (400ms decay) |
+| **Edge** | Key X / MIDI 22/26 | Short, crisp chick sound (played from dedicated WAV sample) |
+| **Mute** | Key Z / MIDI 44 | Percussive 15ms chick transient |
+| **Half-open** | Pedal CC 4 (0.2–0.8) | Crossfade between closed and open samples |
+
+Any hi-hat articulation chokes all others in the group with a 5ms fade-out.
+
+## Drum Kits
+
+| Kit | Type | Description |
+|-----|------|-------------|
+| Stock Kit | Synth | Synthesized drum sounds via Web Audio |
+| Boom Bap | Samples | WAV-based classic hip-hop kit (kick, snare, hihat, hihatOpen, hihatEdge, crash, ride) |
+| Jungle Classic | Samples | Classic jungle/breakbeat hardcore kit |
+| Heavy Jungle | Samples | Heavier, more aggressive jungle kit |
+| Old School Jungle | Samples | Vintage old-school jungle sounds |
+
+Sample kits load asynchronously — a "loading..." indicator appears while samples are fetched and decoded. All sample kits include hi-hat edge samples.
+
+## Patterns
+
+### Core Patterns
+
+| Pattern | Default BPM |
+|---------|-------------|
+| Basic Rock | 120 |
+| Easy Rock | 100 |
+| Slow Rock | 70 |
+| Punk | 160 |
+| Metal | 180 |
+| Funk | 100 |
+| Funk 2 | 100 |
+| Funky Drummer | 100 |
+| Half-Time Shuffle | 70 |
+| Jazz | 120 |
+| Swing | 110 |
+| Blues | 90 |
+| Reggae | 90 |
+| Reggaeton | 95 |
+| Disco | 120 |
+| Hip Hop | 95 |
+| Drum & Bass | 160 |
+| Trap | 140 |
+| House | 128 |
+| Techno | 130 |
+| Dark Techno | 130 |
+| Electro | 115 |
+| Electro Funk | 110 |
+| Two-Step | 130 |
+| UK Garage | 132 |
+| Amen Break | 136 |
+| Amen Break MIDI | 136 |
+| Think Break | 130 |
+| Hot Pants | 120 |
+| Tribal | 100 |
+| Tom Fill | 100 |
+| Crash Fill | 110 |
+| Kick & Snare | 90 |
+| Kick Variations | 80 |
+| Kick Only | 90 |
+| Snare Accents | 80 |
+| Quarter Notes | 60 |
+| Eighth Note Kicks | 70 |
+| Hi-Hat Control | 80 |
+| Ride Practice | 90 |
+| Easy Shuffle | 80 |
+
+### Edge Variants
+5 additional patterns (Funk, Funky Drummer, Hip Hop, Drum & Bass, Trap) have hidden edge articulation variants activated by the Edge/Top Mode toggle.
+
+## Track Mode
+
+Tracks are multi-pattern arrangements for structured practice:
+
+| Track | Patterns |
+|-------|----------|
+| Rock to Funk | Basic Rock ↔ Funk |
+| Groove Essentials | Funk → Reggae → Hip Hop → Funky Drummer |
+| Speed Builder | Basic Rock → Metal |
+| Break Beat Journey | 9-break sequence (Amen → Funky Drummer → Think → Hot Pants → ...) |
+| Odd Meters | Jazz → Swing → Half-Time Shuffle |
+| World Beats | Reggae → Reggaeton → Tribal |
+| Electronic Run | House → Techno → Drum & Bass → UK Garage |
+| Fill Practice | 4 patterns with tom/crash fills |
+| +20 more | Beginner to advanced |
 
 ## Training Mode
 
@@ -74,7 +190,7 @@ Enable training mode to track your hitting accuracy:
 
 1. Click **Training** to enable
 2. Click **Play** to start the pattern
-3. Play along using your MIDI pads or keyboard
+3. Play along using MIDI pads or keyboard
 4. Watch real-time accuracy stats (Perfect/Good/Off/Extra)
 5. Set **Reps** to auto-stop after a number of pattern repetitions
 6. After stopping, a **Session Complete** overlay shows your final accuracy percentage
@@ -87,26 +203,6 @@ Enable training mode to track your hitting accuracy:
 | Off | Hit within 2 sixteenth-notes of the beat |
 | Extra | Hit with no matching pattern note nearby |
 
-## Patterns
-
-| Pattern | Default BPM |
-|---------|-------------|
-| Basic Rock | 120 |
-| Funk | 100 |
-| Half-Time Shuffle | 70 |
-| Metal | 180 |
-| Jazz | 140 |
-| Reggae | 90 |
-| Disco | 125 |
-| Funky Drummer | 100 |
-| Amen Break | 136 |
-| Hot Pants Break | 108 |
-| Think Break | 112 |
-| 2-Step | 135 |
-| UK Garage | 132 |
-| House | 125 |
-| Hip Hop | 95 |
-
 ## Development
 
 ### Project Structure
@@ -114,19 +210,30 @@ Enable training mode to track your hitting accuracy:
 ```
 src/
 ├── audio/            — Sound engine (synth, sample loader, drum sounds)
-├── components/       — React components (Controls, Timeline, PatternMenu, DrumVisualizer)
-├── config/           — Configuration (drum mapping, kits, MIDI configs)
-├── data/             — Drum patterns
+├── components/       — React components (Controls, Timeline, PatternMenu, DrumVisualizer, etc.)
+├── config/           — Configuration (drum mapping, kits, MIDI configs, constants, layouts)
+├── data/             — Drum patterns, track lists, lesson tracks
 ├── hooks/            — React hooks (playback, training, MIDI, keyboard, active drums)
-├── App.jsx           — Main app component
-└── main.jsx          — Entry point
+├── App.tsx           — Main app component
+├── main.tsx          — Entry point
+├── types.ts          — Shared TypeScript interfaces
+└── vite-env.d.ts     — Vite + Web MIDI type declarations
 ```
+
+### Built With
+
+- **TypeScript** — Strict mode with `noUnusedLocals` / `noUnusedParameters`
+- **React** — Functional components with hooks
+- **Vite** — Fast dev server and bundler
+- **Web Audio API** — Sound synthesis and sample playback
+- **Web MIDI API** — MIDI controller input
+- **Canvas 2D** — Pattern timeline rendering
 
 ### Adding a Pattern
 
-Add an entry to `src/data/drumPatterns.js`:
+Add an entry to `src/data/drumPatterns.ts`:
 
-```js
+```ts
 {
   id: 'my-pattern',
   name: 'My Pattern',
@@ -142,19 +249,29 @@ Add an entry to `src/data/drumPatterns.js`:
 
 Values are velocities (0–1, or empty/0 for no hit). The grid uses 16 positions per measure (sixteenth notes).
 
+To define a pattern with the compact `grid()` helper:
+
+```ts
+import { drumPatterns } from './drumPatterns';
+
+function grid(measures: number, ...rows: [string, number[]][]): { measures: number; grid: DrumGrid } {
+  // ...fills DrumGrid from measure count and step arrays
+}
+```
+
 ### Adding a Drum Kit
 
 1. Place WAV files in a subfolder under `public/drum-kits/`
-2. Add an entry to `src/config/drumKits.js`:
+2. Add an entry to `src/config/drumKits.ts`:
 
-```js
+```ts
 {
   id: 'my-kit',
   name: 'My Kit',
   type: 'samples',
   samples: {
-    kick: '/drum-kits/my-kit/kick.wav',
-    snare: '/drum-kits/my-kit/snare.wav',
+    kick: `${base}drum-kits/my-kit/kick.wav`,
+    snare: `${base}drum-kits/my-kit/snare.wav`,
     // ... one per drum ID in drumConfig
   },
 }
@@ -162,9 +279,11 @@ Values are velocities (0–1, or empty/0 for no hit). The grid uses 16 positions
 
 ### MIDI Configuration
 
-Add presets in `src/config/midiConfigs.js`:
+Add presets in `src/config/midiConfigs.ts`:
 
-```js
+```ts
+import { buildMap } from './midiConfigs';
+
 {
   id: 'my-module',
   name: 'My Drum Module',
@@ -176,6 +295,24 @@ Add presets in `src/config/midiConfigs.js`:
 }
 ```
 
+### Extracting REX2 Patterns
+
+REX2 files can be parsed and converted to patterns using `scripts/rex2_extract.py`:
+
+```bash
+python3 scripts/rex2_extract.py /path/to/breakbeat.rex
+```
+
+This extracts slice offsets, quantizes to a 16th-note grid, assigns drum types by position, and computes groove values from timing deviations.
+
+### REX2 Pattern Extraction Details
+
+- REX2 files use Propellerhead "CAT" container format (`CAT ` + size + `REX2` + chunks)
+- SLCE entries need padding-aware stepping with byte-by-byte marker scanning
+- BPM is derived from the source directory name
+- Groove values are clamped to ±5ms from actual timing deviations
+- Patterns are cropped to 2 measures maximum
+
 ## Build
 
 ```bash
@@ -186,6 +323,12 @@ Output goes to `dist/`. Serve with any static file server:
 
 ```bash
 npm run preview
+```
+
+Type-check separately:
+
+```bash
+npx tsc --noEmit
 ```
 
 ## Deploy to GitHub Pages
