@@ -12,7 +12,7 @@
     bpm: number;
     trainingMode: boolean;
     onTrainingToggle: () => void;
-    accuracyStats?: { score: number; perfect: number; good: number; off: number; miss: number; total: number } | null;
+    accuracyStats?: { score: number; perfect: number; good: number; near: number; miss: number; total: number } | null;
     missedHits: number;
     bpmOverride: number | null;
     onBpmChange: (bpm: number) => void;
@@ -230,8 +230,8 @@
             <span class="stat-value good">{sessionResult.stats.good}</span>
           </div>
           <div class="stat">
-            <span class="stat-label">Off</span>
-            <span class="stat-value off">{sessionResult.stats.off}</span>
+            <span class="stat-label">Near</span>
+            <span class="stat-value near">{sessionResult.stats.near}</span>
           </div>
           <div class="stat">
             <span class="stat-label">Extra</span>

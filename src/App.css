@@ -213,7 +213,7 @@
 .fs-stat-value.ok { color: #fbbf24; }
 .fs-stat-value.bad { color: #f87171; }
 .fs-stat-value.perfect { color: #4ade80; }
-.fs-stat-value.off { color: #fbbf24; }
+.fs-stat-value.near { color: #fbbf24; }
 .fs-stat-value.miss { color: #f87171; }
 .fs-stat-value.total { color: #aaa; }
 

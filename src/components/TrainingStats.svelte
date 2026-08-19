@@ -26,8 +26,8 @@
     <span class="fs-stat-value good">{accuracyStats.good}</span>
   </div>
   <div class="fs-stat">
-    <span class="fs-stat-label">Off</span>
-    <span class="fs-stat-value off">{accuracyStats.off}</span>
+    <span class="fs-stat-label">Near</span>
+    <span class="fs-stat-value near">{accuracyStats.near}</span>
   </div>
   <div class="fs-stat">
     <span class="fs-stat-label">Extra</span>
@@ -55,7 +55,7 @@
     <span class="fs-stat-value" style="color: #555">-</span>
   </div>
   <div class="fs-stat">
-    <span class="fs-stat-label">Off</span>
+    <span class="fs-stat-label">Near</span>
     <span class="fs-stat-value" style="color: #555">-</span>
   </div>
   <div class="fs-stat">

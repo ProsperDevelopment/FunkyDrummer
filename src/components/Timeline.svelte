@@ -47,9 +47,9 @@
   let totalWidth = $derived(steps * 3 * STEP_WIDTH);
 
   const userHitColors: Record<string, string> = {
-    perfect: '#4ade80',
-    good: '#fbbf24',
-    off: '#fb923c',
+    perfect: '#ef4444',
+    good: '#22c55e',
+    near: '#06b6d4',
     miss: '#f87171',
   };
 
@@ -138,7 +138,7 @@
     if (trainingMode && isPlaying && userHits.length > 0) {
       const now = Date.now();
       const fadeMs = positiveMode ? 400 : 2500;
-      const accLabels: Record<string, string> = { perfect: 'P', good: 'G', off: 'O', miss: 'X' };
+      const accLabels: Record<string, string> = { perfect: 'P', good: 'G', near: 'N', miss: 'X' };
       for (const hit of userHits) {
         const age = now - hit.timestamp;
         const hitAlpha = positiveMode ? Math.max(0, 1 - age / fadeMs) : 1;

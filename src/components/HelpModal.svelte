@@ -89,7 +89,7 @@
           <tbody>
             <tr><td class="acc-perfect">Perfect</td><td>Hit exactly on the beat</td></tr>
             <tr><td class="acc-good">Good</td><td>Within 1 sixteenth-note</td></tr>
-            <tr><td class="acc-off">Off</td><td>Within 2 sixteenth-notes</td></tr>
+            <tr><td class="acc-near">Near</td><td>Close but not on beat</td></tr>
             <tr><td class="acc-miss">Extra</td><td>No matching pattern note</td></tr>
           </tbody>
         </table>

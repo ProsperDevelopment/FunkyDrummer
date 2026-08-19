@@ -66,7 +66,7 @@ export interface Track {
 export interface TrainingStats {
   perfect: number;
   good: number;
-  off: number;
+  near: number;
   miss: number;
   total: number;
   score: number;

@@ -100,7 +100,7 @@ describe('Controls', () => {
 
   it('shows the session result overlay when present', () => {
     const sessionResult = {
-      stats: { perfect: 10, good: 5, off: 2, miss: 1, total: 18, score: 80 },
+      stats: { perfect: 10, good: 5, near: 2, miss: 1, total: 18, score: 80 },
       missedHits: 3,
     };
     render(Controls, { props: { ...baseProps, sessionResult } });
@@ -111,7 +111,7 @@ describe('Controls', () => {
   it('calls onDismissResult on dismiss button', async () => {
     const user = userEvent.setup();
     const onDismissResult = vi.fn();
-    const sessionResult = { stats: { perfect: 1, good: 0, off: 0, miss: 0, total: 1, score: 100 }, missedHits: 0 };
+    const sessionResult = { stats: { perfect: 1, good: 0, near: 0, miss: 0, total: 1, score: 100 }, missedHits: 0 };
     render(Controls, { props: { ...baseProps, sessionResult, onDismissResult } });
     await user.click(screen.getByText('Dismiss'));
     expect(onDismissResult).toHaveBeenCalledTimes(1);

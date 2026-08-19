@@ -19,12 +19,12 @@ export function getHitRate(id: string): HitRateData | null {
   }
 }
 
-export function saveHitRate(id: string, perfect: number, good: number, miss: number, off: number): void {
+export function saveHitRate(id: string, perfect: number, good: number, miss: number, near: number): void {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     const data: Record<string, HitRateData> = raw ? JSON.parse(raw) : {};
     const prev = data[id];
-    const totalHits = perfect + good + off + miss;
+    const totalHits = perfect + good + near + miss;
 
     if (prev) {
       const newTotal = prev.totalHits + totalHits;

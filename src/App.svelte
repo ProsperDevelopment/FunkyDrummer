@@ -309,7 +309,7 @@
   $effect(() => {
     const accuracy = training.lastHitAccuracy;
     if (positiveMode && accuracy && accuracy !== 'miss') {
-      if (accuracy === 'off') {
+      if (accuracy === 'near') {
         feedbackText = ['Almost!', 'Near!', 'Close!'][Math.floor(Math.random() * 3)];
         feedbackColor = '#06b6d4'; // cyan
       } else {
@@ -330,7 +330,7 @@
     if (playback.repsComplete && training.trainingMode && !isTrackMode && !sessionSet) {
       sessionSet = true;
       sessionResult = {
-        stats: training.accuracyStats || { perfect: 0, good: 0, off: 0, miss: 0, total: 0, score: 0 },
+        stats: training.accuracyStats || { perfect: 0, good: 0, near: 0, miss: 0, total: 0, score: 0 },
         missedHits: training.missedHits,
       };
     }
@@ -341,7 +341,7 @@
     if (playback.isFinished && training.trainingMode && isTrackMode && !sessionSet) {
       sessionSet = true;
       sessionResult = {
-        stats: training.accuracyStats || { perfect: 0, good: 0, off: 0, miss: 0, total: 0, score: 0 },
+        stats: training.accuracyStats || { perfect: 0, good: 0, near: 0, miss: 0, total: 0, score: 0 },
         missedHits: training.missedHits,
       };
     }

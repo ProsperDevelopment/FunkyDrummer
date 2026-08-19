@@ -10,7 +10,7 @@ class TrainingStore {
   lastHitTimestamp = $state(0);
   savedHitRate = $state(0); // average (perfect+good)/total from previous sessions
 
-  private runningCounts: Record<string, number> = { perfect: 0, good: 0, off: 0, miss: 0 };
+  private runningCounts: Record<string, number> = { perfect: 0, good: 0, near: 0, miss: 0 };
   private hitId = 0;
   private currentStepRef = 0;
   private prevStepRef = 0;
@@ -24,17 +24,17 @@ class TrainingStore {
 
   get hitRatio(): number {
     const c = this.runningCounts;
-    const total = (c.perfect || 0) + (c.good || 0) + (c.off || 0) + (c.miss || 0);
+    const total = (c.perfect || 0) + (c.good || 0) + (c.near || 0) + (c.miss || 0);
     if (total === 0) return 0;
     return (c.perfect + c.good) / total;
   }
 
   get accuracyStats(): TrainingStats | null {
     const c = this.runningCounts;
-    const total = (c.perfect || 0) + (c.good || 0) + (c.off || 0) + (c.miss || 0);
+    const total = (c.perfect || 0) + (c.good || 0) + (c.near || 0) + (c.miss || 0);
     if (total === 0) return null;
     const score = Math.round(((c.perfect + c.good * TRAINING_SCORE_GOOD_WEIGHT) / total) * TRAINING_SCORE_MULTIPLIER);
-    return { perfect: c.perfect, good: c.good, off: c.off, miss: c.miss, total, score };
+    return { perfect: c.perfect, good: c.good, near: c.near, miss: c.miss, total, score };
   }
 
   setPattern(pattern: DrumPattern | null) {
@@ -43,7 +43,7 @@ class TrainingStore {
       this.patternRef = pattern;
       this.userHits = [];
       this.missedHits = 0;
-      this.runningCounts = { perfect: 0, good: 0, off: 0, miss: 0 };
+      this.runningCounts = { perfect: 0, good: 0, near: 0, miss: 0 };
       this.lastHitAccuracy = null;
       // Load saved hit rate for this pattern
       if (pattern) {
@@ -60,7 +60,7 @@ class TrainingStore {
       this.patternId = trackId;
       this.userHits = [];
       this.missedHits = 0;
-      this.runningCounts = { perfect: 0, good: 0, off: 0, miss: 0 };
+      this.runningCounts = { perfect: 0, good: 0, near: 0, miss: 0 };
       this.lastHitAccuracy = null;
       const saved = getHitRate(trackId);
       this.savedHitRate = saved ? saved.avgHitRate : 0;
@@ -116,9 +116,9 @@ class TrainingStore {
     if (wasPlaying && !playing) {
       // Save hit rate for this pattern/track when session ends
       const c = this.runningCounts;
-      const total = (c.perfect || 0) + (c.good || 0) + (c.off || 0) + (c.miss || 0);
+      const total = (c.perfect || 0) + (c.good || 0) + (c.near || 0) + (c.miss || 0);
       if (total > 0 && this.patternId) {
-        saveHitRate(this.patternId, c.perfect, c.good, c.miss, c.off);
+        saveHitRate(this.patternId, c.perfect, c.good, c.miss, c.near);
         const saved = getHitRate(this.patternId);
         this.savedHitRate = saved ? saved.avgHitRate : 0;
       }
@@ -132,7 +132,7 @@ class TrainingStore {
     this.userHits = [];
     this.missedHits = 0;
     this.missedSteps = new Set();
-    this.runningCounts = { perfect: 0, good: 0, off: 0, miss: 0 };
+    this.runningCounts = { perfect: 0, good: 0, near: 0, miss: 0 };
     this.trainingMode = v;
 
     if (this.cleanupInterval) {
@@ -178,12 +178,12 @@ class TrainingStore {
       } else if (nearestDist <= TRAINING_HIT_TOLERANCE) {
         accuracy = 'good';
       } else {
-        accuracy = 'off';
+        accuracy = 'near';
       }
     }
 
     this.runningCounts[accuracy]++;
-    this.runningCounts.total = this.runningCounts.perfect + this.runningCounts.good + this.runningCounts.off + this.runningCounts.miss;
+    this.runningCounts.total = this.runningCounts.perfect + this.runningCounts.good + this.runningCounts.near + this.runningCounts.miss;
 
     const hit: UserHit = {
       id: this.hitId++,
@@ -209,7 +209,7 @@ class TrainingStore {
     this.userHits = [];
     this.missedHits = 0;
     this.missedSteps = new Set();
-    this.runningCounts = { perfect: 0, good: 0, off: 0, miss: 0 };
+    this.runningCounts = { perfect: 0, good: 0, near: 0, miss: 0 };
     this.lastHitAccuracy = null;
     // Reload saved hit rate (in case it was updated by another session)
     if (this.patternId) {
