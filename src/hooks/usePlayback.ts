@@ -22,6 +22,8 @@ export function usePlayback(
   const [countdownCount, setCountdownCount] = useState(0);
   const intervalRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const countdownTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const intervalMsRef = useRef(1000);
+  const tickRef = useRef<() => void>(() => {});
   const stepRef = useRef(0);
   const stepsRef = useRef(STEPS_PER_MEASURE * 2);
   const patternRef = useRef(pattern);
@@ -72,12 +74,12 @@ export function usePlayback(
 
   const startPattern = useCallback((intervalMs: number) => {
     setIsPlaying(true);
+    intervalMsRef.current = intervalMs;
 
     let hasPreScheduled = false;
 
     const scheduleDrum = (drumId: string, vel: number, delay: number) => {
       const t = setTimeout(() => {
-        if (!grooveOnRef.current) return;
         playDrum(drumId, vel);
         onDrumPlayed?.(drumId, vel);
       }, delay);
@@ -102,7 +104,7 @@ export function usePlayback(
               const vel = row[nextModStep];
               const nextGroove = groove[nextModStep % grooveLen] || 0;
               if (nextGroove < 0) {
-                scheduleDrum(drumId, vel, intervalMs + nextGroove);
+                scheduleDrum(drumId, vel, intervalMsRef.current + nextGroove);
               }
             }
           }
@@ -150,10 +152,11 @@ export function usePlayback(
         setCurrentStep(0);
       }
 
-      intervalRef.current = setTimeout(tick, intervalMs);
+      intervalRef.current = setTimeout(tick, intervalMsRef.current);
     };
 
-    intervalRef.current = setTimeout(tick, intervalMs);
+    tickRef.current = tick;
+    intervalRef.current = setTimeout(tick, intervalMsRef.current);
   }, [stop, onDrumPlayed]);
 
   const play = useCallback(() => {
@@ -193,10 +196,14 @@ export function usePlayback(
   }, [stop, startPattern]);
 
   useEffect(() => {
-    if (isPlaying) {
-      play();
-    }
-  }, [bpmOverride]);
+    if (!isPlaying) return;
+    const p = patternRef.current;
+    const bpm = bpmRef.current || p?.bpm;
+    if (!bpm) return;
+    intervalMsRef.current = (60 / bpm) * 1000 / 4;
+    if (intervalRef.current) clearTimeout(intervalRef.current);
+    intervalRef.current = setTimeout(tickRef.current, intervalMsRef.current);
+  }, [bpmOverride, isPlaying]);
 
   const togglePlay = useCallback(() => {
     if (isPlaying || isCountdown) stop();

@@ -45,6 +45,10 @@ export function useTraining(pattern: DrumPattern, currentStep: number, isPlaying
     const currMod = currentStep % steps;
     prevStepRef.current = currentStep;
 
+    if (currentStep > 0 && currentStep % steps === 0) {
+      missedStepsRef.current = new Set();
+    }
+
     if (prevMod === currMod || missedStepsRef.current.has(prevMod)) return;
 
     const drumsWithNotes: string[] = [];

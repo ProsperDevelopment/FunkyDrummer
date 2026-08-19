@@ -14,7 +14,7 @@ import { usePlayback } from './hooks/usePlayback';
 import { useTrackPlayback } from './hooks/useTrackPlayback';
 import { useTraining } from './hooks/useTraining';
 import { useActiveDrums } from './hooks/useActiveDrums';
-import { playDrum, setKit, getActiveKit, getHihatPedalPressed, setHihatPedalPressed } from './audio/drumSounds';
+import { playDrum, setKit, getActiveKit, getHihatPedalPressed, setHihatPedalAmount } from './audio/drumSounds';
 import { midiConfigs, getNoteMap } from './config/midiConfigs';
 import { drumLayouts } from './config/drumLayouts';
 import { BPM_MIN, BPM_MAX, BPM_STEP, REPS_MIN, PEDAL_CC, PEDAL_THRESHOLD, GOOD_SCORE_THRESHOLD, OK_SCORE_THRESHOLD } from './config/constants';
@@ -69,7 +69,7 @@ export default function App() {
   }, [hitVisualizer]);
 
   const playback = usePlayback(pattern, bpmOverride, stopAfterReps, onPatternDrumPlayed, metronomeOn, drumPlaybackOn, countdownOn, grooveOn);
-  const trackPlayback = useTrackPlayback(selectedTrack, onPatternDrumPlayed, metronomeOn, drumPlaybackOn, bpmOverride);
+  const trackPlayback = useTrackPlayback(selectedTrack, onPatternDrumPlayed, metronomeOn, drumPlaybackOn, bpmOverride, countdownOn, grooveOn);
 
   const patternDefaultBpm = pattern.bpm;
   const trackDefaultBpm = selectedTrack?.bpm ?? patternDefaultBpm;
@@ -105,10 +105,10 @@ export default function App() {
 
   const handleCC = useCallback((controller: number, value: number) => {
     if (controller === PEDAL_CC) {
-      const pressed = value >= PEDAL_THRESHOLD;
-      setHihatPedalPressedState(pressed);
-      setHihatPedalPressed(pressed);
-      console.log('pedal', pressed ? 'closed' : 'open');
+      const amount = Math.min(1, value / 127);
+      setHihatPedalAmount(amount);
+      setHihatPedalPressedState(getHihatPedalPressed());
+      console.log('pedal', amount.toFixed(2), amount >= PEDAL_THRESHOLD / 127 ? 'closed' : 'open');
     }
   }, []);
 
@@ -197,16 +197,19 @@ export default function App() {
 
   const handleHihatPedalToggle = useCallback(() => {
     const next = !getHihatPedalPressed();
+    setHihatPedalAmount(next ? 1 : 0);
     setHihatPedalPressedState(next);
-    setHihatPedalPressed(next);
   }, []);
 
   const handleKitChange = useCallback(async (kitId: string) => {
     if (kitId === activeKitId) return;
     setKitBusy(true);
-    await setKit(kitId);
-    setActiveKitId(kitId);
-    setKitBusy(false);
+    try {
+      await setKit(kitId);
+      setActiveKitId(kitId);
+    } finally {
+      setKitBusy(false);
+    }
   }, [activeKitId]);
 
   useEffect(() => {
@@ -571,10 +574,10 @@ export default function App() {
         </div>
       )}
 
-      {playback.isCountdown && (
+      {(isTrackMode ? trackPlayback.isCountdown : playback.isCountdown) && (
         <div className="countdown-overlay">
-          <span className="countdown-number" key={Math.ceil(playback.countdownCount / 4)}>
-            {Math.ceil(playback.countdownCount / 4) - 1}
+          <span className="countdown-number" key={Math.ceil((isTrackMode ? trackPlayback.countdownCount : playback.countdownCount) / 4)}>
+            {Math.ceil((isTrackMode ? trackPlayback.countdownCount : playback.countdownCount) / 4) - 1}
           </span>
         </div>
       )}

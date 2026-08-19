@@ -254,7 +254,6 @@ export function onKitLoaded(cb: () => void): void {
 export async function setKit(kitId: string): Promise<void> {
   const kit = drumKits.find(k => k.id === kitId);
   if (!kit || kit.id === activeKit.id) return;
-  activeKit = kit;
   kitLoading = true;
 
   try {
@@ -262,16 +261,15 @@ export async function setKit(kitId: string): Promise<void> {
       const promises = Object.values(kit.samples).map(url => loadSample(url));
       await Promise.all(promises);
     }
+    activeKit = kit;
   } catch (err) {
     console.error('Failed to load kit:', kitId, err);
-    kitLoading = false;
-    loadCallbacks = [];
     throw err;
+  } finally {
+    kitLoading = false;
+    loadCallbacks.forEach(cb => cb());
+    loadCallbacks = [];
   }
-
-  kitLoading = false;
-  loadCallbacks.forEach(cb => cb());
-  loadCallbacks = [];
 }
 
 function playCrossfadeHihat(velocity: number): Voice {
