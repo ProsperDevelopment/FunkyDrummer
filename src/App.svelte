@@ -304,11 +304,16 @@
   $effect(() => {
     const accuracy = training.lastHitAccuracy;
     if (positiveMode && accuracy && accuracy !== 'miss') {
-      const ratio = training.hitRatio;
-      const savedAvg = training.savedHitRate;
-      const texts = getTextsForRatio(accuracy, ratio, savedAvg);
-      feedbackText = texts[Math.floor(Math.random() * texts.length)];
-      feedbackColor = getColorForRatio(ratio, savedAvg);
+      if (accuracy === 'off') {
+        feedbackText = ['Almost!', 'Near!', 'Close!'][Math.floor(Math.random() * 3)];
+        feedbackColor = '#06b6d4'; // cyan
+      } else {
+        const ratio = training.hitRatio;
+        const savedAvg = training.savedHitRate;
+        const texts = getTextsForRatio(accuracy, ratio, savedAvg);
+        feedbackText = texts[Math.floor(Math.random() * texts.length)];
+        feedbackColor = getColorForRatio(ratio, savedAvg);
+      }
       feedbackVisible = true;
       if (feedbackTimer) clearTimeout(feedbackTimer);
       feedbackTimer = setTimeout(() => { feedbackVisible = false; }, 800);
