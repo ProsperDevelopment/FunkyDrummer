@@ -211,19 +211,22 @@
   }
 
   function getTextsForRatio(accuracy: string, ratio: number, savedAvg: number): string[] {
-    // Compare to user's historical average for this pattern/track
-    const improvement = ratio - savedAvg;
-    if (improvement > 0.15) return ['Outstanding!', 'You Crushed It!', 'Personal Best!', 'Amazing!'];
-    if (improvement > 0.05) return ['Improved!', 'Better Than Before!', 'Level Up!', 'Progress!'];
+    if (savedAvg > 0) {
+      const improvement = ratio - savedAvg;
+      if (improvement > 0.15) return ['Outstanding!', 'You Crushed It!', 'Personal Best!', 'Amazing!'];
+      if (improvement > 0.05) return ['Improved!', 'Better Than Before!', 'Level Up!', 'Progress!'];
+    }
     if (ratio >= 0.8) return ['Perfect!', 'Excellent!', 'Master!', 'Flawless!'];
     if (ratio >= 0.6) return ['Very Good!', 'You Got It!', 'Great!', 'Nailed It!'];
     return ['Good!', 'Funky!', 'Beat It!', 'Nice!'];
   }
 
   function getColorForRatio(ratio: number, savedAvg: number): string {
-    const improvement = ratio - savedAvg;
-    if (improvement > 0.15) return '#ef4444'; // red — crushing it
-    if (improvement > 0.05) return '#eab308'; // yellow — improving
+    if (savedAvg > 0) {
+      const improvement = ratio - savedAvg;
+      if (improvement > 0.15) return '#ef4444'; // red — crushing it
+      if (improvement > 0.05) return '#eab308'; // yellow — improving
+    }
     if (ratio >= 0.6) return '#22c55e'; // green — solid
     return '#60a5fa'; // blue — learning
   }

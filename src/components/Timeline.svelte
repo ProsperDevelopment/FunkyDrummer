@@ -135,9 +135,15 @@
     ctx.fillStyle = 'rgba(255,255,255,0.03)';
     ctx.fillRect(scrollX + offsetStep * STEP_WIDTH, 0, STEP_WIDTH, contentH);
 
-    if (trainingMode && isPlaying && !positiveMode && userHits.length > 0) {
+    if (trainingMode && isPlaying && userHits.length > 0) {
+      const now = Date.now();
+      const fadeMs = positiveMode ? 400 : 2500;
       const accLabels: Record<string, string> = { perfect: 'P', good: 'G', off: 'O', miss: 'X' };
       for (const hit of userHits) {
+        const age = now - hit.timestamp;
+        const hitAlpha = positiveMode ? Math.max(0, 1 - age / fadeMs) : 1;
+        if (positiveMode && hitAlpha <= 0) continue;
+
         const rowIdx = rows.findIndex(r => r.id === hit.drumId);
         if (rowIdx === -1) continue;
         const cx = scrollX + (steps + hit.step) * STEP_WIDTH + STEP_WIDTH / 2;
@@ -179,11 +185,11 @@
         ctx.shadowColor = color;
 
         ctx.fillStyle = color;
-        ctx.globalAlpha = 0.85;
+        ctx.globalAlpha = 0.85 * hitAlpha;
         ctx.beginPath();
         ctx.arc(cx, cy, CANVAS_HIT_RADIUS, 0, Math.PI * 2);
         ctx.fill();
-        ctx.globalAlpha = 1;
+        ctx.globalAlpha = hitAlpha;
         ctx.shadowBlur = 0;
 
         ctx.strokeStyle = '#fff';
@@ -191,6 +197,7 @@
         ctx.stroke();
 
         ctx.fillStyle = '#000';
+        ctx.globalAlpha = hitAlpha;
         ctx.font = `bold ${CANVAS_HIT_FONT_SIZE}px sans-serif`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
