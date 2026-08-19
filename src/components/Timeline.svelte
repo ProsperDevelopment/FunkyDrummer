@@ -1,70 +1,49 @@
-import { useRef, useEffect, useLayoutEffect, useState, useMemo } from 'react';
-import { drumConfig } from '../config/drumConfig';
-import { STEPS_PER_MEASURE, BEAT_INTERVAL, MEASURE_INTERVAL, CANVAS_STEP_WIDTH, CANVAS_ROW_HEIGHT, CANVAS_HEADER_WIDTH, CANVAS_HIT_RADIUS, CANVAS_HIT_FONT_SIZE, CANVAS_BEAT_FONT_SIZE } from '../config/constants';
-import type { DrumPattern, UserHit, DrumDef } from '../types';
-import './Timeline.css';
+<script lang="ts">
+  import { drumConfig } from '../config/drumConfig';
+  import { STEPS_PER_MEASURE, BEAT_INTERVAL, MEASURE_INTERVAL, CANVAS_STEP_WIDTH, CANVAS_ROW_HEIGHT, CANVAS_HEADER_WIDTH, CANVAS_HIT_RADIUS, CANVAS_HIT_FONT_SIZE, CANVAS_BEAT_FONT_SIZE } from '../config/constants';
+  import type { DrumPattern, UserHit, DrumDef } from '../types';
+  import './Timeline.css';
 
-const STEP_WIDTH = CANVAS_STEP_WIDTH;
-const ROW_HEIGHT = CANVAS_ROW_HEIGHT;
-const HEADER_WIDTH = CANVAS_HEADER_WIDTH;
-const MAX_GROOVE = 5;
-const GROOVE_VISUAL_SCALE = 0.4;
+  interface Props {
+    pattern: DrumPattern | null;
+    currentStep: number;
+    isPlaying: boolean;
+    userHits?: UserHit[];
+    trainingMode?: boolean;
+    compact?: boolean;
+    grooveOn?: boolean;
+  }
 
-function getScrollX(step: number, stageWidth: number) {
-  return stageWidth / 2 - step * STEP_WIDTH - STEP_WIDTH / 2;
-}
+  let { pattern, currentStep, isPlaying, userHits = [], trainingMode = false, compact = false, grooveOn = false }: Props = $props();
 
-function getGrooveShift(groove: number[] | undefined, stepIdx: number) {
-  if (!groove) return 0;
-  return (groove[stepIdx % 16] || 0) / MAX_GROOVE * STEP_WIDTH * GROOVE_VISUAL_SCALE;
-}
+  const STEP_WIDTH = CANVAS_STEP_WIDTH;
+  const ROW_HEIGHT = CANVAS_ROW_HEIGHT;
+  const HEADER_WIDTH = CANVAS_HEADER_WIDTH;
+  const MAX_GROOVE = 5;
+  const GROOVE_VISUAL_SCALE = 0.4;
 
-interface TimelineProps {
-  pattern: DrumPattern | null;
-  currentStep: number;
-  isPlaying: boolean;
-  userHits?: UserHit[];
-  trainingMode?: boolean;
-  compact?: boolean;
-  grooveOn?: boolean;
-}
+  function getScrollX(step: number, stageWidth: number) {
+    return stageWidth / 2 - step * STEP_WIDTH - STEP_WIDTH / 2;
+  }
 
-export default function Timeline({ pattern, currentStep, isPlaying, userHits = [], trainingMode = false, compact = false, grooveOn = false }: TimelineProps) {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [dimensions, setDimensions] = useState({ width: 800, height: 400 });
-  const stepRef = useRef(currentStep);
-  const patternRef = useRef(pattern);
-  const rafRef = useRef<number>(0);
+  function getGrooveShift(groove: number[] | undefined, stepIdx: number) {
+    if (!groove) return 0;
+    return (groove[stepIdx % 16] || 0) / MAX_GROOVE * STEP_WIDTH * GROOVE_VISUAL_SCALE;
+  }
 
-  stepRef.current = currentStep;
-  patternRef.current = pattern;
+  let canvasRef = $state<HTMLCanvasElement>();
+  let containerRef = $state<HTMLDivElement>();
+  let dimensions = $state({ width: 800, height: 400 });
 
-  const canvasWidth = dimensions.width;
-  const canvasHeight = dimensions.height;
+  let canvasWidth = $derived(dimensions.width);
+  let canvasHeight = $derived(dimensions.height);
 
-  useEffect(() => {
-    const el = containerRef.current;
-    if (!el) return;
-    const ro = new ResizeObserver(entries => {
-      for (const entry of entries) {
-        setDimensions({
-          width: entry.contentRect.width,
-          height: entry.contentRect.height,
-        });
-      }
-    });
-    ro.observe(el);
-    return () => ro.disconnect();
-  }, [pattern]);
-
-  const rows: DrumDef[] = useMemo(() =>
-    pattern ? drumConfig.filter(d => d.id in pattern.grid) : [],
-    [pattern]
+  let rows = $derived(
+    pattern ? drumConfig.filter(d => d.id in pattern.grid) : []
   );
 
-  const steps = pattern ? pattern.measures * STEPS_PER_MEASURE : 0;
-  const totalWidth = steps * 3 * STEP_WIDTH;
+  let steps = $derived(pattern ? pattern.measures * STEPS_PER_MEASURE : 0);
+  let totalWidth = $derived(steps * 3 * STEP_WIDTH);
 
   const userHitColors: Record<string, string> = {
     perfect: '#4ade80',
@@ -72,6 +51,8 @@ export default function Timeline({ pattern, currentStep, isPlaying, userHits = [
     off: '#fb923c',
     miss: '#f87171',
   };
+
+  let rafId = 0;
 
   function draw(ctx: CanvasRenderingContext2D, scrollX: number) {
     const w = canvasWidth;
@@ -153,7 +134,7 @@ export default function Timeline({ pattern, currentStep, isPlaying, userHits = [
     ctx.fillStyle = 'rgba(255,255,255,0.03)';
     ctx.fillRect(scrollX + offsetStep * STEP_WIDTH, 0, STEP_WIDTH, contentH);
 
-    if (trainingMode && userHits.length > 0) {
+    if (trainingMode && isPlaying && userHits.length > 0) {
       const accLabels: Record<string, string> = { perfect: 'P', good: 'G', off: 'O', miss: 'X' };
       for (const hit of userHits) {
         const rowIdx = rows.findIndex(r => r.id === hit.drumId);
@@ -229,85 +210,101 @@ export default function Timeline({ pattern, currentStep, isPlaying, userHits = [
     ctx.shadowBlur = 0;
   }
 
-  const drawRef = useRef(draw);
-  drawRef.current = draw;
+  $effect(() => {
+    const el = containerRef;
+    if (!el) return;
+    const ro = new ResizeObserver(entries => {
+      for (const entry of entries) {
+        dimensions = {
+          width: entry.contentRect.width,
+          height: entry.contentRect.height,
+        };
+      }
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  });
 
-  useLayoutEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas || !containerRef.current) return;
+  $effect(() => {
+    const canvas = canvasRef;
+    if (!canvas || !containerRef) return;
     const dpr = window.devicePixelRatio || 1;
-    const rect = containerRef.current.getBoundingClientRect();
+    const rect = containerRef.getBoundingClientRect();
     canvas.width = rect.width * dpr;
     canvas.height = rect.height * dpr;
     canvas.style.width = rect.width + 'px';
     canvas.style.height = rect.height + 'px';
     const ctx = canvas.getContext('2d');
     if (ctx) ctx.scale(dpr, dpr);
-  }, [dimensions, pattern]);
+  });
 
-  useLayoutEffect(() => {
-    const ctx = canvasRef.current?.getContext('2d');
+  $effect(() => {
+    const ctx = canvasRef?.getContext('2d');
     if (!ctx || !pattern) return;
     const scrollX = getScrollX(steps + (currentStep % steps), canvasWidth);
-    drawRef.current(ctx, scrollX);
-  }, [currentStep, pattern, isPlaying, canvasWidth, rows, userHits, trainingMode, steps, grooveOn]);
+    draw(ctx, scrollX);
+  });
 
-  useEffect(() => {
-    const canvas = canvasRef.current;
+  $effect(() => {
+    const canvas = canvasRef;
     if (!canvas || !pattern) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
+    // Force Svelte to track reactive deps that tick() reads asynchronously
+    void currentStep;
+    void steps;
+    void canvasWidth;
+    void userHits;
+
     const tick = () => {
-      const s = steps + (stepRef.current % steps);
+      const s = steps + (currentStep % steps);
       const scrollX = getScrollX(s, canvasWidth);
-      drawRef.current(ctx, scrollX);
-      rafRef.current = requestAnimationFrame(tick);
+      draw(ctx, scrollX);
+      rafId = requestAnimationFrame(tick);
     };
 
     if (isPlaying) {
-      rafRef.current = requestAnimationFrame(tick);
+      rafId = requestAnimationFrame(tick);
     }
 
     return () => {
-      if (rafRef.current) {
-        cancelAnimationFrame(rafRef.current);
-        rafRef.current = 0;
+      if (rafId) {
+        cancelAnimationFrame(rafId);
+        rafId = 0;
       }
     };
-  }, [pattern, isPlaying, canvasWidth, steps, rows, grooveOn]);
+  });
 
-  if (!pattern) {
-    return <div className="timeline-empty">Select a pattern to begin</div>;
+  function roundRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number) {
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.lineTo(x + w - r, y);
+    ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+    ctx.lineTo(x + w, y + h - r);
+    ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+    ctx.lineTo(x + r, y + h);
+    ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+    ctx.lineTo(x, y + r);
+    ctx.quadraticCurveTo(x, y, x + r, y);
+    ctx.closePath();
   }
+</script>
 
-  return (
-    <div className="timeline-container">
-      <div className="timeline-drum-labels" style={{ width: compact ? 32 : HEADER_WIDTH }}>
-        {rows.map(drum => (
-          <div key={drum.id} className={`drum-label${compact ? ' compact' : ''}`} style={{ height: ROW_HEIGHT }}>
-            <span className="drum-indicator" style={{ backgroundColor: drum.color }} />
-            {!compact && drum.name}
-          </div>
-        ))}
-      </div>
-      <div className="timeline-canvas-wrapper" ref={containerRef}>
-        <canvas ref={canvasRef} />
-      </div>
+{#if !pattern}
+  <div class="timeline-empty">Select a pattern to begin</div>
+{:else}
+  <div class="timeline-container">
+    <div class="timeline-drum-labels" style="width: {compact ? 32 : HEADER_WIDTH}px">
+      {#each rows as drum (drum.id)}
+        <div class="drum-label{compact ? ' compact' : ''}" style="height: {ROW_HEIGHT}px">
+          <span class="drum-indicator" style="background-color: {drum.color}" />
+          {#if !compact}{drum.name}{/if}
+        </div>
+      {/each}
     </div>
-  );
-}
-
-function roundRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number) {
-  ctx.beginPath();
-  ctx.moveTo(x + r, y);
-  ctx.lineTo(x + w - r, y);
-  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
-  ctx.lineTo(x + w, y + h - r);
-  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
-  ctx.lineTo(x + r, y + h);
-  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
-  ctx.lineTo(x, y + r);
-  ctx.quadraticCurveTo(x, y, x + r, y);
-  ctx.closePath();
-}
+    <div class="timeline-canvas-wrapper" bind:this={containerRef}>
+      <canvas bind:this={canvasRef}></canvas>
+    </div>
+  </div>
+{/if}

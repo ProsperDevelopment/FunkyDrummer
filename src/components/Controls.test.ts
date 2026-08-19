@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen } from '@testing-library/svelte';
 import userEvent from '@testing-library/user-event';
-import Controls from './Controls';
+import Controls from './Controls.svelte';
 
 const baseProps = {
   isPlaying: false,
@@ -37,20 +37,20 @@ const baseProps = {
 
 describe('Controls', () => {
   it('renders play and stop buttons', () => {
-    render(<Controls {...baseProps} />);
+    render(Controls, { props: baseProps });
     expect(screen.getByText('▶')).toBeInTheDocument();
     expect(screen.getByText('⏹')).toBeInTheDocument();
   });
 
   it('shows a pause icon when playing', () => {
-    render(<Controls {...baseProps} isPlaying />);
+    render(Controls, { props: { ...baseProps, isPlaying: true } });
     expect(screen.getByText('⏸')).toBeInTheDocument();
   });
 
   it('calls onTogglePlay when play is clicked', async () => {
     const user = userEvent.setup();
     const onTogglePlay = vi.fn();
-    render(<Controls {...baseProps} onTogglePlay={onTogglePlay} />);
+    render(Controls, { props: { ...baseProps, onTogglePlay } });
     await user.click(screen.getByText('▶'));
     expect(onTogglePlay).toHaveBeenCalledTimes(1);
   });
@@ -58,20 +58,20 @@ describe('Controls', () => {
   it('calls onStop when stop is clicked', async () => {
     const user = userEvent.setup();
     const onStop = vi.fn();
-    render(<Controls {...baseProps} onStop={onStop} />);
+    render(Controls, { props: { ...baseProps, onStop } });
     await user.click(screen.getByText('⏹'));
     expect(onStop).toHaveBeenCalledTimes(1);
   });
 
   it('shows the bpm', () => {
-    render(<Controls {...baseProps} bpm={120} />);
+    render(Controls, { props: { ...baseProps, bpm: 120 } });
     expect(screen.getByText('120')).toBeInTheDocument();
   });
 
   it('calls onCountdownToggle when countdown pressed', async () => {
     const user = userEvent.setup();
     const onCountdownToggle = vi.fn();
-    render(<Controls {...baseProps} onCountdownToggle={onCountdownToggle} />);
+    render(Controls, { props: { ...baseProps, onCountdownToggle } });
     await user.click(screen.getByText('🚦'));
     expect(onCountdownToggle).toHaveBeenCalledTimes(1);
   });
@@ -79,7 +79,7 @@ describe('Controls', () => {
   it('calls onGrooveToggle when groove pressed', async () => {
     const user = userEvent.setup();
     const onGrooveToggle = vi.fn();
-    render(<Controls {...baseProps} onGrooveToggle={onGrooveToggle} />);
+    render(Controls, { props: { ...baseProps, onGrooveToggle } });
     await user.click(screen.getByText('🔀'));
     expect(onGrooveToggle).toHaveBeenCalledTimes(1);
   });
@@ -87,13 +87,13 @@ describe('Controls', () => {
   it('calls onTrainingToggle when training pressed', async () => {
     const user = userEvent.setup();
     const onTrainingToggle = vi.fn();
-    render(<Controls {...baseProps} onTrainingToggle={onTrainingToggle} />);
+    render(Controls, { props: { ...baseProps, onTrainingToggle } });
     await user.click(screen.getByText('🎯'));
     expect(onTrainingToggle).toHaveBeenCalledTimes(1);
   });
 
   it('renders track info in track mode', () => {
-    render(<Controls {...baseProps} trackMode trackName="Rock to Funk" trackTotalParts={4} />);
+    render(Controls, { props: { ...baseProps, trackMode: true, trackName: 'Rock to Funk', trackTotalParts: 4 } });
     expect(screen.getByText('Rock to Funk')).toBeInTheDocument();
     expect(screen.getByText('Part 1/4')).toBeInTheDocument();
   });
@@ -103,7 +103,7 @@ describe('Controls', () => {
       stats: { perfect: 10, good: 5, off: 2, miss: 1, total: 18, score: 80 },
       missedHits: 3,
     };
-    render(<Controls {...baseProps} sessionResult={sessionResult} />);
+    render(Controls, { props: { ...baseProps, sessionResult } });
     expect(screen.getByText('Session Complete')).toBeInTheDocument();
     expect(screen.getByText('80%')).toBeInTheDocument();
   });
@@ -112,7 +112,7 @@ describe('Controls', () => {
     const user = userEvent.setup();
     const onDismissResult = vi.fn();
     const sessionResult = { stats: { perfect: 1, good: 0, off: 0, miss: 0, total: 1, score: 100 }, missedHits: 0 };
-    render(<Controls {...baseProps} sessionResult={sessionResult} onDismissResult={onDismissResult} />);
+    render(Controls, { props: { ...baseProps, sessionResult, onDismissResult } });
     await user.click(screen.getByText('Dismiss'));
     expect(onDismissResult).toHaveBeenCalledTimes(1);
   });

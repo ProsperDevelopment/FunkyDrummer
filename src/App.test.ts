@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen } from '@testing-library/svelte';
 import userEvent from '@testing-library/user-event';
-import App from './App';
+import App from './App.svelte';
 import { drumPatterns } from './data/drumPatterns';
 import { trackList } from './data/trackList';
 
@@ -45,21 +45,21 @@ function trackButton(name: string): HTMLElement {
 
 describe('App', () => {
   it('renders the app title and controls', () => {
-    render(<App />);
+    render(App);
     expect(screen.getByText('Funky Drummer', { selector: '.app-title' })).toBeInTheDocument();
     expect(screen.getByText('▶')).toBeInTheDocument();
     expect(screen.getByText('⏹')).toBeInTheDocument();
   });
 
   it('shows the default pattern selected', () => {
-    render(<App />);
+    render(App);
     const first = visiblePatterns[0];
     expect(patternButton(first.name).className).toContain('active');
   });
 
   it('switches patterns on click', async () => {
     const user = userEvent.setup();
-    render(<App />);
+    render(App);
     const target = visiblePatterns[1];
     await user.click(patternButton(target.name));
     expect(patternButton(target.name).className).toContain('active');
@@ -67,7 +67,7 @@ describe('App', () => {
 
   it('toggles play when the play button is clicked', async () => {
     const user = userEvent.setup();
-    render(<App />);
+    render(App);
     expect(screen.getByText('▶')).toBeInTheDocument();
     await user.click(screen.getByText('▶'));
     expect(screen.getByText('⏸')).toBeInTheDocument();
@@ -77,16 +77,16 @@ describe('App', () => {
 
   it('opens and closes the settings modal', async () => {
     const user = userEvent.setup();
-    render(<App />);
+    render(App);
     await user.click(screen.getByTitle('Settings'));
     expect(screen.getByText('Drum Kit')).toBeInTheDocument();
-    await user.click(screen.getByRole('button', { name: '✕' }));
+    await user.click(screen.getByRole('button', { name: '×' }));
     expect(screen.queryByText('Drum Kit')).not.toBeInTheDocument();
   });
 
   it('switches to track mode and plays a track', async () => {
     const user = userEvent.setup();
-    render(<App />);
+    render(App);
     await user.click(screen.getByRole('button', { name: 'Tracks' }));
     const track = trackList[0];
     await user.click(trackButton(track.name));
@@ -96,7 +96,7 @@ describe('App', () => {
 
   it('opens the help modal', async () => {
     const user = userEvent.setup();
-    render(<App />);
+    render(App);
     await user.click(screen.getByTitle('Help'));
     expect(screen.getByText('Help')).toBeInTheDocument();
   });
