@@ -5,6 +5,8 @@ class TrainingStore {
   trainingMode = $state(false);
   userHits = $state<UserHit[]>([]);
   missedHits = $state(0);
+  lastHitAccuracy = $state<string | null>(null);
+  lastHitTimestamp = $state(0);
 
   private runningCounts: Record<string, number> = { perfect: 0, good: 0, off: 0, miss: 0 };
   private hitId = 0;
@@ -16,6 +18,14 @@ class TrainingStore {
   private userHitsRef: UserHit[] = [];
   private isPlaying = false;
   private cleanupInterval: ReturnType<typeof setInterval> | null = null;
+  private feedbackTimer: ReturnType<typeof setTimeout> | null = null;
+
+  get hitRatio(): number {
+    const c = this.runningCounts;
+    const total = (c.perfect || 0) + (c.good || 0) + (c.off || 0) + (c.miss || 0);
+    if (total === 0) return 0;
+    return (c.perfect + c.good) / total;
+  }
 
   get accuracyStats(): TrainingStats | null {
     const c = this.runningCounts;
@@ -32,6 +42,7 @@ class TrainingStore {
       this.userHits = [];
       this.missedHits = 0;
       this.runningCounts = { perfect: 0, good: 0, off: 0, miss: 0 };
+      this.lastHitAccuracy = null;
     }
   }
 
@@ -85,6 +96,7 @@ class TrainingStore {
     if (wasPlaying && !playing) {
       this.userHits = [];
       this.userHitsRef = [];
+      this.lastHitAccuracy = null;
     }
   }
 
@@ -156,6 +168,13 @@ class TrainingStore {
     const next = [...this.userHitsRef, hit];
     this.userHitsRef = next.slice(-200);
     this.userHits = this.userHitsRef;
+
+    this.lastHitAccuracy = accuracy;
+    this.lastHitTimestamp = Date.now();
+    if (this.feedbackTimer) clearTimeout(this.feedbackTimer);
+    this.feedbackTimer = setTimeout(() => {
+      this.lastHitAccuracy = null;
+    }, 800);
   }
 
   clearHits() {
@@ -163,6 +182,7 @@ class TrainingStore {
     this.missedHits = 0;
     this.missedSteps = new Set();
     this.runningCounts = { perfect: 0, good: 0, off: 0, miss: 0 };
+    this.lastHitAccuracy = null;
   }
 }
 

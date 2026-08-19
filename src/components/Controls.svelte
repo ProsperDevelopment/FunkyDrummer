@@ -37,6 +37,8 @@
     trackName?: string;
     trackPart: number;
     trackTotalParts: number;
+    positiveMode: boolean;
+    onPositiveModeToggle: () => void;
   }
 
   let {
@@ -69,6 +71,8 @@
     trackName,
     trackPart,
     trackTotalParts,
+    positiveMode,
+    onPositiveModeToggle,
   }: Props = $props();
 
   let hasSessionResult = $derived(sessionResult && sessionResult.stats);
@@ -183,6 +187,16 @@
         onclick={onTrainingToggle}
       >
         🎯
+      </button>
+    </div>
+
+    <div class="controls-group">
+      <button
+        class="btn btn-positive {positiveMode ? 'active' : 'off'}"
+        onclick={onPositiveModeToggle}
+        title={positiveMode ? 'Positive Reinforcement' : 'Regular mode'}
+      >
+        {positiveMode ? '💚' : '📊'}
       </button>
     </div>
 

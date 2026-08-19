@@ -12,9 +12,10 @@
     trainingMode?: boolean;
     compact?: boolean;
     grooveOn?: boolean;
+    positiveMode?: boolean;
   }
 
-  let { pattern, currentStep, isPlaying, userHits = [], trainingMode = false, compact = false, grooveOn = false }: Props = $props();
+  let { pattern, currentStep, isPlaying, userHits = [], trainingMode = false, compact = false, grooveOn = false, positiveMode = false }: Props = $props();
 
   const STEP_WIDTH = CANVAS_STEP_WIDTH;
   const ROW_HEIGHT = CANVAS_ROW_HEIGHT;
@@ -134,7 +135,7 @@
     ctx.fillStyle = 'rgba(255,255,255,0.03)';
     ctx.fillRect(scrollX + offsetStep * STEP_WIDTH, 0, STEP_WIDTH, contentH);
 
-    if (trainingMode && isPlaying && userHits.length > 0) {
+    if (trainingMode && isPlaying && !positiveMode && userHits.length > 0) {
       const accLabels: Record<string, string> = { perfect: 'P', good: 'G', off: 'O', miss: 'X' };
       for (const hit of userHits) {
         const rowIdx = rows.findIndex(r => r.id === hit.drumId);
@@ -241,6 +242,7 @@
   $effect(() => {
     const ctx = canvasRef?.getContext('2d');
     if (!ctx || !pattern) return;
+    void positiveMode;
     const scrollX = getScrollX(steps + (currentStep % steps), canvasWidth);
     draw(ctx, scrollX);
   });
@@ -256,6 +258,7 @@
     void steps;
     void canvasWidth;
     void userHits;
+    void positiveMode;
 
     const tick = () => {
       const s = steps + (currentStep % steps);

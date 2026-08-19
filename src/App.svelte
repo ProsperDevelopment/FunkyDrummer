@@ -8,6 +8,7 @@
   import FullscreenControls from './components/FullscreenControls.svelte';
   import SettingsModal from './components/SettingsModal.svelte';
   import TrainingStats from './components/TrainingStats.svelte';
+  import FeedbackPopup from './components/FeedbackPopup.svelte';
   import { drumPatterns } from './data/drumPatterns';
   import { trackList } from './data/trackList';
   import { playback } from './stores/playback.svelte';
@@ -54,6 +55,11 @@
   let grooveOn = $state(false);
   let edgeMode = $state(false);
   let sessionSet = $state(false);
+  let positiveMode = $state(false);
+  let feedbackText = $state('');
+  let feedbackColor = $state('#4ade80');
+  let feedbackVisible = $state(false);
+  let feedbackTimer: ReturnType<typeof setTimeout> | null = null;
 
   let isTrackMode = $derived(selectedTrackId !== null);
   let selectedTrack: Track | null = $derived(isTrackMode ? trackList.find(t => t.id === selectedTrackId!) || null : null);
@@ -200,6 +206,22 @@
     edgeMode = !edgeMode;
   }
 
+  function handlePositiveModeToggle() {
+    positiveMode = !positiveMode;
+  }
+
+  function getTextsForRatio(accuracy: string, ratio: number): string[] {
+    if (ratio >= 0.8) return ['Perfect!', 'Excellent!', 'Master!', 'Flawless!'];
+    if (ratio >= 0.6) return ['Very Good!', 'You Got It!', 'Great!', 'Nailed It!'];
+    return ['Good!', 'Funky!', 'Beat It!', 'Nice!'];
+  }
+
+  function getColorForRatio(ratio: number): string {
+    if (ratio >= 0.8) return '#ef4444';
+    if (ratio >= 0.6) return '#eab308';
+    return '#22c55e';
+  }
+
   function keyboardTogglePlay() {
     playback.togglePlay();
   }
@@ -266,6 +288,20 @@
   // Sync isPlaying to training store
   $effect(() => {
     training.setPlaying(trainingIsPlaying);
+  });
+
+  // Positive reinforcement feedback
+  $effect(() => {
+    const accuracy = training.lastHitAccuracy;
+    if (positiveMode && accuracy && accuracy !== 'miss') {
+      const ratio = training.hitRatio;
+      const texts = getTextsForRatio(accuracy, ratio);
+      feedbackText = texts[Math.floor(Math.random() * texts.length)];
+      feedbackColor = getColorForRatio(ratio);
+      feedbackVisible = true;
+      if (feedbackTimer) clearTimeout(feedbackTimer);
+      feedbackTimer = setTimeout(() => { feedbackVisible = false; }, 800);
+    }
   });
 
   // Session result: pattern mode
@@ -408,6 +444,8 @@
         trackName={selectedTrack?.name ?? ''}
         trackPart={playback.currentPartIndex}
         trackTotalParts={selectedTrack?.parts.length ?? 0}
+        positiveMode={positiveMode}
+        onPositiveModeToggle={handlePositiveModeToggle}
       />
 
       <Timeline
@@ -418,12 +456,13 @@
         trainingMode={training.trainingMode}
         compact={false}
         grooveOn={grooveOn}
+        positiveMode={positiveMode}
       />
 
       {#if showVisualizer}
         <DrumVisualizer activeDrums={activeDrums.activeDrums} onDrumClick={onDrumHit} layoutId={drumLayoutId} hihatPedalPressed={hihatPedalPressed} onHihatPedalDown={handleHihatPedalToggle} />
       {/if}
-      {#if training.trainingMode}
+      {#if training.trainingMode && !positiveMode}
         <div class="fs-stats-stack">
           {#if stopAfterReps > 0}
             <div class="fs-reps-progress-bar">
@@ -473,7 +512,7 @@
         >⛶</button>
       </header>
       <div class="fullscreen-content">
-        {#if training.trainingMode}
+        {#if training.trainingMode && !positiveMode}
           <div class="fs-stats-stack">
             {#if stopAfterReps > 0}
               <div class="fs-reps-progress-bar">
@@ -494,6 +533,7 @@
           trainingMode={training.trainingMode}
           compact={true}
           grooveOn={grooveOn}
+          positiveMode={positiveMode}
         />
         <div class="fs-viz-area">
           <DrumVisualizer activeDrums={activeDrums.activeDrums} onDrumClick={onDrumHit} layoutId={drumLayoutId} hihatPedalPressed={hihatPedalPressed} onHihatPedalDown={handleHihatPedalToggle} />
@@ -509,6 +549,8 @@
       </span>
     </div>
   {/if}
+
+  <FeedbackPopup text={feedbackText} color={feedbackColor} visible={feedbackVisible} />
 
   {#if showSettings}
     <SettingsModal

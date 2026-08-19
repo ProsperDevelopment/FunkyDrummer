@@ -204,6 +204,24 @@
   box-shadow: 0 0 12px rgba(139, 92, 246, 0.3);
 }
 
+.btn-positive {
+  color: #86efac;
+  border-color: #2a4a2a;
+  transition: all 0.2s;
+}
+
+.btn-positive:hover {
+  background: #1a2a1a;
+  border-color: #4a7a4a;
+}
+
+.btn-positive.active {
+  background: #1a3a2a;
+  border-color: #4ade80;
+  color: #86efac;
+  box-shadow: 0 0 12px rgba(74, 222, 128, 0.3);
+}
+
 .btn-visualizer {
   color: #34d399;
   border-color: #2a4a3a;
