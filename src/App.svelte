@@ -211,24 +211,29 @@
   }
 
   function getTextsForRatio(accuracy: string, ratio: number, savedAvg: number): string[] {
+    // Accuracy first
+    if (accuracy === 'perfect') return ['Perfect!', 'Flawless!', 'Nailed It!', 'Master!'];
+    if (accuracy === 'good') return ['Good!', 'Funky!', 'Beat It!', 'Nice!'];
+    // Then improvement (if saved average exists)
     if (savedAvg > 0) {
       const improvement = ratio - savedAvg;
       if (improvement > 0.15) return ['Outstanding!', 'You Crushed It!', 'Personal Best!', 'Amazing!'];
       if (improvement > 0.05) return ['Improved!', 'Better Than Before!', 'Level Up!', 'Progress!'];
     }
-    if (ratio >= 0.8) return ['Perfect!', 'Excellent!', 'Master!', 'Flawless!'];
-    if (ratio >= 0.6) return ['Very Good!', 'You Got It!', 'Great!', 'Nailed It!'];
-    return ['Good!', 'Funky!', 'Beat It!', 'Nice!'];
+    return ['Very Good!', 'You Got It!', 'Great!'];
   }
 
-  function getColorForRatio(ratio: number, savedAvg: number): string {
+  function getColorForRatio(accuracy: string, ratio: number, savedAvg: number): string {
+    // Accuracy first
+    if (accuracy === 'perfect') return '#ef4444'; // red
+    if (accuracy === 'good') return '#22c55e'; // green
+    // Then improvement
     if (savedAvg > 0) {
       const improvement = ratio - savedAvg;
-      if (improvement > 0.15) return '#ef4444'; // red — crushing it
-      if (improvement > 0.05) return '#eab308'; // yellow — improving
+      if (improvement > 0.15) return '#ef4444'; // red
+      if (improvement > 0.05) return '#eab308'; // yellow
     }
-    if (ratio >= 0.6) return '#22c55e'; // green — solid
-    return '#60a5fa'; // blue — learning
+    return '#60a5fa'; // blue
   }
 
   function keyboardTogglePlay() {
@@ -312,7 +317,7 @@
         const savedAvg = training.savedHitRate;
         const texts = getTextsForRatio(accuracy, ratio, savedAvg);
         feedbackText = texts[Math.floor(Math.random() * texts.length)];
-        feedbackColor = getColorForRatio(ratio, savedAvg);
+        feedbackColor = getColorForRatio(accuracy, ratio, savedAvg);
       }
       feedbackVisible = true;
       if (feedbackTimer) clearTimeout(feedbackTimer);
