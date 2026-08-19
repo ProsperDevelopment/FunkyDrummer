@@ -1,4 +1,5 @@
 import { STEPS_PER_MEASURE, TRAINING_HIT_TOLERANCE, TRAINING_SCORE_GOOD_WEIGHT, TRAINING_SCORE_MULTIPLIER } from '../config/constants';
+import { getHitRate, saveHitRate } from '../lib/hitRates';
 import type { DrumPattern, UserHit, TrainingStats } from '../types';
 
 class TrainingStore {
@@ -7,13 +8,14 @@ class TrainingStore {
   missedHits = $state(0);
   lastHitAccuracy = $state<string | null>(null);
   lastHitTimestamp = $state(0);
+  savedHitRate = $state(0); // average (perfect+good)/total from previous sessions
 
   private runningCounts: Record<string, number> = { perfect: 0, good: 0, off: 0, miss: 0 };
   private hitId = 0;
   private currentStepRef = 0;
   private prevStepRef = 0;
   private patternRef: DrumPattern | null = null;
-  private prevPatternId: string | undefined = undefined;
+  private patternId: string | undefined = undefined;
   private missedSteps = new Set<number>();
   private userHitsRef: UserHit[] = [];
   private isPlaying = false;
@@ -36,13 +38,32 @@ class TrainingStore {
   }
 
   setPattern(pattern: DrumPattern | null) {
-    this.patternRef = pattern;
-    if (pattern?.id !== this.prevPatternId) {
-      this.prevPatternId = pattern?.id;
+    if (pattern?.id !== this.patternId) {
+      this.patternId = pattern?.id;
+      this.patternRef = pattern;
       this.userHits = [];
       this.missedHits = 0;
       this.runningCounts = { perfect: 0, good: 0, off: 0, miss: 0 };
       this.lastHitAccuracy = null;
+      // Load saved hit rate for this pattern
+      if (pattern) {
+        const saved = getHitRate(pattern.id);
+        this.savedHitRate = saved ? saved.avgHitRate : 0;
+      } else {
+        this.savedHitRate = 0;
+      }
+    }
+  }
+
+  setTrackId(trackId: string | null) {
+    if (trackId && trackId !== this.patternId) {
+      this.patternId = trackId;
+      this.userHits = [];
+      this.missedHits = 0;
+      this.runningCounts = { perfect: 0, good: 0, off: 0, miss: 0 };
+      this.lastHitAccuracy = null;
+      const saved = getHitRate(trackId);
+      this.savedHitRate = saved ? saved.avgHitRate : 0;
     }
   }
 
@@ -92,8 +113,15 @@ class TrainingStore {
   setPlaying(playing: boolean) {
     const wasPlaying = this.isPlaying;
     this.isPlaying = playing;
-    // Clear hits when playback stops (prevents stale hits lingering on screen)
     if (wasPlaying && !playing) {
+      // Save hit rate for this pattern/track when session ends
+      const c = this.runningCounts;
+      const total = (c.perfect || 0) + (c.good || 0) + (c.off || 0) + (c.miss || 0);
+      if (total > 0 && this.patternId) {
+        saveHitRate(this.patternId, c.perfect, c.good, c.miss, c.off);
+        const saved = getHitRate(this.patternId);
+        this.savedHitRate = saved ? saved.avgHitRate : 0;
+      }
       this.userHits = [];
       this.userHitsRef = [];
       this.lastHitAccuracy = null;
@@ -183,6 +211,11 @@ class TrainingStore {
     this.missedSteps = new Set();
     this.runningCounts = { perfect: 0, good: 0, off: 0, miss: 0 };
     this.lastHitAccuracy = null;
+    // Reload saved hit rate (in case it was updated by another session)
+    if (this.patternId) {
+      const saved = getHitRate(this.patternId);
+      this.savedHitRate = saved ? saved.avgHitRate : 0;
+    }
   }
 }
 
