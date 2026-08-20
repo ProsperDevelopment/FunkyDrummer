@@ -13,16 +13,16 @@ class MIDIStore {
   private activeHandler: ((event: WebMidi.MIDIMessageEvent) => void) | null = null;
   private stateHandler: (() => void) | null = null;
 
-  setNoteMap(map: Record<number, string | null>) {
-    this.noteMap = map || defaultNoteMap;
-  }
-
   setOnNoteOn(cb: (drumId: string, velocity: number) => void) {
     this.onNoteOn = cb;
   }
 
   setOnCC(cb?: (controller: number, value: number) => void) {
     this.onCC = cb;
+  }
+
+  setNoteMap(map: Record<number, string | null>) {
+    this.noteMap = map || defaultNoteMap;
   }
 
   private initialized = false;

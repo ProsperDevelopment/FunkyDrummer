@@ -352,11 +352,17 @@
     setKit(getActiveKit().id);
   });
 
-  // Setup MIDI
+  // Setup MIDI — init once, config updates are synchronous
   $effect(() => {
     midi.setOnNoteOn(onDrumHit);
-    midi.setNoteMap(midiNoteMap);
     midi.setOnCC(handleCC);
+  });
+
+  $effect(() => {
+    midi.setNoteMap(midiNoteMap);
+  });
+
+  $effect(() => {
     midi.init();
     return () => { midi.destroy(); };
   });
