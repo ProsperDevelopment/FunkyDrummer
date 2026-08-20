@@ -18,7 +18,7 @@ declare namespace WebMidi {
 
   interface MIDIInput {
     id: string;
-    name: string;
+    name: string | null;
     onmidimessage: ((e: MIDIMessageEvent) => void) | null;
     addEventListener(type: 'midimessage', listener: EventListener): void;
     removeEventListener(type: 'midimessage', listener: EventListener): void;
@@ -34,5 +34,5 @@ declare namespace WebMidi {
 }
 
 interface Navigator {
-  requestMIDIAccess(): Promise<WebMidi.MIDIAccess>;
+  requestMIDIAccess(options?: { sysex?: boolean }): Promise<WebMidi.MIDIAccess>;
 }

@@ -25,20 +25,26 @@ class MIDIStore {
     this.onCC = cb;
   }
 
+  private initialized = false;
+
   async init() {
+    if (this.initialized) return;
     if (!navigator.requestMIDIAccess) {
-      console.log('Web MIDI API not available');
+      console.warn('Web MIDI API not available — check chrome://flags/#web-midi or use HTTPS');
       return;
     }
 
     try {
-      const access = await navigator.requestMIDIAccess();
+      console.log('Requesting MIDI access...');
+      const access = await navigator.requestMIDIAccess({ sysex: false });
+      this.initialized = true;
       this.midiAccess = access;
       const list: MidiInput[] = [];
       for (const input of access.inputs.values()) {
         list.push({ id: input.id, name: input.name || 'MIDI Input' });
       }
       this.inputs = list;
+      console.log(`MIDI: ${list.length} input(s) found`, list.map(i => i.name));
       if (list.length > 0) {
         const preferred = list.find(i => !i.name.includes('MIDI Through'));
         this.activeInput = preferred ? preferred.id : list[0].id;
@@ -47,7 +53,7 @@ class MIDIStore {
       this.setupStateListener(access);
       this.setupMessageListener();
     } catch (err) {
-      console.log('MIDI access denied:', err);
+      console.error('MIDI access failed:', err);
     }
   }
 
@@ -108,6 +114,7 @@ class MIDIStore {
   }
 
   destroy() {
+    this.initialized = false;
     if (this.activeHandler && this.midiAccess && this.activeInput) {
       const input = this.midiAccess.inputs.get(this.activeInput);
       if (input) {
