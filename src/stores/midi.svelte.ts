@@ -68,6 +68,12 @@ class MIDIStore {
         list.push({ id: input.id, name: input.name || 'MIDI Input' });
       }
       this.inputs = list;
+      // Auto-select new device if none active
+      if (list.length > 0 && !this.activeInput) {
+        const preferred = list.find(i => !i.name.includes('MIDI Through'));
+        this.activeInput = preferred ? preferred.id : list[0].id;
+        this.setupMessageListener();
+      }
     };
 
     access.addEventListener('statechange', this.stateHandler);
@@ -104,6 +110,7 @@ class MIDIStore {
       if (status === MIDI_NOTE_ON && data2 > 0) {
         const velocity = data2 / 127;
         const drumId = this.noteMap[data1];
+        console.log(`MIDI Note ${data1} → ${drumId || '(unmapped)'} vel=${velocity.toFixed(2)}`);
         if (drumId) {
           this.onNoteOn?.(drumId, velocity);
         }

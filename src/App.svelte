@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
   import './App.css';
   import Timeline from './components/Timeline.svelte';
   import PatternTrackTabs from './components/PatternTrackTabs.svelte';
@@ -352,7 +353,7 @@
     setKit(getActiveKit().id);
   });
 
-  // Setup MIDI — init once, config updates are synchronous
+  // Setup MIDI — init once on mount, config updates are synchronous
   $effect(() => {
     midi.setOnNoteOn(onDrumHit);
     midi.setOnCC(handleCC);
@@ -362,7 +363,7 @@
     midi.setNoteMap(midiNoteMap);
   });
 
-  $effect(() => {
+  onMount(() => {
     midi.init();
     return () => { midi.destroy(); };
   });
