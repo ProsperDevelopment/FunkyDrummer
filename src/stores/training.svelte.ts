@@ -48,8 +48,8 @@ class TrainingStore {
     const row = p.grid[drumId];
     if (!row) return null;
 
-    // Search forward from current step for the nearest note
-    for (let offset = 0; offset < steps; offset++) {
+    // Search forward from current step + 1 for the next note
+    for (let offset = 1; offset <= steps; offset++) {
       const checkStep = (currentStep + offset) % steps;
       if (row[checkStep]) {
         return checkStep;
