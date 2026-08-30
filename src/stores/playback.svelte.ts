@@ -39,6 +39,7 @@ class PlaybackStore {
   private onDrumPlayed?: (drumId: string, vel: number) => void;
   private drumTimeoutsRef: ReturnType<typeof setTimeout>[] = [];
   private hasPreScheduled = false;
+  private rhythmModeRef = false;
 
   setPattern(p: DrumPattern | null) {
     this.mode = 'pattern';
@@ -108,6 +109,63 @@ class PlaybackStore {
 
   setGroove(on: boolean) {
     this.grooveOnRef = on;
+  }
+
+  setRhythmMode(on: boolean) {
+    this.rhythmModeRef = on;
+  }
+
+  jumpToStep(step: number) {
+    if (!this.isPlaying) return;
+    
+    const p = this.getCurrentPatternForTick();
+    if (!p) return;
+    
+    const steps = p.measures * STEPS_PER_MEASURE;
+    const normalizedStep = ((step % steps) + steps) % steps;
+    
+    // Clear any pending intervals
+    if (this.intervalRef) {
+      clearTimeout(this.intervalRef);
+      this.intervalRef = null;
+    }
+    
+    // Clear pending drum timeouts
+    for (const t of this.drumTimeoutsRef) clearTimeout(t);
+    this.drumTimeoutsRef = [];
+    
+    // Jump to the target step
+    this.stepRef = normalizedStep;
+    this.currentStep = normalizedStep;
+    this.hasPreScheduled = false;
+    
+    // Play the drums at this step
+    this.playDrumsAtStep(normalizedStep);
+    
+    // Schedule next tick
+    this.intervalRef = setTimeout(() => this.tick(), this.intervalMs);
+  }
+
+  private playDrumsAtStep(step: number) {
+    const p = this.getCurrentPatternForTick();
+    if (!p) return;
+    
+    const steps = p.measures * STEPS_PER_MEASURE;
+    const modStep = step % steps;
+    
+    if (this.drumPlaybackRef) {
+      for (const [drumId, row] of Object.entries(p.grid)) {
+        if (row[modStep]) {
+          const vel = row[modStep];
+          playDrum(drumId, vel);
+          this.onDrumPlayed?.(drumId, vel);
+        }
+      }
+    }
+    
+    if (this.metronomeRef && modStep % BEAT_INTERVAL === 0) {
+      playMetronomeClick(modStep % MEASURE_INTERVAL === 0);
+    }
   }
 
   stop() {
@@ -334,6 +392,11 @@ class PlaybackStore {
 
     if (this.metronomeRef && modStep % BEAT_INTERVAL === 0) {
       playMetronomeClick(modStep % MEASURE_INTERVAL === 0);
+    }
+
+    // In rhythm mode, don't auto-advance - wait for user input to trigger jump
+    if (this.rhythmModeRef) {
+      return;
     }
 
     const nextStep = step + 1;

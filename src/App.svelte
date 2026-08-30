@@ -313,6 +313,15 @@
     training.setPlaying(trainingIsPlaying);
   });
 
+  // Handle rhythm mode jumps
+  $effect(() => {
+    const target = training.jumpTarget;
+    if (target !== null && trackingMode === 'rhythm') {
+      playback.jumpToStep(target);
+      training.jumpTarget = null;
+    }
+  });
+
   // Positive reinforcement feedback
   $effect(() => {
     const accuracy = training.lastHitAccuracy;
@@ -611,7 +620,10 @@
       keyboardMapId={keyboardMapId}
       onKeyboardMapChange={handleKeyboardMapChange}
       trackingMode={trackingMode}
-      onTrackingModeChange={(m) => { trackingMode = m; }}
+      onTrackingModeChange={(m) => { 
+        trackingMode = m;
+        playback.setRhythmMode(m === 'rhythm');
+      }}
     />
   {/if}
   {#if showHelp}

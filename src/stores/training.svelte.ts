@@ -10,6 +10,7 @@ class TrainingStore {
   lastHitTimestamp = $state(0);
   savedHitRate = $state(0);
   rhythmBpm = $state<number | null>(null);
+  jumpTarget = $state<number | null>(null);
 
   private runningCounts: Record<string, number> = { perfect: 0, good: 0, near: 0, miss: 0 };
   private hitId = 0;
@@ -38,6 +39,23 @@ class TrainingStore {
     if (total === 0) return null;
     const score = Math.round(((c.perfect + c.good * TRAINING_SCORE_GOOD_WEIGHT) / total) * TRAINING_SCORE_MULTIPLIER);
     return { perfect: c.perfect, good: c.good, near: c.near, miss: c.miss, total, score };
+  }
+
+  private findNearestPatternStep(drumId: string, currentStep: number): number | null {
+    const p = this.patternRef;
+    if (!p) return null;
+    const steps = p.measures * STEPS_PER_MEASURE;
+    const row = p.grid[drumId];
+    if (!row) return null;
+
+    // Search forward from current step for the nearest note
+    for (let offset = 0; offset < steps; offset++) {
+      const checkStep = (currentStep + offset) % steps;
+      if (row[checkStep]) {
+        return checkStep;
+      }
+    }
+    return null;
   }
 
   setPattern(pattern: DrumPattern | null) {
@@ -222,6 +240,12 @@ class TrainingStore {
     this.feedbackTimer = setTimeout(() => {
       this.lastHitAccuracy = null;
     }, 800);
+
+    // In rhythm mode, find the nearest pattern step for this drum
+    const nearestStep = this.findNearestPatternStep(drumId, modStep);
+    if (nearestStep !== null) {
+      this.jumpTarget = nearestStep;
+    }
   }
 
   clearHits() {
