@@ -35,7 +35,7 @@ class MIDIStore {
     }
 
     try {
-      console.log('Requesting MIDI access...');
+      console.log('Requesting MIDI access...', { onNoteOnSet: !!this.onNoteOn });
       const access = await navigator.requestMIDIAccess({ sysex: false });
       this.initialized = true;
       this.midiAccess = access;
@@ -110,7 +110,7 @@ class MIDIStore {
       if (status === MIDI_NOTE_ON && data2 > 0) {
         const velocity = data2 / 127;
         const drumId = this.noteMap[data1];
-        console.log(`MIDI Note ${data1} → ${drumId || '(unmapped)'} vel=${velocity.toFixed(2)}`);
+        console.log(`MIDI Note ${data1} → ${drumId || '(unmapped)'} vel=${velocity.toFixed(2)}`, { onNoteOnSet: !!this.onNoteOn });
         if (drumId) {
           this.onNoteOn?.(drumId, velocity);
         }

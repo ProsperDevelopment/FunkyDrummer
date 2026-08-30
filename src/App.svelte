@@ -353,9 +353,12 @@
     setKit(getActiveKit().id);
   });
 
-  // Setup MIDI — init once on mount, config updates are synchronous
+  // Setup MIDI — set callbacks before init, config updates are synchronous
   $effect(() => {
     midi.setOnNoteOn(onDrumHit);
+  });
+
+  $effect(() => {
     midi.setOnCC(handleCC);
   });
 
@@ -364,6 +367,10 @@
   });
 
   onMount(() => {
+    // Set callbacks before init to ensure they're available when MIDI messages arrive
+    midi.setOnNoteOn(onDrumHit);
+    midi.setOnCC(handleCC);
+    midi.setNoteMap(midiNoteMap);
     midi.init();
     return () => { midi.destroy(); };
   });
