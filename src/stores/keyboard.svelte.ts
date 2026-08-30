@@ -1,4 +1,5 @@
 import { keyToDrum } from '../config/drumConfig';
+import { getKeyboardMap, type KeyboardMap } from '../config/keyboardMaps';
 import { DEFAULT_VELOCITY } from '../config/constants';
 import type { KeyboardActions } from '../types';
 
@@ -7,6 +8,7 @@ class KeyboardStore {
   private onNoteOn?: (drumId: string, velocity: number) => void;
   private actions: KeyboardActions = {};
   private disabled = false;
+  private keyboardMapId = 'standard';
 
   setOnNoteOn(cb: (drumId: string, velocity: number) => void) {
     this.onNoteOn = cb;
@@ -26,6 +28,14 @@ class KeyboardStore {
     }
   }
 
+  setKeyboardMap(mapId: string) {
+    this.keyboardMapId = mapId;
+  }
+
+  getKeyboardMap(): KeyboardMap {
+    return getKeyboardMap(this.keyboardMapId);
+  }
+
   init() {
     if (this.disabled) return;
 
@@ -34,6 +44,16 @@ class KeyboardStore {
       if (e.target instanceof HTMLElement && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT')) return;
 
       const key = e.key.toLowerCase();
+      const map = getKeyboardMap(this.keyboardMapId);
+      const mapping = map.keys[key];
+
+      if (mapping) {
+        e.preventDefault();
+        this.onNoteOn?.(mapping.drumId, mapping.velocity || DEFAULT_VELOCITY);
+        return;
+      }
+
+      // Fallback to drumConfig key mapping
       const drumId = keyToDrum[key];
       if (drumId) {
         e.preventDefault();

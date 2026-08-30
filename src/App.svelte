@@ -57,6 +57,8 @@
   let edgeMode = $state(false);
   let sessionSet = $state(false);
   let positiveMode = $state(false);
+  let trackingMode = $state<'fixed' | 'rhythm'>('fixed');
+  let keyboardMapId = $state('standard');
   let feedbackText = $state('');
   let feedbackColor = $state('#4ade80');
   let feedbackVisible = $state(false);
@@ -209,6 +211,11 @@
 
   function handlePositiveModeToggle() {
     positiveMode = !positiveMode;
+  }
+
+  function handleKeyboardMapChange(id: string) {
+    keyboardMapId = id;
+    keyboard.setKeyboardMap(id);
   }
 
   function getTextsForRatio(accuracy: string, ratio: number, savedAvg: number): string[] {
@@ -601,6 +608,8 @@
       onInputChange={midi.selectInput}
       midiConfigId={midiConfigId}
       onMidiConfigChange={handleMidiConfigChange}
+      keyboardMapId={keyboardMapId}
+      onKeyboardMapChange={handleKeyboardMapChange}
     />
   {/if}
   {#if showHelp}

@@ -2,6 +2,7 @@
   import { drumKits } from '../config/drumKits';
   import { drumLayouts } from '../config/drumLayouts';
   import { midiConfigs } from '../config/midiConfigs';
+  import { keyboardMaps } from '../config/keyboardMaps';
   import './SettingsModal.css';
   import type { MidiInput } from '../types';
 
@@ -18,6 +19,8 @@
     onInputChange: (id: string) => void;
     midiConfigId: string;
     onMidiConfigChange: (id: string) => void;
+    keyboardMapId: string;
+    onKeyboardMapChange: (id: string) => void;
   }
 
   let {
@@ -33,6 +36,8 @@
     onInputChange,
     midiConfigId,
     onMidiConfigChange,
+    keyboardMapId,
+    onKeyboardMapChange,
   }: Props = $props();
 
   let overlayRef = $state<HTMLDivElement>();
@@ -130,6 +135,22 @@
               <option value={c.id}>{c.name}</option>
             {/each}
           </select>
+        </div>
+      </div>
+
+      <div class="settings-field">
+        <label class="settings-label">Keyboard Map</label>
+        <div class="settings-control">
+          <select
+            class="settings-select"
+            value={keyboardMapId}
+            onchange={(e) => onKeyboardMapChange((e.target as HTMLSelectElement).value)}
+          >
+            {#each keyboardMaps as map (map.id)}
+              <option value={map.id}>{map.name}</option>
+            {/each}
+          </select>
+          <span class="settings-hint">{keyboardMaps.find(m => m.id === keyboardMapId)?.description}</span>
         </div>
       </div>
     </div>
