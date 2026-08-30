@@ -79,7 +79,7 @@ class MIDIStore {
     access.addEventListener('statechange', this.stateHandler);
   }
 
-  selectInput(inputId: string | null) {
+  selectInput = (inputId: string | null) => {
     this._activeInput = inputId;
     this.setupMessageListener();
   }
