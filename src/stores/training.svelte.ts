@@ -8,7 +8,8 @@ class TrainingStore {
   missedHits = $state(0);
   lastHitAccuracy = $state<string | null>(null);
   lastHitTimestamp = $state(0);
-  savedHitRate = $state(0); // average (perfect+good)/total from previous sessions
+  savedHitRate = $state(0);
+  rhythmBpm = $state<number | null>(null);
 
   private runningCounts: Record<string, number> = { perfect: 0, good: 0, near: 0, miss: 0 };
   private hitId = 0;
@@ -21,6 +22,8 @@ class TrainingStore {
   private isPlaying = false;
   private cleanupInterval: ReturnType<typeof setInterval> | null = null;
   private feedbackTimer: ReturnType<typeof setTimeout> | null = null;
+  private lastHitTimeRef = 0;
+  private hitIntervalsRef: number[] = [];
 
   get hitRatio(): number {
     const c = this.runningCounts;
@@ -134,6 +137,9 @@ class TrainingStore {
     this.missedSteps = new Set();
     this.runningCounts = { perfect: 0, good: 0, near: 0, miss: 0 };
     this.trainingMode = v;
+    this.rhythmBpm = null;
+    this.hitIntervalsRef = [];
+    this.lastHitTimeRef = 0;
 
     if (this.cleanupInterval) {
       clearInterval(this.cleanupInterval);
@@ -197,6 +203,19 @@ class TrainingStore {
     this.userHitsRef = next.slice(-200);
     this.userHits = this.userHitsRef;
 
+    // Rhythm tracking: measure interval between hits and compute BPM
+    const now = Date.now();
+    if (this.lastHitTimeRef > 0) {
+      const interval = now - this.lastHitTimeRef;
+      if (interval > 100 && interval < 5000) {
+        this.hitIntervalsRef.push(interval);
+        if (this.hitIntervalsRef.length > 8) this.hitIntervalsRef.shift();
+        const avgInterval = this.hitIntervalsRef.reduce((a, b) => a + b, 0) / this.hitIntervalsRef.length;
+        this.rhythmBpm = Math.round((60 * 1000) / avgInterval);
+      }
+    }
+    this.lastHitTimeRef = now;
+
     this.lastHitAccuracy = accuracy;
     this.lastHitTimestamp = Date.now();
     if (this.feedbackTimer) clearTimeout(this.feedbackTimer);
@@ -211,6 +230,9 @@ class TrainingStore {
     this.missedSteps = new Set();
     this.runningCounts = { perfect: 0, good: 0, near: 0, miss: 0 };
     this.lastHitAccuracy = null;
+    this.rhythmBpm = null;
+    this.hitIntervalsRef = [];
+    this.lastHitTimeRef = 0;
     // Reload saved hit rate (in case it was updated by another session)
     if (this.patternId) {
       const saved = getHitRate(this.patternId);

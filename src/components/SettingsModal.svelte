@@ -21,6 +21,8 @@
     onMidiConfigChange: (id: string) => void;
     keyboardMapId: string;
     onKeyboardMapChange: (id: string) => void;
+    trackingMode: 'fixed' | 'rhythm';
+    onTrackingModeChange: (mode: 'fixed' | 'rhythm') => void;
   }
 
   let {
@@ -38,6 +40,8 @@
     onMidiConfigChange,
     keyboardMapId,
     onKeyboardMapChange,
+    trackingMode,
+    onTrackingModeChange,
   }: Props = $props();
 
   let overlayRef = $state<HTMLDivElement>();
@@ -151,6 +155,24 @@
             {/each}
           </select>
           <span class="settings-hint">{keyboardMaps.find(m => m.id === keyboardMapId)?.description}</span>
+        </div>
+      </div>
+
+      <div class="settings-field">
+        <label class="settings-label">Tracking Mode</label>
+        <div class="settings-control">
+          <button
+            class="settings-toggle {trackingMode === 'fixed' ? 'active' : ''}"
+            onclick={() => onTrackingModeChange('fixed')}
+          >
+            🎵 Fixed BPM
+          </button>
+          <button
+            class="settings-toggle {trackingMode === 'rhythm' ? 'active' : ''}"
+            onclick={() => onTrackingModeChange('rhythm')}
+          >
+            🥁 Your Rhythm
+          </button>
         </div>
       </div>
     </div>

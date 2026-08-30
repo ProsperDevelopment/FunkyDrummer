@@ -71,7 +71,7 @@
   let patternDefaultBpm = $derived(pattern.bpm);
   let trackDefaultBpm = $derived(selectedTrack?.bpm ?? patternDefaultBpm);
   let defaultBpm = $derived(isTrackMode ? trackDefaultBpm : patternDefaultBpm);
-  let effectiveBpm = $derived(bpmOverride || defaultBpm);
+  let effectiveBpm = $derived(trackingMode === 'rhythm' && training.rhythmBpm ? training.rhythmBpm : (bpmOverride || defaultBpm));
   let trainingPattern = $derived(isTrackMode ? (playback.currentPattern || pattern) : pattern);
   let trainingCurrentStep = $derived(playback.currentStep);
   let trainingIsPlaying = $derived(playback.isPlaying);
@@ -610,6 +610,8 @@
       onMidiConfigChange={handleMidiConfigChange}
       keyboardMapId={keyboardMapId}
       onKeyboardMapChange={handleKeyboardMapChange}
+      trackingMode={trackingMode}
+      onTrackingModeChange={(m) => { trackingMode = m; }}
     />
   {/if}
   {#if showHelp}
