@@ -5,13 +5,15 @@ import type { MidiInput } from '../types';
 class MIDIStore {
   midiAccess = $state<WebMidi.MIDIAccess | null>(null);
   inputs = $state<MidiInput[]>([]);
-  activeInput = $state<string | null>(null);
+  private _activeInput: string | null = null;
+  get activeInput() { return this._activeInput; }
 
   private noteMap: Record<number, string | null> = defaultNoteMap;
   private onNoteOn?: (drumId: string, velocity: number) => void;
   private onCC?: (controller: number, value: number) => void;
   private activeHandler: ((event: WebMidi.MIDIMessageEvent) => void) | null = null;
   private stateHandler: (() => void) | null = null;
+  private initialized = false;
 
   setOnNoteOn(cb: (drumId: string, velocity: number) => void) {
     this.onNoteOn = cb;
@@ -24,8 +26,6 @@ class MIDIStore {
   setNoteMap(map: Record<number, string | null>) {
     this.noteMap = map || defaultNoteMap;
   }
-
-  private initialized = false;
 
   async init() {
     if (this.initialized) return;
@@ -47,7 +47,7 @@ class MIDIStore {
       console.log(`MIDI: ${list.length} input(s) found`, list.map(i => i.name));
       if (list.length > 0) {
         const preferred = list.find(i => !i.name.includes('MIDI Through'));
-        this.activeInput = preferred ? preferred.id : list[0].id;
+        this._activeInput = preferred ? preferred.id : list[0].id;
       }
 
       this.setupStateListener(access);
@@ -69,9 +69,9 @@ class MIDIStore {
       }
       this.inputs = list;
       // Auto-select new device if none active
-      if (list.length > 0 && !this.activeInput) {
+      if (list.length > 0 && !this._activeInput) {
         const preferred = list.find(i => !i.name.includes('MIDI Through'));
-        this.activeInput = preferred ? preferred.id : list[0].id;
+        this._activeInput = preferred ? preferred.id : list[0].id;
         this.setupMessageListener();
       }
     };
@@ -80,14 +80,14 @@ class MIDIStore {
   }
 
   selectInput(inputId: string | null) {
-    this.activeInput = inputId;
+    this._activeInput = inputId;
     this.setupMessageListener();
   }
 
   private setupMessageListener() {
-    if (!this.midiAccess || !this.activeInput) return;
+    if (!this.midiAccess || !this._activeInput) return;
 
-    const input = this.midiAccess.inputs.get(this.activeInput);
+    const input = this.midiAccess.inputs.get(this._activeInput);
     if (!input) return;
 
     if (this.activeHandler) {
@@ -122,8 +122,8 @@ class MIDIStore {
 
   destroy() {
     this.initialized = false;
-    if (this.activeHandler && this.midiAccess && this.activeInput) {
-      const input = this.midiAccess.inputs.get(this.activeInput);
+    if (this.activeHandler && this.midiAccess && this._activeInput) {
+      const input = this.midiAccess.inputs.get(this._activeInput);
       if (input) {
         input.removeEventListener('midimessage', this.activeHandler as EventListener);
       }
