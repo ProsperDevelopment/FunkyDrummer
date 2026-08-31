@@ -40,6 +40,8 @@ class PlaybackStore {
   private drumTimeoutsRef: ReturnType<typeof setTimeout>[] = [];
   private hasPreScheduled = false;
   private rhythmModeRef = false;
+  private adaptiveModeRef = false;
+  adaptiveBpm = $state<number | null>(null);
 
   setPattern(p: DrumPattern | null) {
     this.mode = 'pattern';
@@ -113,6 +115,29 @@ class PlaybackStore {
 
   setRhythmMode(on: boolean) {
     this.rhythmModeRef = on;
+  }
+
+  setAdaptiveMode(on: boolean) {
+    this.adaptiveModeRef = on;
+    if (!on) {
+      this.adaptiveBpm = null;
+    }
+  }
+
+  // Gradually adjust BPM towards target (called from training store rhythm tracking)
+  adjustBpmTowards(targetBpm: number) {
+    if (!this.adaptiveModeRef || !this.isPlaying) return;
+    if (!targetBpm || targetBpm < 30 || targetBpm > 300) return;
+
+    // Smoothly blend: 20% towards target per hit
+    if (this.adaptiveBpm === null) {
+      this.adaptiveBpm = targetBpm;
+    } else {
+      this.adaptiveBpm = this.adaptiveBpm * 0.8 + targetBpm * 0.2;
+    }
+
+    // Update the interval
+    this.intervalMs = (60 / this.adaptiveBpm) * 1000 / 4;
   }
 
   jumpToStep(step: number) {
@@ -410,7 +435,9 @@ class PlaybackStore {
         this.handlePatternLoopBoundary();
       }
     } else {
-      this.intervalRef = setTimeout(() => this.tick(), this.intervalMs);
+      // In adaptive mode, use the current adaptive BPM interval
+      const ms = this.adaptiveModeRef && this.adaptiveBpm ? (60 / this.adaptiveBpm) * 1000 / 4 : this.intervalMs;
+      this.intervalRef = setTimeout(() => this.tick(), ms);
     }
   }
 

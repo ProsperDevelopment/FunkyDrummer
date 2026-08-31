@@ -57,7 +57,7 @@
   let edgeMode = $state(false);
   let sessionSet = $state(false);
   let positiveMode = $state(false);
-  let trackingMode = $state<'fixed' | 'rhythm'>('fixed');
+  let trackingMode = $state<'fixed' | 'rhythm' | 'adaptive'>('fixed');
   let keyboardMapId = $state('standard');
   let feedbackText = $state('');
   let feedbackColor = $state('#4ade80');
@@ -71,7 +71,11 @@
   let patternDefaultBpm = $derived(pattern.bpm);
   let trackDefaultBpm = $derived(selectedTrack?.bpm ?? patternDefaultBpm);
   let defaultBpm = $derived(isTrackMode ? trackDefaultBpm : patternDefaultBpm);
-  let effectiveBpm = $derived(trackingMode === 'rhythm' && training.rhythmBpm ? training.rhythmBpm : (bpmOverride || defaultBpm));
+  let effectiveBpm = $derived(
+    trackingMode === 'rhythm' && training.rhythmBpm ? training.rhythmBpm :
+    trackingMode === 'adaptive' && playback.adaptiveBpm ? playback.adaptiveBpm :
+    (bpmOverride || defaultBpm)
+  );
   let trainingPattern = $derived(isTrackMode ? (playback.currentPattern || pattern) : pattern);
   let trainingCurrentStep = $derived(playback.currentStep);
   let trainingIsPlaying = $derived(playback.isPlaying);
@@ -319,6 +323,14 @@
     if (target !== null && trackingMode === 'rhythm') {
       playback.jumpToStep(target);
       training.jumpTarget = null;
+    }
+  });
+
+  // Handle adaptive mode BPM adjustment
+  $effect(() => {
+    const rhythmBpm = training.rhythmBpm;
+    if (rhythmBpm && trackingMode === 'adaptive') {
+      playback.adjustBpmTowards(rhythmBpm);
     }
   });
 
@@ -623,6 +635,7 @@
       onTrackingModeChange={(m) => { 
         trackingMode = m;
         playback.setRhythmMode(m === 'rhythm');
+        playback.setAdaptiveMode(m === 'adaptive');
       }}
     />
   {/if}

@@ -21,8 +21,8 @@
     onMidiConfigChange: (id: string) => void;
     keyboardMapId: string;
     onKeyboardMapChange: (id: string) => void;
-    trackingMode: 'fixed' | 'rhythm';
-    onTrackingModeChange: (mode: 'fixed' | 'rhythm') => void;
+    trackingMode: 'fixed' | 'rhythm' | 'adaptive';
+    onTrackingModeChange: (mode: 'fixed' | 'rhythm' | 'adaptive') => void;
   }
 
   let {
@@ -161,18 +161,15 @@
       <div class="settings-field">
         <label class="settings-label">Tracking Mode</label>
         <div class="settings-control">
-          <button
-            class="settings-toggle {trackingMode === 'fixed' ? 'active' : ''}"
-            onclick={() => onTrackingModeChange('fixed')}
+          <select
+            class="settings-select"
+            value={trackingMode}
+            onchange={(e) => onTrackingModeChange((e.target as HTMLSelectElement).value as 'fixed' | 'rhythm' | 'adaptive')}
           >
-            🎵 Fixed BPM
-          </button>
-          <button
-            class="settings-toggle {trackingMode === 'rhythm' ? 'active' : ''}"
-            onclick={() => onTrackingModeChange('rhythm')}
-          >
-            🥁 Your Rhythm
-          </button>
+            <option value="fixed">Fixed BPM — Follow the pattern's tempo</option>
+            <option value="rhythm">Your Rhythm — Pattern jumps to your hits</option>
+            <option value="adaptive">Adaptive — Starts fixed, adjusts to you</option>
+          </select>
         </div>
       </div>
     </div>
