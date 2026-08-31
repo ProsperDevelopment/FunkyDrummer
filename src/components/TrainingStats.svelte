@@ -44,30 +44,30 @@
 {:else}
   <div class="fs-stat">
     <span class="fs-stat-label">Acc</span>
-    <span class="fs-stat-value" style="color: #555">-</span>
+    <span class="fs-stat-value" style="color: #7a5a8a">-</span>
   </div>
   <div class="fs-stat">
     <span class="fs-stat-label">Perfect</span>
-    <span class="fs-stat-value" style="color: #555">-</span>
+    <span class="fs-stat-value" style="color: #7a5a8a">-</span>
   </div>
   <div class="fs-stat">
     <span class="fs-stat-label">Good</span>
-    <span class="fs-stat-value" style="color: #555">-</span>
+    <span class="fs-stat-value" style="color: #7a5a8a">-</span>
   </div>
   <div class="fs-stat">
     <span class="fs-stat-label">Near</span>
-    <span class="fs-stat-value" style="color: #555">-</span>
+    <span class="fs-stat-value" style="color: #7a5a8a">-</span>
   </div>
   <div class="fs-stat">
     <span class="fs-stat-label">Extra</span>
-    <span class="fs-stat-value" style="color: #555">-</span>
+    <span class="fs-stat-value" style="color: #7a5a8a">-</span>
   </div>
   <div class="fs-stat">
     <span class="fs-stat-label">Missed</span>
-    <span class="fs-stat-value" style="color: #555">-</span>
+    <span class="fs-stat-value" style="color: #7a5a8a">-</span>
   </div>
   <div class="fs-stat">
     <span class="fs-stat-label">Total</span>
-    <span class="fs-stat-value" style="color: #555">-</span>
+    <span class="fs-stat-value" style="color: #7a5a8a">-</span>
   </div>
 {/if}

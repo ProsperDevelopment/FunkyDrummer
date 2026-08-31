@@ -1,7 +1,7 @@
 .drum-visualizer {
-  background: #12121e;
-  border-radius: 8px;
-  border: 1px solid #2a2a4a;
+  background: oklch(from var(--background) l -3 c h);
+  border-radius: var(--radius);
+  border: 1px solid var(--border-subtle);
   overflow: hidden;
   animation: drum-fade-in 0.2s ease-out;
 }

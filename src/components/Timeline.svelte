@@ -65,7 +65,7 @@
     if (!pattern) return;
 
     for (let i = 0; i < rows.length; i++) {
-      ctx.fillStyle = '#16162a';
+      ctx.fillStyle = '#211325';
       ctx.fillRect(scrollX, i * ROW_HEIGHT, totalWidth, ROW_HEIGHT);
     }
 
@@ -74,7 +74,7 @@
     for (let i = 0; i <= viewSteps; i++) {
       const x = scrollX + i * STEP_WIDTH;
       if (i > 0 && i < viewSteps && i % steps === 0) {
-        ctx.strokeStyle = '#6b21a8';
+        ctx.strokeStyle = '#7c3aed';
         ctx.lineWidth = 2;
         ctx.setLineDash([6, 4]);
         ctx.beginPath();
@@ -85,10 +85,10 @@
         continue;
       }
       if (i % MEASURE_INTERVAL === 0) {
-        ctx.strokeStyle = '#4a4a6a';
+        ctx.strokeStyle = '#3d2445';
         ctx.lineWidth = 2;
       } else if (i % BEAT_INTERVAL === 0) {
-        ctx.strokeStyle = '#2a2a4a';
+        ctx.strokeStyle = '#2d1b3a';
         ctx.lineWidth = 1;
       } else {
         continue;
@@ -100,12 +100,12 @@
     }
 
     ctx.font = `${CANVAS_BEAT_FONT_SIZE}px sans-serif`;
-    ctx.fillStyle = '#555';
+    ctx.fillStyle = '#7a5a8a';
     for (let i = 0; i < viewSteps; i += BEAT_INTERVAL) {
       ctx.fillText(`${Math.floor((i % steps) / BEAT_INTERVAL) + 1}`, scrollX + i * STEP_WIDTH + 4, 12);
     }
 
-    ctx.strokeStyle = '#1e1e3a';
+    ctx.strokeStyle = '#301d40';
     ctx.lineWidth = 1;
     for (let i = 1; i < rows.length; i++) {
       const y = i * ROW_HEIGHT;

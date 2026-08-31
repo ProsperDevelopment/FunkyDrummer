@@ -10,6 +10,7 @@
   import SettingsModal from './components/SettingsModal.svelte';
   import TrainingStats from './components/TrainingStats.svelte';
   import FeedbackPopup from './components/FeedbackPopup.svelte';
+  import PixelIcon from './lib/PixelIcon.svelte';
   import { drumPatterns } from './data/drumPatterns';
   import { trackList } from './data/trackList';
   import { playback } from './stores/playback.svelte';
@@ -215,6 +216,14 @@
 
   function handlePositiveModeToggle() {
     positiveMode = !positiveMode;
+  }
+
+  const trackingModes: Array<'fixed' | 'rhythm' | 'adaptive'> = ['fixed', 'rhythm', 'adaptive'];
+  function handleTrackingModeCycle() {
+    const idx = trackingModes.indexOf(trackingMode);
+    trackingMode = trackingModes[(idx + 1) % trackingModes.length];
+    playback.setRhythmMode(trackingMode === 'rhythm');
+    playback.setAdaptiveMode(trackingMode === 'adaptive');
   }
 
   function handleKeyboardMapChange(id: string) {
@@ -430,7 +439,7 @@
       onclick={() => { showPatterns = !showPatterns; }}
       title={showPatterns ? 'Hide patterns' : 'Show patterns'}
     >
-      {showPatterns ? '◀' : '▶'}
+      <PixelIcon name={showPatterns ? 'angle-left' : 'angle-right'} size={16} />
     </button>
     <h1 class="app-title">Funky Drummer</h1>
     <span class="app-subtitle">Drum Machine & Trainer</span>
@@ -440,21 +449,21 @@
       onclick={() => { showHelp = true; }}
       title="Help"
     >
-      ?
+      <PixelIcon name="question-circle" size={20} />
     </button>
     <button
       class="header-btn settings-btn"
       onclick={handleOpenSettings}
       title="Settings"
     >
-      ⚙
+      <PixelIcon name="cog" size={20} />
     </button>
     <button
       class="header-btn fullscreen-btn"
       onclick={handleToggleFullscreen}
       title="Fullscreen"
     >
-      ⛶
+      <PixelIcon name="expand" size={20} />
     </button>
   </header>
 
@@ -507,8 +516,8 @@
         trackName={selectedTrack?.name ?? ''}
         trackPart={playback.currentPartIndex}
         trackTotalParts={selectedTrack?.parts.length ?? 0}
-        positiveMode={positiveMode}
-        onPositiveModeToggle={handlePositiveModeToggle}
+        trackingMode={trackingMode}
+        onTrackingModeCycle={handleTrackingModeCycle}
       />
 
       <Timeline
@@ -546,7 +555,7 @@
       <header class="app-header fullscreen-header">
         <h1 class="app-title">
           <span class="app-title-text">Funky Drummer</span>
-          <span class="app-title-icon">🥁</span>
+          <span class="app-title-icon"><PixelIcon name="disc" size={24} /></span>
         </h1>
         <span class="app-subtitle">Drum Machine & Trainer</span>
         <FullscreenControls
@@ -572,7 +581,7 @@
           class="header-btn fullscreen-btn"
           onclick={handleToggleFullscreen}
           title="Exit fullscreen"
-        >⛶</button>
+        ><PixelIcon name="expand" size={20} /></button>
       </header>
       <div class="fullscreen-content">
         {#if training.trainingMode && !positiveMode}
@@ -637,6 +646,8 @@
         playback.setRhythmMode(m === 'rhythm');
         playback.setAdaptiveMode(m === 'adaptive');
       }}
+      positiveMode={positiveMode}
+      onPositiveModeToggle={handlePositiveModeToggle}
     />
   {/if}
   {#if showHelp}

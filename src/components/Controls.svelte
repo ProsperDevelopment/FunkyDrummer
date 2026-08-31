@@ -1,6 +1,7 @@
 <script lang="ts">
   import { GOOD_SCORE_THRESHOLD, OK_SCORE_THRESHOLD } from '../config/constants';
   import type { SessionResult } from '../types';
+  import PixelIcon from '../lib/PixelIcon.svelte';
   import BpmPopup from './BpmPopup.svelte';
   import RepsPopup from './RepsPopup.svelte';
   import './Controls.css';
@@ -37,8 +38,8 @@
     trackName?: string;
     trackPart: number;
     trackTotalParts: number;
-    positiveMode: boolean;
-    onPositiveModeToggle: () => void;
+    trackingMode: 'fixed' | 'rhythm' | 'adaptive';
+    onTrackingModeCycle: () => void;
   }
 
   let {
@@ -71,8 +72,8 @@
     trackName,
     trackPart,
     trackTotalParts,
-    positiveMode,
-    onPositiveModeToggle,
+    trackingMode,
+    onTrackingModeCycle,
   }: Props = $props();
 
   let hasSessionResult = $derived(sessionResult && sessionResult.stats);
@@ -93,10 +94,16 @@
 <div class="controls">
   <div class="controls-row">
     <div class="controls-group">
-      <button class="btn btn-play {isPlaying ? 'playing' : ''}" onclick={onTogglePlay}>
-        {isPlaying ? '⏸' : '▶'}
+      <button class="btn btn-play {isPlaying ? 'playing' : ''}" onclick={onTogglePlay} title={isPlaying ? 'Pause' : 'Play'}>
+        {#if isPlaying}
+          <PixelIcon name="pause" size={24} />
+        {:else}
+          <PixelIcon name="play" size={24} />
+        {/if}
       </button>
-      <button class="btn btn-stop" onclick={onStop}>⏹</button>
+      <button class="btn btn-stop" onclick={onStop} title="Stop">
+        <PixelIcon name="times-square" size={24} />
+      </button>
     </div>
 
     {#if trackMode}
@@ -139,8 +146,9 @@
       <button
         class="btn btn-countdown {countdownOn ? 'active' : 'off'}"
         onclick={onCountdownToggle}
+        title="Countdown"
       >
-        🚦
+        <PixelIcon name="bolt" size={20} />
       </button>
     </div>
 
@@ -148,8 +156,9 @@
       <button
         class="btn btn-groove {grooveOn ? 'active' : 'off'}"
         onclick={onGrooveToggle}
+        title="Groove"
       >
-        🔀
+        <PixelIcon name="shuffle" size={20} />
       </button>
     </div>
 
@@ -159,7 +168,7 @@
         onclick={onEdgeModeToggle}
         title="Edge mode: {edgeMode ? 'ON' : 'OFF'} — replaces standard hi-hats with edge/top articulation"
       >
-        🎛
+        <PixelIcon name="filter" size={20} />
       </button>
     </div>
 
@@ -168,7 +177,7 @@
         class="btn btn-metronome {metronomeOn ? 'active' : 'off'}"
         onclick={onToggleMetronome}
       >
-        🔊
+        <PixelIcon name="sound-on" size={20} />
       </button>
     </div>
 
@@ -177,7 +186,7 @@
         class="btn btn-drum-playback {drumPlaybackOn ? 'active' : 'off'}"
         onclick={onToggleDrumPlayback}
       >
-        🥁
+        <PixelIcon name="disc" size={20} />
       </button>
     </div>
 
@@ -185,18 +194,25 @@
       <button
         class="btn btn-training {trainingMode ? 'active' : 'off'}"
         onclick={onTrainingToggle}
+        title="Training"
       >
-        🎯
+        <PixelIcon name="shapes" size={20} />
       </button>
     </div>
 
     <div class="controls-group">
       <button
-        class="btn btn-positive {positiveMode ? 'active' : 'off'}"
-        onclick={onPositiveModeToggle}
-        title={positiveMode ? 'Positive Reinforcement' : 'Regular mode'}
+        class="btn btn-tracking"
+        onclick={onTrackingModeCycle}
+        title="Tracking: {trackingMode === 'fixed' ? 'Fixed BPM' : trackingMode === 'rhythm' ? 'Your Rhythm' : 'Adaptive'}"
       >
-        {positiveMode ? '💚' : '📊'}
+        {#if trackingMode === 'fixed'}
+          <PixelIcon name="chart-line" size={20} />
+        {:else if trackingMode === 'rhythm'}
+          <PixelIcon name="disc" size={20} />
+        {:else}
+          <PixelIcon name="chart-network" size={20} />
+        {/if}
       </button>
     </div>
 
@@ -205,7 +221,7 @@
         class="btn btn-visualizer {showVisualizer ? 'active' : 'off'}"
         onclick={onToggleVisualizer}
       >
-        📊
+        <PixelIcon name="chart-line" size={20} />
       </button>
     </div>
   </div>

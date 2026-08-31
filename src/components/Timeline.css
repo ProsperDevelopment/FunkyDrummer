@@ -1,8 +1,8 @@
 .timeline-container {
   display: flex;
-  background: #1a1a2e;
-  border-radius: 8px;
-  border: 1px solid #2a2a4a;
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  border: 1px solid var(--border-subtle);
   overflow: hidden;
   flex: 0 0 auto;
 }
@@ -10,14 +10,14 @@
 .timeline-empty {
   padding: 40px;
   text-align: center;
-  color: #666;
+  color: var(--text-dim);
   font-size: 1.1rem;
 }
 
 .timeline-drum-labels {
   flex-shrink: 0;
-  border-right: 2px solid #2a2a4a;
-  background: #16162a;
+  border-right: 2px solid var(--border-subtle);
+  background: var(--bg-input);
   z-index: 2;
 }
 
@@ -27,8 +27,8 @@
   gap: 8px;
   padding: 0 12px;
   font-size: 0.75rem;
-  color: #aaa;
-  border-bottom: 1px solid #1e1e3a;
+  color: var(--text-muted);
+  border-bottom: 1px solid oklch(from var(--border-subtle) l -5 c h);
   height: 32px;
 }
 

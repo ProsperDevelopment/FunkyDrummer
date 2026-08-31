@@ -5,19 +5,20 @@
 }
 
 .menu-section {
-  background: #1a1a2e;
-  border-radius: 8px;
+  background: var(--bg-card);
+  border-radius: var(--radius);
   padding: 14px;
-  border: 1px solid #2a2a4a;
+  border: 1px solid var(--border-subtle);
 }
 
 .menu-section-title {
   margin: 0 0 10px 0;
-  font-size: 0.85rem;
-  color: #888;
+  font-size: 0.6rem;
+  color: var(--text-dim);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  font-family: var(--font-retro);
 }
 
 .pattern-list {
@@ -29,12 +30,13 @@
 }
 
 .style-group-header {
-  font-size: 0.65rem;
-  color: #6a6a8a;
+  font-size: 0.55rem;
+  color: var(--text-dim);
   text-transform: uppercase;
   letter-spacing: 0.8px;
   padding: 8px 4px 4px;
   font-weight: 600;
+  font-family: var(--font-retro);
 }
 
 .pattern-item {
@@ -42,10 +44,10 @@
   justify-content: space-between;
   align-items: center;
   padding: 7px 10px;
-  background: #16162a;
-  border: 1px solid #2a2a4a;
-  border-radius: 5px;
-  color: #aaa;
+  background: var(--bg-input);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius);
+  color: var(--text-muted);
   cursor: pointer;
   transition: all 0.15s;
   text-align: left;
@@ -64,15 +66,15 @@
 }
 
 .pattern-item:hover {
-  background: #1e1e3e;
-  border-color: #3a3a6a;
-  color: #ddd;
+  background: var(--bg-hover);
+  border-color: var(--border-strong);
+  color: var(--foreground);
 }
 
 .pattern-item.active {
-  background: #2a1a3e;
-  border-color: #8b5cf6;
-  color: #c4b5fd;
+  background: oklch(from var(--primary) l c h / 0.12);
+  border-color: var(--primary);
+  color: var(--foreground);
 }
 
 .pattern-name {
@@ -81,7 +83,7 @@
 
 .pattern-desc {
   font-size: 0.68rem;
-  color: #666;
+  color: var(--text-dim);
   line-height: 1.35;
   word-wrap: break-word;
   overflow-wrap: break-word;
@@ -89,6 +91,6 @@
 
 .pattern-bpm {
   font-size: 0.7rem;
-  color: #666;
+  color: var(--text-dim);
   flex-shrink: 0;
 }

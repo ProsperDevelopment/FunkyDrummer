@@ -3,6 +3,7 @@
   import { drumLayouts } from '../config/drumLayouts';
   import { midiConfigs } from '../config/midiConfigs';
   import { keyboardMaps } from '../config/keyboardMaps';
+  import PixelIcon from '../lib/PixelIcon.svelte';
   import './SettingsModal.css';
   import type { MidiInput } from '../types';
 
@@ -23,6 +24,8 @@
     onKeyboardMapChange: (id: string) => void;
     trackingMode: 'fixed' | 'rhythm' | 'adaptive';
     onTrackingModeChange: (mode: 'fixed' | 'rhythm' | 'adaptive') => void;
+    positiveMode: boolean;
+    onPositiveModeToggle: () => void;
   }
 
   let {
@@ -42,6 +45,8 @@
     onKeyboardMapChange,
     trackingMode,
     onTrackingModeChange,
+    positiveMode,
+    onPositiveModeToggle,
   }: Props = $props();
 
   let overlayRef = $state<HTMLDivElement>();
@@ -170,6 +175,23 @@
             <option value="rhythm">Your Rhythm — Pattern jumps to your hits</option>
             <option value="adaptive">Adaptive — Starts fixed, adjusts to you</option>
           </select>
+        </div>
+      </div>
+
+      <div class="settings-field">
+        <label class="settings-label">Learning Mode</label>
+        <div class="settings-control">
+          <button
+            class="settings-toggle {positiveMode ? 'active' : ''}"
+            onclick={onPositiveModeToggle}
+          >
+            {#if positiveMode}
+              <PixelIcon name="heart" size={16} /> Positive Reinforcement
+            {:else}
+              <PixelIcon name="chart-line" size={16} /> Regular
+            {/if}
+          </button>
+          <span class="settings-hint">{positiveMode ? 'Animated feedback popups instead of stats' : 'Shows accuracy stats and hit history'}</span>
         </div>
       </div>
     </div>

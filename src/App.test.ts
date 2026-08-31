@@ -47,8 +47,8 @@ describe('App', () => {
   it('renders the app title and controls', () => {
     render(App);
     expect(screen.getByText('Funky Drummer', { selector: '.app-title' })).toBeInTheDocument();
-    expect(screen.getByText('▶')).toBeInTheDocument();
-    expect(screen.getByText('⏹')).toBeInTheDocument();
+    expect(screen.getByTitle('Play')).toBeInTheDocument();
+    expect(screen.getByTitle('Stop')).toBeInTheDocument();
   });
 
   it('shows the default pattern selected', () => {
@@ -68,11 +68,11 @@ describe('App', () => {
   it('toggles play when the play button is clicked', async () => {
     const user = userEvent.setup();
     render(App);
-    expect(screen.getByText('▶')).toBeInTheDocument();
-    await user.click(screen.getByText('▶'));
-    expect(screen.getByText('⏸')).toBeInTheDocument();
-    await user.click(screen.getByText('⏸'));
-    expect(screen.getByText('▶')).toBeInTheDocument();
+    expect(screen.getByTitle('Play')).toBeInTheDocument();
+    await user.click(screen.getByTitle('Play'));
+    expect(screen.getByTitle('Pause')).toBeInTheDocument();
+    await user.click(screen.getByTitle('Pause'));
+    expect(screen.getByTitle('Play')).toBeInTheDocument();
   });
 
   it('opens and closes the settings modal', async () => {

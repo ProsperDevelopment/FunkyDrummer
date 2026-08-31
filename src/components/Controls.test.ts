@@ -38,20 +38,20 @@ const baseProps = {
 describe('Controls', () => {
   it('renders play and stop buttons', () => {
     render(Controls, { props: baseProps });
-    expect(screen.getByText('▶')).toBeInTheDocument();
-    expect(screen.getByText('⏹')).toBeInTheDocument();
+    expect(screen.getByTitle('Play')).toBeInTheDocument();
+    expect(screen.getByTitle('Stop')).toBeInTheDocument();
   });
 
   it('shows a pause icon when playing', () => {
     render(Controls, { props: { ...baseProps, isPlaying: true } });
-    expect(screen.getByText('⏸')).toBeInTheDocument();
+    expect(screen.getByTitle('Pause')).toBeInTheDocument();
   });
 
   it('calls onTogglePlay when play is clicked', async () => {
     const user = userEvent.setup();
     const onTogglePlay = vi.fn();
     render(Controls, { props: { ...baseProps, onTogglePlay } });
-    await user.click(screen.getByText('▶'));
+    await user.click(screen.getByTitle('Play'));
     expect(onTogglePlay).toHaveBeenCalledTimes(1);
   });
 
@@ -59,7 +59,7 @@ describe('Controls', () => {
     const user = userEvent.setup();
     const onStop = vi.fn();
     render(Controls, { props: { ...baseProps, onStop } });
-    await user.click(screen.getByText('⏹'));
+    await user.click(screen.getByTitle('Stop'));
     expect(onStop).toHaveBeenCalledTimes(1);
   });
 
@@ -72,7 +72,7 @@ describe('Controls', () => {
     const user = userEvent.setup();
     const onCountdownToggle = vi.fn();
     render(Controls, { props: { ...baseProps, onCountdownToggle } });
-    await user.click(screen.getByText('🚦'));
+    await user.click(screen.getByTitle('Countdown'));
     expect(onCountdownToggle).toHaveBeenCalledTimes(1);
   });
 
@@ -80,7 +80,7 @@ describe('Controls', () => {
     const user = userEvent.setup();
     const onGrooveToggle = vi.fn();
     render(Controls, { props: { ...baseProps, onGrooveToggle } });
-    await user.click(screen.getByText('🔀'));
+    await user.click(screen.getByTitle('Groove'));
     expect(onGrooveToggle).toHaveBeenCalledTimes(1);
   });
 
@@ -88,7 +88,7 @@ describe('Controls', () => {
     const user = userEvent.setup();
     const onTrainingToggle = vi.fn();
     render(Controls, { props: { ...baseProps, onTrainingToggle } });
-    await user.click(screen.getByText('🎯'));
+    await user.click(screen.getByTitle('Training'));
     expect(onTrainingToggle).toHaveBeenCalledTimes(1);
   });
 

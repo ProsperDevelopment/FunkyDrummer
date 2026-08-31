@@ -2,56 +2,101 @@
   position: fixed;
   inset: 0;
   z-index: 100;
-  background: rgba(0, 0, 0, 0.55);
+  background: rgba(0, 0, 0, 0.6);
   display: flex;
   align-items: center;
   justify-content: center;
+  backdrop-filter: blur(4px);
 }
 
 .settings-modal {
-  background: #1a1a2e;
-  border: 1px solid #3a3a6a;
-  border-radius: 12px;
+  background: var(--card);
+  border: none;
+  border-radius: 0;
   min-width: 300px;
   max-width: 90vw;
-  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.5);
+  position: relative;
   overflow: hidden;
+}
+
+/* 8-bit pixel border for modal */
+.settings-modal::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border: 3px solid var(--accent-purple);
+  box-shadow:
+    -3px -3px 0 0 var(--accent-purple),
+    3px -3px 0 0 var(--accent-purple),
+    -3px 3px 0 0 var(--accent-purple),
+    3px 3px 0 0 var(--accent-purple),
+    0 -3px 0 0 var(--accent-purple),
+    0 3px 0 0 var(--accent-purple),
+    -3px 0 0 0 var(--accent-purple),
+    3px 0 0 0 var(--accent-purple),
+    inset 2px 2px 0 rgba(255, 255, 255, 0.05),
+    0 0 16px var(--accent-purple-glow);
 }
 
 .settings-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 14px 18px;
-  border-bottom: 1px solid #2a2a4a;
+  padding: 16px 20px;
+  border-bottom: 3px solid var(--border);
 }
 
 .settings-title {
-  font-size: 1rem;
+  font-size: 0.7rem;
   font-weight: 700;
-  color: #c4b5fd;
+  font-family: var(--font-retro);
+  color: var(--accent-pink);
+  text-transform: uppercase;
 }
 
 .settings-close {
-  background: none;
-  border: 1px solid #2a2a4a;
-  color: #888;
+  background: var(--bg-elevated);
+  border: 3px solid var(--border);
+  color: var(--text-secondary);
   cursor: pointer;
-  padding: 4px 10px;
-  border-radius: 4px;
+  padding: 6px 12px;
+  border-radius: 2px;
   font-size: 0.85rem;
   font-family: inherit;
   line-height: 1;
+  min-height: 44px;
+  min-width: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: none;
+  box-shadow:
+    inset -2px -2px 0 rgba(0, 0, 0, 0.25),
+    inset 2px 2px 0 rgba(255, 255, 255, 0.08),
+    3px 3px 0 var(--border);
 }
 
 .settings-close:hover {
-  background: #2a1a1a;
-  border-color: #5a2a2a;
-  color: #f87171;
+  background: rgba(232, 80, 80, 0.12);
+  border-color: var(--danger);
+  color: var(--danger);
+  box-shadow:
+    inset -2px -2px 0 rgba(0, 0, 0, 0.25),
+    inset 2px 2px 0 rgba(255, 255, 255, 0.08),
+    3px 3px 0 var(--danger),
+    0 0 8px rgba(232, 80, 80, 0.3);
+}
+
+.settings-close:active {
+  box-shadow:
+    inset 2px 2px 0 rgba(0, 0, 0, 0.3),
+    inset -2px -2px 0 rgba(255, 255, 255, 0.05);
+  transform: translate(2px, 2px);
 }
 
 .settings-body {
-  padding: 18px;
+  padding: 20px;
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -64,9 +109,10 @@
 }
 
 .settings-label {
-  font-size: 0.8rem;
+  font-size: 0.5rem;
   font-weight: 600;
-  color: #aaa;
+  font-family: var(--font-retro);
+  color: var(--text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -78,15 +124,21 @@
 }
 
 .settings-select {
-  padding: 8px 12px;
-  background: #16162a;
-  border: 1px solid #2a2a4a;
-  border-radius: 6px;
-  color: #ccc;
+  padding: 10px 14px;
+  background: var(--bg-elevated);
+  border: 3px solid var(--border);
+  border-radius: 2px;
+  color: var(--text-primary);
   font-size: 0.85rem;
   font-family: inherit;
   cursor: pointer;
   flex: 1;
+  min-height: 44px;
+  transition: none;
+  box-shadow:
+    inset -2px -2px 0 rgba(0, 0, 0, 0.25),
+    inset 2px 2px 0 rgba(255, 255, 255, 0.08),
+    3px 3px 0 var(--border);
 }
 
 .settings-select:disabled {
@@ -96,17 +148,22 @@
 
 .settings-select:focus {
   outline: none;
-  border-color: #8b5cf6;
+  border-color: var(--accent-purple);
+  box-shadow:
+    inset -2px -2px 0 rgba(0, 0, 0, 0.25),
+    inset 2px 2px 0 rgba(255, 255, 255, 0.08),
+    3px 3px 0 var(--accent-purple),
+    0 0 8px var(--accent-purple-glow);
 }
 
 .settings-loading {
   font-size: 0.75rem;
-  color: #fbbf24;
+  color: var(--warning);
   font-style: italic;
 }
 
 .settings-hint {
   font-size: 0.75rem;
-  color: #666;
+  color: var(--text-muted);
   font-style: italic;
 }

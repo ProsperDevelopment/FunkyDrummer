@@ -1,4 +1,5 @@
 <script lang="ts">
+  import PixelIcon from '../lib/PixelIcon.svelte';
   import BpmPopup from './BpmPopup.svelte';
   import RepsPopup from './RepsPopup.svelte';
   import './FullscreenControls.css';
@@ -51,10 +52,14 @@
       onclick={onTogglePlay}
       title={showPlaying ? 'Pause' : 'Play'}
     >
-      {showPlaying ? '⏸' : '▶'}
+      {#if showPlaying}
+        <PixelIcon name="pause" size={24} />
+      {:else}
+        <PixelIcon name="play" size={24} />
+      {/if}
     </button>
     <button class="fs-btn fs-btn-stop" onclick={onStop} title="Stop">
-      ⏹
+      <PixelIcon name="times-square" size={24} />
     </button>
 
     <button
@@ -62,7 +67,7 @@
       onclick={onToggleDrumPlayback}
       title={drumPlaybackOn ? 'Pattern On' : 'Pattern Off'}
     >
-      🥁
+      <PixelIcon name="disc" size={20} />
     </button>
 
     <button
@@ -70,7 +75,7 @@
       onclick={onTrainingToggle}
       title={trainingMode ? 'Training On' : 'Training Off'}
     >
-      🎯
+      <PixelIcon name="shapes" size={20} />
     </button>
 
     <button
@@ -78,7 +83,7 @@
       onclick={onGrooveToggle}
       title={grooveOn ? 'Groove On' : 'Groove Off'}
     >
-      🔀
+      <PixelIcon name="shuffle" size={20} />
     </button>
 
     <button
@@ -86,7 +91,7 @@
       onclick={onCountdownToggle}
       title={countdownOn ? 'Countdown On' : 'Countdown Off'}
     >
-      🚦
+      <PixelIcon name="bolt" size={20} />
     </button>
 
     <div class="fs-separator"></div>
