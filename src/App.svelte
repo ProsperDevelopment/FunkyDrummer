@@ -36,8 +36,31 @@
     return drumPatterns.find(p => p.id === id) || drumPatterns[0];
   }
 
-  let selectedPatternId = $state(drumPatterns[0].id);
-  let selectedTrackId = $state<string | null>(null);
+  function readHash(): { patternId?: string; trackId?: string } {
+    const hash = window.location.hash.slice(1);
+    if (!hash) return {};
+    const params = new URLSearchParams(hash);
+    const patternId = params.get('pattern');
+    const trackId = params.get('track');
+    return {
+      patternId: patternId && drumPatterns.some(p => p.id === patternId) ? patternId : undefined,
+      trackId: trackId && trackList.some(t => t.id === trackId) ? trackId : undefined,
+    };
+  }
+
+  function updateHash(patternId: string, trackId: string | null) {
+    const params = new URLSearchParams();
+    if (trackId) {
+      params.set('track', trackId);
+    } else {
+      params.set('pattern', patternId);
+    }
+    history.replaceState(null, '', `#${params.toString()}`);
+  }
+
+  let initialHash = readHash();
+  let selectedPatternId = $state(initialHash.trackId ? drumPatterns[0].id : (initialHash.patternId || drumPatterns[0].id));
+  let selectedTrackId = $state<string | null>(initialHash.trackId || null);
   let bpmOverride = $state<number | null>(null);
   let stopAfterReps = $state(REPS_MIN);
   let sessionResult = $state<SessionResult | null>(null);
@@ -134,6 +157,7 @@
     bpmOverride = null;
     sessionResult = null;
     sessionSet = false;
+    updateHash(id, null);
   }
 
   function handleTrackSelect(id: string) {
@@ -142,6 +166,7 @@
     bpmOverride = null;
     sessionResult = null;
     sessionSet = false;
+    updateHash(selectedPatternId, id);
   }
 
   function handleBpmChange(value: number) {
@@ -409,7 +434,22 @@
     midi.setOnCC(handleCC);
     midi.setNoteMap(midiNoteMap);
     midi.init();
-    return () => { midi.destroy(); };
+
+    function onHashChange() {
+      const { patternId, trackId } = readHash();
+      if (trackId) {
+        selectedTrackId = trackId;
+      } else if (patternId) {
+        selectedTrackId = null;
+        selectedPatternId = patternId;
+      }
+    }
+    window.addEventListener('hashchange', onHashChange);
+
+    return () => {
+      midi.destroy();
+      window.removeEventListener('hashchange', onHashChange);
+    };
   });
 
   // Setup keyboard
