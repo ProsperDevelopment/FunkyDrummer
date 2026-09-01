@@ -26,6 +26,8 @@
     onTrackingModeChange: (mode: 'fixed' | 'rhythm' | 'adaptive') => void;
     positiveMode: boolean;
     onPositiveModeToggle: () => void;
+    countdownOn: boolean;
+    onCountdownToggle: () => void;
   }
 
   let {
@@ -47,6 +49,8 @@
     onTrackingModeChange,
     positiveMode,
     onPositiveModeToggle,
+    countdownOn,
+    onCountdownToggle,
   }: Props = $props();
 
   let overlayRef = $state<HTMLDivElement>();
@@ -192,6 +196,23 @@
             {/if}
           </button>
           <span class="settings-hint">{positiveMode ? 'Animated feedback popups instead of stats' : 'Shows accuracy stats and hit history'}</span>
+        </div>
+      </div>
+
+      <div class="settings-field">
+        <label class="settings-label">Countdown</label>
+        <div class="settings-control">
+          <button
+            class="settings-toggle {countdownOn ? 'active' : ''}"
+            onclick={onCountdownToggle}
+          >
+            {#if countdownOn}
+              <PixelIcon name="bolt" size={16} /> Countdown On
+            {:else}
+              <PixelIcon name="bolt" size={16} /> Countdown Off
+            {/if}
+          </button>
+          <span class="settings-hint">{countdownOn ? 'Count in 4 beats before playback starts' : 'Playback starts immediately'}</span>
         </div>
       </div>
     </div>

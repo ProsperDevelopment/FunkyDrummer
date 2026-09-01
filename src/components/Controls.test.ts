@@ -24,8 +24,6 @@ const baseProps = {
   onToggleMetronome: vi.fn(),
   drumPlaybackOn: true,
   onToggleDrumPlayback: vi.fn(),
-  countdownOn: false,
-  onCountdownToggle: vi.fn(),
   grooveOn: false,
   onGrooveToggle: vi.fn(),
   edgeMode: false,
@@ -66,14 +64,6 @@ describe('Controls', () => {
   it('shows the bpm', () => {
     render(Controls, { props: { ...baseProps, bpm: 120 } });
     expect(screen.getByText('120')).toBeInTheDocument();
-  });
-
-  it('calls onCountdownToggle when countdown pressed', async () => {
-    const user = userEvent.setup();
-    const onCountdownToggle = vi.fn();
-    render(Controls, { props: { ...baseProps, onCountdownToggle } });
-    await user.click(screen.getByTitle('Countdown'));
-    expect(onCountdownToggle).toHaveBeenCalledTimes(1);
   });
 
   it('calls onGrooveToggle when groove pressed', async () => {

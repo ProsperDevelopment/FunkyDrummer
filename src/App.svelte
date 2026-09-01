@@ -506,8 +506,6 @@
         onToggleMetronome={handleToggleMetronome}
         drumPlaybackOn={drumPlaybackOn}
         onToggleDrumPlayback={handleToggleDrumPlayback}
-        countdownOn={countdownOn}
-        onCountdownToggle={handleCountdownToggle}
         grooveOn={grooveOn}
         onGrooveToggle={handleGrooveToggle}
         edgeMode={edgeMode}
@@ -648,6 +646,8 @@
       }}
       positiveMode={positiveMode}
       onPositiveModeToggle={handlePositiveModeToggle}
+      countdownOn={countdownOn}
+      onCountdownToggle={handleCountdownToggle}
     />
   {/if}
   {#if showHelp}

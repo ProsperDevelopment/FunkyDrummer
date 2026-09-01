@@ -28,8 +28,6 @@
     onToggleMetronome: () => void;
     drumPlaybackOn: boolean;
     onToggleDrumPlayback: () => void;
-    countdownOn: boolean;
-    onCountdownToggle: () => void;
     grooveOn: boolean;
     onGrooveToggle: () => void;
     edgeMode: boolean;
@@ -62,8 +60,6 @@
     onToggleMetronome,
     drumPlaybackOn,
     onToggleDrumPlayback,
-    countdownOn,
-    onCountdownToggle,
     grooveOn,
     onGrooveToggle,
     edgeMode,
@@ -141,16 +137,6 @@
         />
       </div>
     {/if}
-
-    <div class="controls-group">
-      <button
-        class="btn btn-countdown {countdownOn ? 'active' : 'off'}"
-        onclick={onCountdownToggle}
-        title="Countdown"
-      >
-        <PixelIcon name="bolt" size={20} />
-      </button>
-    </div>
 
     <div class="controls-group">
       <button
