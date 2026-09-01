@@ -102,13 +102,6 @@
       </button>
     </div>
 
-    {#if trackMode}
-      <div class="controls-group track-info-group">
-        <span class="track-info-label">{trackName}</span>
-        <span class="track-info-progress">Part {trackPart + 1}/{trackTotalParts}</span>
-      </div>
-    {/if}
-
     <div class="controls-group">
       <BpmPopup
         {bpm}
@@ -120,6 +113,13 @@
         wrapperClass="bpm-wrap"
       />
     </div>
+
+    {#if trackMode}
+      <div class="controls-group track-info-group">
+        <span class="track-info-label">{trackName}</span>
+        <span class="track-info-progress">Part {trackPart + 1}/{trackTotalParts}</span>
+      </div>
+    {/if}
 
     {#if trainingMode}
       <div class="controls-group">
