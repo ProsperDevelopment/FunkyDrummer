@@ -32,6 +32,11 @@
 
   let tab = $state<'patterns' | 'tracks'>('patterns');
   let activeStyles = $state<string[]>([]);
+  let searchQuery = $state('');
+
+  function resetSearch() {
+    searchQuery = '';
+  }
 
   function selectAndClose(id: string, type: 'pattern' | 'track') {
     if (type === 'pattern') {
@@ -40,6 +45,11 @@
       onSelectTrack(id);
     }
     onClose();
+  }
+
+  function handleTabSwitch(newTab: 'patterns' | 'tracks') {
+    tab = newTab;
+    searchQuery = '';
   }
 </script>
 
@@ -55,13 +65,19 @@
       <div class="modal-tabs">
         <button
           class="tab-btn {tab === 'patterns' ? 'active' : ''}"
-          onclick={() => tab = 'patterns'}
+          onclick={() => handleTabSwitch('patterns')}
         >Patterns</button>
         <button
           class="tab-btn {tab === 'tracks' ? 'active' : ''}"
-          onclick={() => tab = 'tracks'}
+          onclick={() => handleTabSwitch('tracks')}
         >Tracks</button>
         <StyleFilter {activeStyles} onChange={(styles) => activeStyles = styles} />
+        <input
+          class="search-input"
+          type="text"
+          placeholder="Search..."
+          bind:value={searchQuery}
+        />
       </div>
 
       <div class="modal-body">
@@ -70,6 +86,7 @@
             {selectedPatternId}
             onSelectPattern={(id) => selectAndClose(id, 'pattern')}
             {activeStyles}
+            {searchQuery}
             embedded
             grid
           />
@@ -82,6 +99,7 @@
             {trackPart}
             {trackTotalParts}
             {activeStyles}
+            {searchQuery}
             embedded
             grid
           />
