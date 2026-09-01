@@ -187,22 +187,21 @@
       </button>
     </div>
 
-    {#if trainingMode}
-      <div class="controls-group">
-        <RepsPopup
-          {stopAfterReps}
-          {onStopAfterRepsChange}
-          {isPlaying}
-          {currentLoop}
-          buttonClass="btn btn-reps"
-          popupClass="reps-popup"
-          sliderClass="reps-slider"
-          inputClass="reps-input"
-          wrapperClass="reps-wrap"
-          counterClass="reps-counter"
-        />
-      </div>
-    {/if}
+    <div class="controls-group">
+      <RepsPopup
+        {stopAfterReps}
+        {onStopAfterRepsChange}
+        {isPlaying}
+        {currentLoop}
+        buttonClass="btn btn-reps"
+        popupClass="reps-popup"
+        sliderClass="reps-slider"
+        inputClass="reps-input"
+        wrapperClass="reps-wrap"
+        counterClass="reps-counter"
+        disabled={!trainingMode}
+      />
+    </div>
 
     <div class="controls-group">
       <BpmPopup
@@ -213,6 +212,7 @@
         sliderClass="bpm-slider"
         inputClass="bpm-input"
         wrapperClass="bpm-wrap"
+        disabled={!trainingMode}
       />
     </div>
   </div>

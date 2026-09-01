@@ -233,17 +233,7 @@
 }
 
 .fs-bpm-input {
-  width: clamp(40px, 6vw, 56px);
-  padding: clamp(4px, 0.6vw, 8px) clamp(4px, 0.8vw, 8px);
-  background: var(--bg-deep);
-  border: 3px solid var(--border);
-  border-radius: 2px;
-  color: var(--text-primary);
-  font-size: clamp(0.7rem, 1.4vw, 0.9rem);
-  font-family: inherit;
-  text-align: center;
-  font-weight: 600;
-  font-variant-numeric: tabular-nums;
+  display:none;
 }
 
 .fs-bpm-input:focus {
@@ -359,17 +349,7 @@
 }
 
 .fs-reps-input {
-  width: clamp(40px, 6vw, 56px);
-  padding: clamp(4px, 0.6vw, 8px) clamp(4px, 0.8vw, 8px);
-  background: var(--bg-deep);
-  border: 3px solid var(--border);
-  border-radius: 2px;
-  color: var(--text-primary);
-  font-size: clamp(0.7rem, 1.4vw, 0.9rem);
-  font-family: inherit;
-  text-align: center;
-  font-weight: 600;
-  font-variant-numeric: tabular-nums;
+  display: none;
 }
 
 .fs-reps-input:focus {

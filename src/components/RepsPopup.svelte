@@ -12,6 +12,7 @@
     inputClass?: string;
     wrapperClass?: string;
     counterClass?: string;
+    disabled?: boolean;
   }
 
   let {
@@ -25,6 +26,7 @@
     inputClass = 'reps-input',
     wrapperClass = 'reps-wrap',
     counterClass = 'reps-counter',
+    disabled = false,
   }: Props = $props();
 
   let showPopup = $state(false);
@@ -54,12 +56,15 @@
 <div class={wrapperClass} bind:this={wrapRef}>
   <button
     class="{buttonClass} {showPopup ? 'active' : ''}"
-    onclick={() => (showPopup = !showPopup)}
+    onclick={() => !disabled && (showPopup = !showPopup)}
     title="Reps"
+    disabled={disabled}
   >
-    <span class="reps-value">{stopAfterReps || REPS_MIN}</span>
+    {#if !disabled}
+      <span class="reps-value">{stopAfterReps || REPS_MIN}</span>
+    {/if}
   </button>
-  {#if showPopup}
+  {#if showPopup && !disabled}
     <div class={popupClass}>
       <input
         type="range"

@@ -83,3 +83,100 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: var(--accent-purple);
 }
+
+/* ── 8bit Pixel Corner Utilities (from 8bit.cnlibs.com) ── */
+/* Uses clip-path staircase polygons instead of border-radius */
+
+:root {
+  --px-size: 4px;
+  /* Staircase polygon for 2-step corners (md) */
+  --px-shape-md: polygon(
+    var(--px-size) 0,
+    calc(100% - var(--px-size)) 0,
+    100% var(--px-size),
+    100% calc(100% - var(--px-size)),
+    calc(100% - var(--px-size)) 100%,
+    var(--px-size) 100%,
+    0 calc(100% - var(--px-size)),
+    0 var(--px-size)
+  );
+  /* Staircase polygon for 1-step corners (sm) */
+  --px-shape-sm: polygon(
+    1px 0,
+    calc(100% - 1px) 0,
+    100% 1px,
+    100% calc(100% - 1px),
+    calc(100% - 1px) 100%,
+    1px 100%,
+    0 calc(100% - 1px),
+    0 1px
+  );
+}
+
+/* Rounded pixel corners (small) */
+.px-rounded-sm {
+  clip-path: var(--px-shape-sm);
+  -webkit-clip-path: var(--px-shape-sm);
+}
+
+/* Rounded pixel corners (medium - 2-step) */
+.px-rounded-md {
+  clip-path: var(--px-shape-md);
+  -webkit-clip-path: var(--px-shape-md);
+}
+
+/* Pixel border (medium) */
+.px-border-md {
+  position: relative;
+}
+
+.px-border-md::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  clip-path: var(--px-shape-md);
+  -webkit-clip-path: var(--px-shape-md);
+  border: var(--px-border-width, 2px) solid var(--px-border-color, var(--border));
+  background: transparent;
+  z-index: 1;
+}
+
+/* Pixel border (small) */
+.px-border-sm {
+  position: relative;
+}
+
+.px-border-sm::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  clip-path: var(--px-shape-sm);
+  -webkit-clip-path: var(--px-shape-sm);
+  border: var(--px-border-width, 2px) solid var(--px-border-color, var(--border));
+  background: transparent;
+  z-index: 1;
+}
+
+/* Focus ring */
+.px-ring {
+  position: relative;
+}
+
+.px-ring::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  clip-path: var(--px-shape-md);
+  -webkit-clip-path: var(--px-shape-md);
+  background: var(--ring);
+  opacity: 0;
+  transition: opacity 0.2s;
+  z-index: 0;
+}
+
+.px-ring:focus-visible::after {
+  opacity: 1;
+}

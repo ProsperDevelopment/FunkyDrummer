@@ -40,78 +40,53 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 48px;
+  width: 66px;
   height: 48px;
   flex-shrink: 0;
   overflow: visible;
 }
 
-/* ── Base Button — 8-bit Pixel Style ──────────── */
+/* ── Base Button — Match Fullscreen Style ──────── */
 
 .btn {
-  padding: clamp(10px, 1vw, 14px) clamp(14px, 1.6vw, 20px);
-  border: none;
+  padding: clamp(8px, 1vw, 12px) clamp(10px, 1.4vw, 16px);
+  border: 3px solid var(--border);
   border-radius: 2px;
-  font-size: clamp(0.75rem, 1.4vw, 1rem);
+  font-size: clamp(0.9rem, 1.8vw, 1.2rem);
   cursor: pointer;
   transition: none;
   font-family: inherit;
   background: var(--bg-elevated);
-  color: var(--text-primary);
+  color: var(--text-secondary);
   position: relative;
-  line-height: 1.2;
-  min-height: 48px;
-  min-width: 48px;
+  line-height: 1;
+  min-height: 44px;
+  min-width: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
-  /* 8-bit pixel border: 4 corner squares + 4 side bars + inner shadow */
   box-shadow:
-    /* Corner squares */
-    -3px -3px 0 0 var(--border),
-    3px -3px 0 0 var(--border),
-    -3px 3px 0 0 var(--border),
-    3px 3px 0 0 var(--border),
-    /* Top/bottom bars */
-    0 -3px 0 0 var(--border),
-    0 3px 0 0 var(--border),
-    /* Left/right bars */
-    -3px 0 0 0 var(--border),
-    3px 0 0 0 var(--border),
-    /* Inner highlight/shadow */
     inset -2px -2px 0 rgba(0, 0, 0, 0.25),
-    inset 2px 2px 0 rgba(255, 255, 255, 0.08);
+    inset 2px 2px 0 rgba(255, 255, 255, 0.08),
+    3px 3px 0 var(--border);
 }
 
 .btn:hover {
   background: var(--bg-hover);
+  border-color: var(--accent-purple);
+  color: var(--text-primary);
   box-shadow:
-    -3px -3px 0 0 var(--accent-purple),
-    3px -3px 0 0 var(--accent-purple),
-    -3px 3px 0 0 var(--accent-purple),
-    3px 3px 0 0 var(--accent-purple),
-    0 -3px 0 0 var(--accent-purple),
-    0 3px 0 0 var(--accent-purple),
-    -3px 0 0 0 var(--accent-purple),
-    3px 0 0 0 var(--accent-purple),
     inset -2px -2px 0 rgba(0, 0, 0, 0.25),
     inset 2px 2px 0 rgba(255, 255, 255, 0.08),
+    3px 3px 0 var(--accent-purple),
     0 0 8px var(--accent-purple-glow);
 }
 
 .btn:active {
   box-shadow:
-    -2px -2px 0 0 var(--border),
-    2px -2px 0 0 var(--border),
-    -2px 2px 0 0 var(--border),
-    2px 2px 0 0 var(--border),
-    0 -2px 0 0 var(--border),
-    0 2px 0 0 var(--border),
-    -2px 0 0 0 var(--border),
-    2px 0 0 0 var(--border),
     inset 2px 2px 0 rgba(0, 0, 0, 0.3),
     inset -2px -2px 0 rgba(255, 255, 255, 0.05);
-  transform: translate(1px, 1px);
+  transform: translate(2px, 2px);
 }
 
 /* ── Play / Stop ───────────────────────────────── */
@@ -129,6 +104,7 @@
 .btn-play:hover {
   background: rgba(96, 208, 136, 0.2);
   border-color: var(--success);
+  color: var(--success);
   box-shadow:
     inset -2px -2px 0 rgba(0, 0, 0, 0.25),
     inset 2px 2px 0 rgba(255, 255, 255, 0.08),
@@ -161,6 +137,7 @@
 .btn-stop:hover {
   background: rgba(232, 80, 80, 0.12);
   border-color: var(--danger);
+  color: var(--danger);
   box-shadow:
     inset -2px -2px 0 rgba(0, 0, 0, 0.25),
     inset 2px 2px 0 rgba(255, 255, 255, 0.08),
@@ -292,17 +269,8 @@
 }
 
 .bpm-input {
-  width: clamp(40px, 6vw, 56px);
-  padding: clamp(4px, 0.6vw, 8px) clamp(4px, 0.8vw, 8px);
-  background: var(--bg-deep);
-  border: 3px solid var(--border);
-  border-radius: 2px;
-  color: var(--text-primary);
-  font-size: clamp(0.7rem, 1.4vw, 0.9rem);
-  font-family: inherit;
-  text-align: center;
-  font-weight: 600;
-  font-variant-numeric: tabular-nums;
+  display: none;
+  
 }
 
 .bpm-input:focus {
@@ -834,17 +802,8 @@
 }
 
 .reps-input {
-  width: clamp(40px, 6vw, 56px);
-  padding: clamp(4px, 0.6vw, 8px) clamp(4px, 0.8vw, 8px);
-  background: var(--bg-deep);
-  border: 3px solid var(--border);
-  border-radius: 2px;
-  color: var(--text-primary);
-  font-size: clamp(0.7rem, 1.4vw, 0.9rem);
-  font-family: inherit;
-  text-align: center;
-  font-weight: 600;
-  font-variant-numeric: tabular-nums;
+  display: none;
+ 
 }
 
 .reps-input:focus {

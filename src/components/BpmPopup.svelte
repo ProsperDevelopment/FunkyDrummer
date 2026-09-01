@@ -9,6 +9,7 @@
     sliderClass?: string;
     inputClass?: string;
     wrapperClass?: string;
+    disabled?: boolean;
   }
 
   let {
@@ -19,6 +20,7 @@
     sliderClass = 'bpm-slider',
     inputClass = 'bpm-input',
     wrapperClass = 'bpm-wrap',
+    disabled = false,
   }: Props = $props();
 
   let showPopup = $state(false);
@@ -48,12 +50,15 @@
 <div class={wrapperClass} bind:this={wrapRef}>
   <button
     class="{buttonClass} {showPopup ? 'active' : ''}"
-    onclick={() => (showPopup = !showPopup)}
+    onclick={() => !disabled && (showPopup = !showPopup)}
     title="BPM"
+    disabled={disabled}
   >
-    <span class="bpm-value">{bpm}</span>
+    {#if !disabled}
+      <span class="bpm-value">{bpm}</span>
+    {/if}
   </button>
-  {#if showPopup}
+  {#if showPopup && !disabled}
     <div class={popupClass}>
       <input
         type="range"
