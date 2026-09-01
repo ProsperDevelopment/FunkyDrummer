@@ -102,18 +102,6 @@
       </button>
     </div>
 
-    <div class="controls-group">
-      <BpmPopup
-        {bpm}
-        {onBpmChange}
-        buttonClass="btn btn-bpm"
-        popupClass="bpm-popup"
-        sliderClass="bpm-slider"
-        inputClass="bpm-input"
-        wrapperClass="bpm-wrap"
-      />
-    </div>
-
     {#if trackMode}
       <div class="controls-group track-info-group">
         <span class="track-info-label">{trackName}</span>
@@ -121,22 +109,25 @@
       </div>
     {/if}
 
-    {#if trainingMode}
-      <div class="controls-group">
-        <RepsPopup
-          {stopAfterReps}
-          {onStopAfterRepsChange}
-          {isPlaying}
-          {currentLoop}
-          buttonClass="btn btn-reps"
-          popupClass="reps-popup"
-          sliderClass="reps-slider"
-          inputClass="reps-input"
-          wrapperClass="reps-wrap"
-          counterClass="reps-counter"
-        />
-      </div>
-    {/if}
+    <div class="controls-group">
+      <button
+        class="btn btn-drum-playback {drumPlaybackOn ? 'active' : 'off'}"
+        onclick={onToggleDrumPlayback}
+        title="Pattern"
+      >
+        <PixelIcon name="disc" size={20} />
+      </button>
+    </div>
+
+    <div class="controls-group">
+      <button
+        class="btn btn-training {trainingMode ? 'active' : 'off'}"
+        onclick={onTrainingToggle}
+        title="Training"
+      >
+        <PixelIcon name="shapes" size={20} />
+      </button>
+    </div>
 
     <div class="controls-group">
       <button
@@ -152,7 +143,7 @@
       <button
         class="btn btn-edge {edgeMode ? 'active' : 'off'}"
         onclick={onEdgeModeToggle}
-        title="Edge mode: {edgeMode ? 'ON' : 'OFF'} — replaces standard hi-hats with edge/top articulation"
+        title="Edge"
       >
         <PixelIcon name="filter" size={20} />
       </button>
@@ -162,27 +153,9 @@
       <button
         class="btn btn-metronome {metronomeOn ? 'active' : 'off'}"
         onclick={onToggleMetronome}
+        title="Metronome"
       >
         <PixelIcon name="sound-on" size={20} />
-      </button>
-    </div>
-
-    <div class="controls-group">
-      <button
-        class="btn btn-drum-playback {drumPlaybackOn ? 'active' : 'off'}"
-        onclick={onToggleDrumPlayback}
-      >
-        <PixelIcon name="disc" size={20} />
-      </button>
-    </div>
-
-    <div class="controls-group">
-      <button
-        class="btn btn-training {trainingMode ? 'active' : 'off'}"
-        onclick={onTrainingToggle}
-        title="Training"
-      >
-        <PixelIcon name="shapes" size={20} />
       </button>
     </div>
 
@@ -209,6 +182,35 @@
       >
         <PixelIcon name="chart-line" size={20} />
       </button>
+    </div>
+
+    {#if trainingMode}
+      <div class="controls-group">
+        <RepsPopup
+          {stopAfterReps}
+          {onStopAfterRepsChange}
+          {isPlaying}
+          {currentLoop}
+          buttonClass="btn btn-reps"
+          popupClass="reps-popup"
+          sliderClass="reps-slider"
+          inputClass="reps-input"
+          wrapperClass="reps-wrap"
+          counterClass="reps-counter"
+        />
+      </div>
+    {/if}
+
+    <div class="controls-group">
+      <BpmPopup
+        {bpm}
+        {onBpmChange}
+        buttonClass="btn btn-bpm"
+        popupClass="bpm-popup"
+        sliderClass="bpm-slider"
+        inputClass="bpm-input"
+        wrapperClass="bpm-wrap"
+      />
     </div>
   </div>
 
