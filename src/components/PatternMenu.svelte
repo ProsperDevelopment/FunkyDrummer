@@ -7,9 +7,10 @@
     onSelectPattern: (id: string) => void;
     embedded?: boolean;
     activeStyles?: string[];
+    grid?: boolean;
   }
 
-  let { selectedPatternId, onSelectPattern, embedded = false, activeStyles = [] }: Props = $props();
+  let { selectedPatternId, onSelectPattern, embedded = false, activeStyles = [], grid = false }: Props = $props();
 
   const visiblePatterns = drumPatterns.filter(p => !p.id.endsWith('-edge'));
 
@@ -28,7 +29,7 @@
 </script>
 
 {#if embedded}
-  <div class="pattern-list">
+  <div class="pattern-list" class:grid-layout={grid}>
     {#each Object.entries(grouped) as [style, patterns]}
       <div>
         <div class="style-group-header">{style}</div>

@@ -11,6 +11,7 @@
     trackTotalParts: number;
     embedded?: boolean;
     activeStyles?: string[];
+    grid?: boolean;
   }
 
   let {
@@ -22,6 +23,7 @@
     trackTotalParts,
     embedded = false,
     activeStyles = [],
+    grid = false,
   }: Props = $props();
 
   let grouped = $derived.by(() => {
@@ -71,7 +73,7 @@
   <div class="track-menu">
     <div class="menu-section">
       <h2 class="menu-section-title">Tracks</h2>
-      <div class="track-list">
+  <div class="track-list" class:grid-layout={grid}>
         {#each Object.entries(grouped) as [style, tracks]}
           <div>
             <div class="style-group-header">{style}</div>

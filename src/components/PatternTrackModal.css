@@ -1,0 +1,154 @@
+/* Modal overlay */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  backdrop-filter: blur(4px);
+}
+
+.modal-content {
+  background: var(--card);
+  border: none;
+  border-radius: 0;
+  width: 90vw;
+  max-width: 900px;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  box-shadow:
+    -4px -4px 0 0 var(--accent-purple),
+    4px -4px 0 0 var(--accent-purple),
+    -4px 4px 0 0 var(--accent-purple),
+    4px 4px 0 0 var(--accent-purple),
+    0 -4px 0 0 var(--accent-purple),
+    0 4px 0 0 var(--accent-purple),
+    -4px 0 0 0 var(--accent-purple),
+    4px 0 0 0 var(--accent-purple),
+    inset 2px 2px 0 rgba(255, 255, 255, 0.05),
+    0 0 24px var(--accent-purple-glow);
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 3px solid var(--border);
+}
+
+.modal-title {
+  margin: 0;
+  font-size: 0.8rem;
+  font-weight: 700;
+  font-family: var(--font-retro);
+  color: var(--accent-pink);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 4px 8px;
+  line-height: 1;
+}
+
+.modal-close:hover {
+  color: var(--danger);
+}
+
+.modal-tabs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  border-bottom: 3px solid var(--border);
+}
+
+.modal-tabs .tab-btn {
+  padding: 8px 16px;
+  background: var(--bg-elevated);
+  border: 3px solid var(--border);
+  border-radius: 2px;
+  color: var(--text-muted);
+  font-family: var(--font-retro);
+  font-size: 0.6rem;
+  cursor: pointer;
+  transition: none;
+  box-shadow:
+    -2px -2px 0 0 var(--border),
+    2px -2px 0 0 var(--border),
+    -2px 2px 0 0 var(--border),
+    2px 2px 0 0 var(--border),
+    0 -2px 0 0 var(--border),
+    0 2px 0 0 var(--border),
+    -2px 0 0 0 var(--border),
+    2px 0 0 0 var(--border);
+}
+
+.modal-tabs .tab-btn.active {
+  background: rgba(144, 96, 224, 0.2);
+  border-color: var(--accent-purple);
+  color: var(--accent-purple-light);
+  box-shadow:
+    -2px -2px 0 0 var(--accent-purple),
+    2px -2px 0 0 var(--accent-purple),
+    -2px 2px 0 0 var(--accent-purple),
+    2px 2px 0 0 var(--accent-purple),
+    0 -2px 0 0 var(--accent-purple),
+    0 2px 0 0 var(--accent-purple),
+    -2px 0 0 0 var(--accent-purple),
+    2px 0 0 0 var(--accent-purple);
+}
+
+.modal-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+}
+
+/* Grid layout for patterns/tracks */
+.grid-layout {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 10px;
+  padding: 0;
+}
+
+.grid-layout .style-group-header {
+  grid-column: 1 / -1;
+  padding: 8px 0 4px;
+  font-size: 0.7rem;
+  color: var(--accent-purple-light);
+  font-family: var(--font-retro);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.grid-layout .pattern-item,
+.grid-layout .track-item {
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  gap: 6px;
+  padding: 12px;
+}
+
+.grid-layout .pattern-desc {
+  font-size: 0.7rem;
+  line-height: 1.3;
+}
+
+.grid-layout .pattern-bpm,
+.grid-layout .track-bpm {
+  margin-left: 0;
+}

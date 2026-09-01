@@ -2,7 +2,7 @@
   import { onMount } from 'svelte';
   import './App.css';
   import Timeline from './components/Timeline.svelte';
-  import PatternTrackTabs from './components/PatternTrackTabs.svelte';
+  import PatternTrackModal from './components/PatternTrackModal.svelte';
   import Controls from './components/Controls.svelte';
   import DrumVisualizer from './components/DrumVisualizer.svelte';
   import HelpModal from './components/HelpModal.svelte';
@@ -48,7 +48,7 @@
   let drumPlaybackOn = $state(true);
   let midiConfigId = $state(midiConfigs[0].id);
   let drumLayoutId = $state(drumLayouts[0].id);
-  let showPatterns = $state(true);
+  let showPatterns = $state(false);
   let showHelp = $state(false);
   let fullscreenMode = $state(false);
   let showSettings = $state(false);
@@ -436,10 +436,10 @@
   <header class="app-header">
     <button
       class="header-btn sidebar-toggle"
-      onclick={() => { showPatterns = !showPatterns; }}
-      title={showPatterns ? 'Hide patterns' : 'Show patterns'}
+      onclick={() => { showPatterns = true; }}
+      title="Open patterns & tracks"
     >
-      <PixelIcon name={showPatterns ? 'angle-left' : 'angle-right'} size={16} />
+      <PixelIcon name="angle-right" size={16} />
     </button>
     <h1 class="app-title">Funky Drummer</h1>
     <span class="app-subtitle">Drum Machine & Trainer</span>
@@ -468,22 +468,7 @@
   </header>
 
   <div class="app-layout">
-    {#if showPatterns}
-      <aside class="app-sidebar">
-        <PatternTrackTabs
-          selectedPatternId={selectedPatternId}
-          onSelectPattern={handlePatternSelect}
-          selectedTrackId={selectedTrackId}
-          currentTrackName={playback.currentPattern?.name}
-          onSelectTrack={handleTrackSelect}
-          isPlayingTrack={playback.isPlaying}
-          trackPart={playback.currentPartIndex}
-          trackTotalParts={selectedTrack?.parts.length ?? 0}
-        />
-      </aside>
-    {/if}
-
-    <main class="app-main{showPatterns ? '' : ' app-main-full'}">
+    <main class="app-main app-main-full">
       <Controls
         isPlaying={playback.isPlaying}
         onTogglePlay={() => playback.togglePlay()}
@@ -653,4 +638,17 @@
   {#if showHelp}
     <HelpModal onClose={() => { showHelp = false; }} />
   {/if}
+
+  <PatternTrackModal
+    open={showPatterns}
+    onClose={() => { showPatterns = false; }}
+    {selectedPatternId}
+    onSelectPattern={handlePatternSelect}
+    {selectedTrackId}
+    currentTrackName={playback.currentPattern?.name}
+    onSelectTrack={handleTrackSelect}
+    isPlayingTrack={playback.isPlaying}
+    trackPart={playback.currentPartIndex}
+    trackTotalParts={selectedTrack?.parts.length ?? 0}
+  />
 </div>

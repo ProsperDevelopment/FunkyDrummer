@@ -51,8 +51,10 @@ describe('App', () => {
     expect(screen.getByTitle('Stop')).toBeInTheDocument();
   });
 
-  it('shows the default pattern selected', () => {
+  it('shows the default pattern selected', async () => {
+    const user = userEvent.setup();
     render(App);
+    await user.click(screen.getByTitle('Open patterns & tracks'));
     const first = visiblePatterns[0];
     expect(patternButton(first.name).className).toContain('active');
   });
@@ -60,9 +62,11 @@ describe('App', () => {
   it('switches patterns on click', async () => {
     const user = userEvent.setup();
     render(App);
+    await user.click(screen.getByTitle('Open patterns & tracks'));
     const target = visiblePatterns[1];
     await user.click(patternButton(target.name));
-    expect(patternButton(target.name).className).toContain('active');
+    // Modal closes after selection, so button should not be in the DOM
+    expect(screen.queryByText(target.name)).not.toBeInTheDocument();
   });
 
   it('toggles play when the play button is clicked', async () => {
@@ -87,10 +91,11 @@ describe('App', () => {
   it('switches to track mode and plays a track', async () => {
     const user = userEvent.setup();
     render(App);
+    await user.click(screen.getByTitle('Open patterns & tracks'));
     await user.click(screen.getByRole('button', { name: 'Tracks' }));
     const track = trackList[0];
     await user.click(trackButton(track.name));
-    expect(screen.getAllByText(track.name).length).toBeGreaterThan(0);
+    // Modal closes after selection, track info shows in controls
     expect(screen.getByText(/Part 1\/\d+/)).toBeInTheDocument();
   });
 
