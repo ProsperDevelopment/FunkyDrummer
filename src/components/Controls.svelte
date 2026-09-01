@@ -97,6 +97,9 @@
           <PixelIcon name="play" size={24} />
         {/if}
       </button>
+    </div>
+
+    <div class="controls-group">
       <button class="btn btn-stop" onclick={onStop} title="Stop">
         <PixelIcon name="times-square" size={24} />
       </button>
