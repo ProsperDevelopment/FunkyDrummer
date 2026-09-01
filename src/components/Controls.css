@@ -189,12 +189,14 @@
   font-family: var(--font-retro);
   color: var(--accent-purple);
   font-variant-numeric: tabular-nums;
-  width: 52px;
-  min-width: 52px;
-  max-width: 52px;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
   border-color: var(--border);
-  padding: 10px 6px;
+  padding: 10px 4px;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .btn-bpm:hover {
