@@ -7,6 +7,8 @@
   interface Props {
     pattern: DrumPattern | null;
     currentStep: number;
+    stepStartTime?: number;
+    stepDurationMs?: number;
     isPlaying: boolean;
     userHits?: UserHit[];
     trainingMode?: boolean;
@@ -15,7 +17,7 @@
     positiveMode?: boolean;
   }
 
-  let { pattern, currentStep, isPlaying, userHits = [], trainingMode = false, compact = false, grooveOn = false, positiveMode = false }: Props = $props();
+  let { pattern, currentStep, stepStartTime = 0, stepDurationMs = 1000, isPlaying, userHits = [], trainingMode = false, compact = false, grooveOn = false, positiveMode = false }: Props = $props();
 
   const STEP_WIDTH = CANVAS_STEP_WIDTH;
   const ROW_HEIGHT = CANVAS_ROW_HEIGHT;
@@ -136,7 +138,7 @@
     ctx.fillRect(scrollX + offsetStep * STEP_WIDTH, 0, STEP_WIDTH, contentH);
 
     if (trainingMode && isPlaying && userHits.length > 0) {
-      const now = Date.now();
+      const now = performance.now();
       const fadeMs = positiveMode ? 400 : 2500;
       const accLabels: Record<string, string> = { perfect: 'P', good: 'G', near: 'N', miss: 'X' };
       for (const hit of userHits) {
@@ -146,7 +148,7 @@
 
         const rowIdx = rows.findIndex(r => r.id === hit.drumId);
         if (rowIdx === -1) continue;
-        const cx = scrollX + (steps + hit.step) * STEP_WIDTH + STEP_WIDTH / 2;
+        const cx = canvasWidth / 2 - (now - hit.perfTime) / stepDurationMs * STEP_WIDTH;
         const cy = rowIdx * ROW_HEIGHT + ROW_HEIGHT / 2;
         const color = userHitColors[hit.accuracy] || userHitColors.miss;
 
@@ -184,24 +186,30 @@
         ctx.shadowBlur = 10;
         ctx.shadowColor = color;
 
-        ctx.fillStyle = color;
+        ctx.strokeStyle = color;
         ctx.globalAlpha = 0.85 * hitAlpha;
+        ctx.lineWidth = 3;
         ctx.beginPath();
-        ctx.arc(cx, cy, CANVAS_HIT_RADIUS, 0, Math.PI * 2);
-        ctx.fill();
+        ctx.moveTo(cx, rowIdx * ROW_HEIGHT + 2);
+        ctx.lineTo(cx, (rowIdx + 1) * ROW_HEIGHT - 2);
+        ctx.stroke();
         ctx.globalAlpha = hitAlpha;
         ctx.shadowBlur = 0;
 
         ctx.strokeStyle = '#fff';
-        ctx.lineWidth = 1.5;
+        ctx.lineWidth = 1;
+        ctx.globalAlpha = 0.5 * hitAlpha;
+        ctx.beginPath();
+        ctx.moveTo(cx, rowIdx * ROW_HEIGHT + 2);
+        ctx.lineTo(cx, (rowIdx + 1) * ROW_HEIGHT - 2);
         ctx.stroke();
 
         ctx.fillStyle = '#000';
         ctx.globalAlpha = hitAlpha;
         ctx.font = `bold ${CANVAS_HIT_FONT_SIZE}px sans-serif`;
         ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText(accLabels[hit.accuracy] || '?', cx, cy);
+        ctx.textBaseline = 'bottom';
+        ctx.fillText(accLabels[hit.accuracy] || '?', cx, rowIdx * ROW_HEIGHT - 2);
         ctx.restore();
       }
     }
@@ -247,28 +255,23 @@
   });
 
   $effect(() => {
-    const ctx = canvasRef?.getContext('2d');
-    if (!ctx || !pattern) return;
-    void positiveMode;
-    const scrollX = getScrollX(steps + (currentStep % steps), canvasWidth);
-    draw(ctx, scrollX);
-  });
-
-  $effect(() => {
     const canvas = canvasRef;
     if (!canvas || !pattern) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    // Force Svelte to track reactive deps that tick() reads asynchronously
     void currentStep;
+    void stepStartTime;
+    void stepDurationMs;
     void steps;
     void canvasWidth;
     void userHits;
     void positiveMode;
 
     const tick = () => {
-      const s = steps + (currentStep % steps);
+      const fraction = Math.min(1, (performance.now() - stepStartTime) / stepDurationMs);
+      const fractionalStep = currentStep % steps + fraction;
+      const s = steps + fractionalStep;
       const scrollX = getScrollX(s, canvasWidth);
       draw(ctx, scrollX);
       rafId = requestAnimationFrame(tick);

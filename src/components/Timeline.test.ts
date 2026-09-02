@@ -11,6 +11,8 @@ function makeHit(drumId: string, step: number, accuracy: string, ageMs: number =
     id: Math.random(),
     drumId,
     step,
+    stepFraction: 0,
+    perfTime: performance.now() - ageMs,
     accuracy,
     timestamp: Date.now() - ageMs,
   };

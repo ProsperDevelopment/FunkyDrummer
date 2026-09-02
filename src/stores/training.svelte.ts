@@ -172,15 +172,18 @@ class TrainingStore {
     }
   }
 
-  handleDrumHit(drumId: string) {
+  handleDrumHit(drumId: string, playbackStep?: number, stepStartTime?: number, stepDurationMs?: number) {
     if (!this.trainingMode || !this.isPlaying) return;
 
     const p = this.patternRef;
     if (!p) return;
 
-    const step = this.currentStepRef;
+    const step = playbackStep ?? this.currentStepRef;
     const steps = p.measures * 16;
     const modStep = step % steps;
+    const fraction = stepStartTime != null && stepDurationMs
+      ? Math.min(1, (performance.now() - stepStartTime) / stepDurationMs)
+      : 0;
 
     let accuracy: string;
     if (!p.grid[drumId]) {
@@ -213,6 +216,8 @@ class TrainingStore {
       id: this.hitId++,
       drumId,
       step: modStep,
+      stepFraction: fraction,
+      perfTime: performance.now(),
       accuracy,
       timestamp: Date.now(),
     };

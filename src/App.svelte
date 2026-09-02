@@ -115,7 +115,7 @@
       : drumId;
     const prev = getHihatPedalPressed();
     playDrum(resolvedId, velocity);
-    training.handleDrumHit(drumId);
+    training.handleDrumHit(drumId, playback.currentStep, playback.stepStartTime, playback.stepDurationMs);
     activeDrums.hit(resolvedId, velocity);
     const next = getHihatPedalPressed();
     if (prev !== next) {
@@ -546,6 +546,8 @@
       <Timeline
         pattern={isTrackMode ? playback.currentPattern : pattern}
         currentStep={playback.currentStep}
+        stepStartTime={playback.stepStartTime}
+        stepDurationMs={playback.stepDurationMs}
         isPlaying={playback.isPlaying}
         userHits={training.userHits}
         trainingMode={training.trainingMode}
@@ -623,6 +625,8 @@
         <Timeline
           pattern={isTrackMode ? playback.currentPattern : pattern}
           currentStep={playback.currentStep}
+          stepStartTime={playback.stepStartTime}
+          stepDurationMs={playback.stepDurationMs}
           isPlaying={playback.isPlaying}
           userHits={training.userHits}
           trainingMode={training.trainingMode}

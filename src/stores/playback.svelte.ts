@@ -18,6 +18,8 @@ class PlaybackStore {
   currentPattern = $state<DrumPattern | null>(null);
   currentPartIndex = $state(0);
   isFinished = $state(false);
+  stepStartTime = 0;
+  stepDurationMs = 1000;
 
   private mode: 'pattern' | 'track' = 'pattern';
   private patternRef: DrumPattern | null = null;
@@ -427,6 +429,9 @@ class PlaybackStore {
     const nextStep = step + 1;
     this.stepRef = nextStep;
     this.currentStep = nextStep;
+    this.stepStartTime = performance.now();
+    const ms = this.adaptiveModeRef && this.adaptiveBpm ? (60 / this.adaptiveBpm) * 1000 / 4 : this.intervalMs;
+    this.stepDurationMs = ms;
 
     if (nextStep > 0 && nextStep % steps === 0) {
       if (this.mode === 'track') {

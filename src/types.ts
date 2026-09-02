@@ -76,6 +76,8 @@ export interface UserHit {
   id: number;
   drumId: string;
   step: number;
+  stepFraction: number;
+  perfTime: number;
   accuracy: string;
   timestamp: number;
 }
