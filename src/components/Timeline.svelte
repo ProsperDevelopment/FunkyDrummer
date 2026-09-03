@@ -124,10 +124,38 @@
       for (let s = 0; s < viewSteps; s++) {
         if (row[s % steps]) {
           const shift = grooveOn ? getGrooveShift(pattern.groove, s) : 0;
-          ctx.globalAlpha = 0.6 + row[s % steps] * 0.4;
+          const barX = scrollX + s * STEP_WIDTH + 4 + shift;
+          const barY = rowIdx * ROW_HEIGHT + 4;
+          const barW = STEP_WIDTH - 8;
+          const barH = ROW_HEIGHT - 8;
+          let popScale = 0;
+          if (trainingMode && isPlaying) {
+            const now = performance.now();
+            for (const hit of userHits) {
+              if (hit.drumId !== drum.id) continue;
+              const hitAge = now - hit.perfTime;
+              if (hitAge >= 150) continue;
+              const hitX = canvasWidth / 2 - hitAge / stepDurationMs * STEP_WIDTH;
+              if (Math.abs(hitX - (barX + barW / 2)) < STEP_WIDTH / 2) {
+                popScale = Math.max(popScale, 1 - hitAge / 150);
+              }
+            }
+          }
+          const grow = popScale * 3;
+          ctx.globalAlpha = 0.6 + row[s % steps] * 0.4 + popScale * 0.4;
           ctx.fillStyle = drum.color;
-          roundRect(ctx, scrollX + s * STEP_WIDTH + 4 + shift, rowIdx * ROW_HEIGHT + 4, STEP_WIDTH - 8, ROW_HEIGHT - 8, 4);
+          roundRect(ctx, barX - grow, barY - grow, barW + grow * 2, barH + grow * 2, 4);
           ctx.fill();
+          if (popScale > 0) {
+            ctx.shadowBlur = 12 * popScale;
+            ctx.shadowColor = drum.color;
+            ctx.strokeStyle = '#fff';
+            ctx.globalAlpha = popScale * 0.6;
+            ctx.lineWidth = 1;
+            roundRect(ctx, barX - grow, barY - grow, barW + grow * 2, barH + grow * 2, 4);
+            ctx.stroke();
+            ctx.shadowBlur = 0;
+          }
           ctx.globalAlpha = 1;
         }
       }
@@ -142,7 +170,7 @@
       const fadeMs = positiveMode ? 400 : 2500;
       const accLabels: Record<string, string> = { perfect: 'P', good: 'G', near: 'N', miss: 'X' };
       for (const hit of userHits) {
-        const age = now - hit.timestamp;
+        const age = now - hit.perfTime;
         const hitAlpha = positiveMode ? Math.max(0, 1 - age / fadeMs) : 1;
         if (positiveMode && hitAlpha <= 0) continue;
 

@@ -166,8 +166,8 @@ class TrainingStore {
 
     if (v) {
       this.cleanupInterval = setInterval(() => {
-        const cutoff = Date.now() - 2500;
-        this.userHits = this.userHits.filter(h => h.timestamp > cutoff);
+        const cutoff = performance.now() - 2500;
+        this.userHits = this.userHits.filter(h => h.perfTime > cutoff);
       }, 300);
     }
   }
